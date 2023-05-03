@@ -10,72 +10,6 @@ import matplotlib.image as mpimg
 import os
 from PIL import Image
 
-# =======================================================================
-
-import cv2
-import numpy as np
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.pyplot as plt
-
-def reconstruct_3d(images, calibration_matrices):
-    # Convertir las imágenes a escala de grises
-    gray_images = [cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) for image in images]
-
-    # Crear un objeto SIFT
-    sift = cv2.xfeatures2d.SIFT_create()
-
-    # Detectar los puntos característicos y calcular los descriptores para todas las imágenes
-    keypoints = []
-    descriptors = []
-    for image in gray_images:
-        kp, des = sift.detectAndCompute(image, None)
-        keypoints.append(kp)
-        descriptors.append(des)
-
-    # Emparejar los descriptores utilizando el algoritmo de fuerza bruta
-    bf = cv2.BFMatcher()
-    matches = []
-    for i in range(len(images)-1):
-        for j in range(i+1, len(images)):
-            # Emparejar los descriptores de los puntos característicos en las dos imágenes
-            matches_ij = bf.match(descriptors[i], descriptors[j])
-            # Seleccionar los mejores emparejamientos
-            matches_ij = sorted(matches_ij, key=lambda x: x.distance)[:100]
-            # Añadir las correspondencias a la lista global de correspondencias
-            matches.append((i, j, matches_ij))
-
-    # Calcular las matrices fundamentales para cada par de imágenes
-    F_matrices = []
-    for match in matches:
-        i, j, matches_ij = match
-        pts_i = np.float32([keypoints[i][m.queryIdx].pt for m in matches_ij])
-        pts_j = np.float32([keypoints[j][m.trainIdx].pt for m in matches_ij])
-        F, _ = cv2.findFundamentalMat(pts_i, pts_j, cv2.FM_RANSAC, 0.1, 0.99)
-        F_matrices.append(F)
-
-    # Calcular la matriz de homografía para cada imagen
-    H_matrices = []
-    for i in range(len(images)):
-        H, _ = cv2.findHomography(np.float32(keypoints[i]), np.float32(keypoints[0]), cv2.RANSAC, 5.0)
-        H_matrices.append(H)
-
-    # Obtener las coordenadas 3D de los puntos
-    points3d = []
-    for i in range(len(keypoints[0])):
-        x, y = keypoints[0][i].pt
-        points2d = []
-        for j in range(len(images)):
-            if i < len(keypoints[j]):
-                x_j, y_j = keypoints[j][i].pt
-                points2d.append((x_j, y_j))
-        points2d = np.float32(points2d).reshape(-1, 1, 2)
-        points3d_homogeneous = cv2.triangulatePoints(calibration_matrices[0], calibration_matrices[1], points2d[0], points2d[1])
-        points3d_cartesian = cv2.convertPointsFromHomogeneous(points3d_homogeneous.T)
-        points
-
-
-
-# =======================================================================
 
 def load_images_from_folder(folder):
     image_names = [] # List where we are going to save the names of the images in the folder
@@ -112,10 +46,7 @@ def load_and_show_images(image1_name, image2_name):
     frame = cv2.hconcat((img1, img2))  # Building the frame with both images (in RGB, not in Gray).
     show_image(frame, title_img_name + "Frame in RGB")
 
-    frameORB = calculate_keypoints(img1, img2, title_img_name)
-    matchesORB = calculate_keypoints_ORB_matching(img1,img2,title_img_name)
-
-    return frame, frameORB, matchesORB
+    return frame
 
 def calculate_keypoints(img1, img2, title=""):
     orb1 = cv2.ORB_create(500)
