@@ -25,7 +25,7 @@
 `> pip install -r requirements.txt`
 
 # Authors:
-* Pol Colomer Campoy (1605612)
-* Gerard Josep Guarin Velez (1605947)
-* Jan Rubio Rico (1603753)
+* Pol Colomer Campoy (1605612) | PolKinsa
+* Gerard Josep Guarin Velez (1605947) | GerardGV
+* Jan Rubio Rico (1603753) | TheRosPetit
 * Rubén Simó Marin (1569391)
