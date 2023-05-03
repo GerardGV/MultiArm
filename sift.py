@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.image as mpimg
+import scipy
 import os
 
 def load_images_from_folder(folder):
@@ -46,12 +47,37 @@ def load_and_show_images(image1_name, image2_name):
 def calculate_DoG():
     pass
 
-def determinate_keypoints(img:np.array, k:int):
-    #ocatava por la que vamos
-    s=0
+
+def determinate_keypoints(img: np.array, scale: float, mode='same', max_scale=256):
+    # Obtenemos la Gaussiana -->
+    # G(x, y, sigma) = (1 / (2 * pi * sigma^2)) * e^(-(x^2+y^2)/2*sigma^2)
+    G = np.random.normal()
+
+    # Convolucionamos la imagen con la Gaussiana como mascara
+    # L(x, y, sigma) = G(x, y, sigma) * I(x, y) --> Donde '*' es el operador de la convolución
+    # (Aplicar filtro de Gaussianas a la imagen, en este caso)
+    # Como la convolución NO es commutativa,
+    # haremos I '*' G, para aplicar los cambios a I (Aplicar el filtro Gaussiano a la Imagen)
+    L = np.convolve(img, G, mode=mode)
+
+    # Calculamos octavas hasta el maximo especificado en el hyperparametro
+    while scale <= max_scale:
+        #ampla o desviacion tipica del filtro Gaussiano
+        k = pow(2, 1 / scale)
+
+        #guardem la convolucion anterior
+        Lant = L
+
+        #como la desviacion tipica es 1, ponemos directamente k para modificar la amplada del filtro de Gaussiana
+        L = scipy.stats.norm.pdf(np.random.normal(), 0, k)
+
+        # en cada nueva octaba, el scale se duplica, uamos shift porque va mas rapido moviendo un bit
+        scale = scale << 1
+        #calculo diferencia de Gaussianas
+        D = L-Lant
 
 
-    k=pow(2, 1/s)
+
     pass
 
 def shift():
