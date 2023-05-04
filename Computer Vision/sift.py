@@ -56,7 +56,7 @@ def calculate_DoG():
 def determinate_keypoints(img: np.array, scale: float, mode='same', max_scale=256):
     # Obtenemos la Gaussiana -->
     # G(x, y, sigma) = (1 / (2 * pi * sigma^2)) * e^(-(x^2+y^2)/2*sigma^2)
-    G = np.random.normal()
+    G = np.random.normal(loc=0, scale=scale)
 
     # Convolucionamos la imagen con la Gaussiana como mascara
     # L(x, y, sigma) = G(x, y, sigma) * I(x, y) --> Donde '*' es el operador de la convolución
@@ -65,24 +65,43 @@ def determinate_keypoints(img: np.array, scale: float, mode='same', max_scale=25
     # haremos I '*' G, para aplicar los cambios a I (Aplicar el filtro Gaussiano a la Imagen)
     L = np.convolve(img, G, mode=mode)
 
+    octavas= []
+
     # Calculamos octavas hasta el maximo especificado en el hyperparametro
     while scale <= max_scale:
-        #ampla o desviacion tipica del filtro Gaussiano
+        #amplitud o desviacion tipica del filtro Gaussiano
         k = pow(2, 1 / scale)
 
-        #guardem la convolucion anterior
+        #guardamos la convolucion anterior
         Lant = L
 
-        #como la desviacion tipica es 1, ponemos directamente k para modificar la amplada del filtro de Gaussiana
-        L = scipy.stats.norm.pdf(np.random.normal(), 0, k)
+        #generamos la nueva Gausiana con sigma diferente
+        G = np.random.normal(scale=scale*k)
 
-        # en cada nueva octaba, el scale se duplica, uamos shift porque va mas rapido moviendo un bit
-        scale = scale << 1
+        #nueva convolucion
+        L = np.convolve(img, G, mode=mode)
+
         #calculo diferencia de Gaussianas
         D = L-Lant
 
+        #guardamos las octavas para luego sacar los keypoints
+        octavas.append(D)
 
+        # en cada nueva octaba, el scale se duplica, uamos shift porque va mas rapido moviendo un bit
+        scale = scale << 1
 
+    keyPoints=[]
+
+    #escogemos puntos caracteristicos entre los puntos de interes
+    for i in range(1, img.shape[0]):
+        for j in range(1, img.shape[1]):
+
+            #si el pixel es el maximo o el minimo de su alrededor(area 3x3 en 3 capas) seguarda
+            if img[i][j] == max(img[i-1][j-1], img[i-1][j],img[i][j+1], img[i][j-1], img[i][j+1], img[i+1][j-1], img[i+1][j], img[i+1][j+1]):
+                keyPoints.append(img[i][j])
+
+            if img[i][j] == min(img[i-1][j-1], img[i-1][j],img[i][j+1], img[i][j-1], img[i][j+1], img[i+1][j-1], img[i+1][j], img[i+1][j+1]):
+                keyPoints.append(img[i][j])
     pass
 
 
