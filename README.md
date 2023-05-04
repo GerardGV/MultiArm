@@ -27,5 +27,5 @@
 # Authors:
 * Pol Colomer Campoy (1605612) | PolKinsa
 * Gerard Josep Guarin Velez (1605947) | GerardGV
-* Jan Rubio Rico (1603753) | TheRosPetit
+* Jan Rubio Rico (1603753) | TheRospetit
 * Rubén Simó Marin (1569391)
