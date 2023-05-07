@@ -118,7 +118,7 @@ def determinateKeypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocat
         for i in range(1, capaDoG.shape[0]):
             for j in range(1, capaDoG.shape[1]):
 
-                #los prints son TEMPORALES PORQUE LOS IF SE UNIRAN EN UNO UNA VEZ COMPROBADO QUE TODO VA, todos los condicionales max y min se uniran en uno max y otro min
+                #los prints son TEMPORALES PORQUE LOS IF SE UNIRAN EN UNO UNA VEZ COMPROBADO QUE VAN todos los condicionales max y min se uniran en uno max y otro min
 
 
                 #si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ACTUAL
