@@ -53,56 +53,78 @@ def calculate_DoG():
     pass
 
 
-def determinate_keypoints(img: np.array, scale: float, mode='same', max_scale=256):
-    # Obtenemos la Gaussiana -->
-    # G(x, y, sigma) = (1 / (2 * pi * sigma^2)) * e^(-(x^2+y^2)/2*sigma^2)
-    G = np.random.normal(loc=0, scale=scale)
+def determinate_keypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4):
+
+    imgCopy=np.copy(img)
+
+    # Obtenemos la Gaussiana con sigma inicial de 0.7071876 por el video
+    ultimoSigma=0.7071876
+    #G = np.random.normal(loc=0, scale=ultimoSigma)
 
     # Convolucionamos la imagen con la Gaussiana como mascara
     # L(x, y, sigma) = G(x, y, sigma) * I(x, y) --> Donde '*' es el operador de la convolución
     # (Aplicar filtro de Gaussianas a la imagen, en este caso)
     # Como la convolución NO es commutativa,
     # haremos I '*' G, para aplicar los cambios a I (Aplicar el filtro Gaussiano a la Imagen)
-    L = np.convolve(img, G, mode=mode)
+    #L = np.convolve(img, G, mode=mode)
 
-    octavas= []
+    DoG = []
 
-    # Calculamos octavas hasta el maximo especificado en el hyperparametro
-    while scale <= max_scale:
-        #amplitud o desviacion tipica del filtro Gaussiano
-        k = pow(2, 1 / scale)
+    for ocatavActual in range(num_ocatavas):
 
-        #guardamos la convolucion anterior
-        Lant = L
+        #generamos Gausiana
+        G = np.random.normal(loc=0, scale=ultimoSigma)
 
-        #generamos la nueva Gausiana con sigma diferente
-        G = np.random.normal(scale=scale*k)
+        # haremos I '*' G, para aplicar los cambios a I (Aplicar el filtro Gaussiano a la Imagen)
+        L = np.convolve(imgCopy, G, mode=mode)
 
-        #nueva convolucion
-        L = np.convolve(img, G, mode=mode)
+        # Calculamos octavas hasta el maximo especificado en el hyperparametro
+        for scale in range(max_scale):
+            #amplitud o desviacion tipica del filtro Gaussiano
+            #k = pow(2, 1 / scale)
 
-        #calculo diferencia de Gaussianas
-        D = L-Lant
+            #guardamos la convolucion anterior
+            Lant = L
 
-        #guardamos las octavas para luego sacar los keypoints
-        octavas.append(D)
+            #generamos la nueva Gausiana con el anterior sigma por k, como cada iteracion se hace kAnterior*k, es com estar haciendo k^2->k^3...
+            G = np.random.normal(scale=ultimoSigma*k)
 
-        # en cada nueva octaba, el scale se duplica, uamos shift porque va mas rapido moviendo un bit
-        scale = scale << 1
+            #nueva convolucion
+            L = np.convolve(imgCopy, G, mode=mode)
+
+            #calculo diferencia de Gaussianas
+            D = L-Lant
+
+            #guardamos las octavas para luego sacar los keypoints
+            DoG.append(D)
+
+            # en cada nueva octaba, el scale se duplica, uamos shift porque va mas rapido moviendo un bit
+            #scale = scale << 1
+
+        #se reduce la resolucion a la mitad
+        imgCopy=imgCopy[int(imgCopy.shape[0]/2), int(imgCopy.shape[1]/2)]
+
+        #cuando terminamos una octava, la siguiente empieza con k multiplicada por numero de octava, por tema de que se ha reducido la resolucion de la imagen a la mitad
+        ultimoSigma=pow(k, ocatavActual)
+
+
 
     keyPoints=[]
 
-    #escogemos puntos caracteristicos entre los puntos de interes
-    for i in range(1, img.shape[0]):
-        for j in range(1, img.shape[1]):
+    #ahora iremos mirando los puntos caracteristicos de cada capa segun su capa anterior y posterir, por ello no miramos la primera ni la ultima
+    for capaDoG in range(1, len(DoG)):
+        #iteramos pixel a pixel miranod 3(x)x3(y)x3(capa, z)-1(pixel que escogemos para mirar a su alrededor) pixeles
+        for i in range(1, capaDoG.shape[0]):
+            for j in range(1, capaDoG.shape[1]):
 
-            #si el pixel es el maximo o el minimo de su alrededor(area 3x3 en 3 capas) seguarda
-            if img[i][j] == max(img[i-1][j-1], img[i-1][j],img[i][j+1], img[i][j-1], img[i][j+1], img[i+1][j-1], img[i+1][j], img[i+1][j+1]):
-                keyPoints.append(img[i][j])
+                #si el pixel es el maximo o el minimo de su alrededor(area 3x3 en 3 capas) seguarda
+                if img[i][j] == max(capaDoG[i-1][j-1], capaDoG[i-1][j], capaDoG[i][j+1], capaDoG[i][j-1], capaDoG[i][j+1], capaDoG[i+1][j-1], capaDoG[i+1][j], capaDoG[i+1][j+1]):
+                    keyPoints.append((i, j))
 
-            if img[i][j] == min(img[i-1][j-1], img[i-1][j],img[i][j+1], img[i][j-1], img[i][j+1], img[i+1][j-1], img[i+1][j], img[i+1][j+1]):
-                keyPoints.append(img[i][j])
-    pass
+                if img[i][j] == min(capaDoG[i-1][j-1], capaDoG[i-1][j], capaDoG[i][j+1], capaDoG[i][j-1], capaDoG[i][j+1], capaDoG[i+1][j-1], capaDoG[i+1][j], capaDoG[i+1][j+1]):
+                    keyPoints.append((i, j))
+
+    return keyPoints
 
 
 def sift(img: np.array, scale=1.6):
