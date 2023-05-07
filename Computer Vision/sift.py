@@ -49,11 +49,12 @@ def load_and_show_images(image1_name, image2_name):
     return frame
 
 
-def calculate_DoG():
+def filtrarKeypoints(keypoints:list):
+
     pass
 
 
-def determinate_keypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4):
+def determinateKeypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4):
 
     imgCopy=np.copy(img)
 
@@ -117,12 +118,46 @@ def determinate_keypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_oca
         for i in range(1, capaDoG.shape[0]):
             for j in range(1, capaDoG.shape[1]):
 
-                #si el pixel es el maximo o el minimo de su alrededor(area 3x3 en 3 capas) seguarda
-                if img[i][j] == max(capaDoG[i-1][j-1], capaDoG[i-1][j], capaDoG[i][j+1], capaDoG[i][j-1], capaDoG[i][j+1], capaDoG[i+1][j-1], capaDoG[i+1][j], capaDoG[i+1][j+1]):
-                    keyPoints.append((i, j))
+                #los prints son TEMPORALES PORQUE LOS IF SE UNIRAN EN UNO UNA VEZ COMPROBADO QUE TODO VA, todos los condicionales max y min se uniran en uno max y otro min
 
-                if img[i][j] == min(capaDoG[i-1][j-1], capaDoG[i-1][j], capaDoG[i][j+1], capaDoG[i][j-1], capaDoG[i][j+1], capaDoG[i+1][j-1], capaDoG[i+1][j], capaDoG[i+1][j+1]):
-                    keyPoints.append((i, j))
+
+                #si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ACTUAL
+                if img[i][j] == max(DoG[capaDoG][i-1][j-1], DoG[capaDoG][i-1][j], DoG[capaDoG][i][j+1],
+                                    DoG[capaDoG][i][j-1], DoG[capaDoG][i][j+1], DoG[capaDoG][i+1][j-1],
+                                    DoG[capaDoG][i+1][j], DoG[capaDoG][i+1][j+1]):
+                    print("max de la capa ACTUAL")
+                    #keyPoints.append((i, j))
+
+                if img[i][j] == min(DoG[capaDoG][i-1][j-1], DoG[capaDoG][i-1][j], DoG[capaDoG][i][j+1], DoG[capaDoG][i][j-1],
+                                    DoG[capaDoG][i][j+1], DoG[capaDoG][i+1][j-1], DoG[capaDoG][i+1][j],
+                                    DoG[capaDoG][i+1][j+1]):
+                    print("min de la capa ACTUAL")
+                    #keyPoints.append((i, j))
+
+                # si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ANTERIOR
+                if img[i][j] == max(DoG[capaDoG-1][i - 1][j - 1], DoG[capaDoG-1][i - 1][j], DoG[capaDoG-1][i][j + 1],
+                                    DoG[capaDoG-1][i][j - 1], DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i + 1][j - 1],
+                                    DoG[capaDoG-1][i + 1][j], DoG[capaDoG-1][i + 1][j + 1], DoG[capaDoG-1][i][j]):
+                    print("max de la capa ANTERIOR")
+
+                if img[i][j] == min(DoG[capaDoG-1][i - 1][j - 1], DoG[capaDoG-1][i - 1][j], DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i][j - 1],
+                                    DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i + 1][j - 1], DoG[capaDoG-1][i + 1][j],
+                                    DoG[capaDoG-1][i + 1][j + 1], DoG[capaDoG-1][i][j]):
+                    print("min de la capa ANTERIOR")
+
+                # si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA POSTERIOR
+                if img[i][j] == max(DoG[capaDoG + 1][i - 1][j - 1], DoG[capaDoG + 1][i - 1][j],
+                                    DoG[capaDoG + 1][i][j + 1], DoG[capaDoG + 1][i][j - 1], DoG[capaDoG + 1][i][j + 1],
+                                    DoG[capaDoG + 1][i + 1][j - 1], DoG[capaDoG + 1][i + 1][j],
+                                    DoG[capaDoG + 1][i + 1][j + 1], DoG[capaDoG + 1][i][j]):
+                    print("max de la capa POSTERIROR")
+
+                if img[i][j] == min(DoG[capaDoG + 1][i - 1][j - 1], DoG[capaDoG + 1][i - 1][j],
+                                    DoG[capaDoG + 1][i][j + 1], DoG[capaDoG + 1][i][j - 1],
+                                    DoG[capaDoG + 1][i][j + 1], DoG[capaDoG + 1][i + 1][j - 1],
+                                    DoG[capaDoG + 1][i + 1][j],
+                                    DoG[capaDoG + 1][i + 1][j + 1], DoG[capaDoG + 1][i][j]):
+                    print("min de la capa POSTERIOR")
 
     return keyPoints
 
@@ -130,7 +165,8 @@ def determinate_keypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_oca
 def sift(img: np.array, scale=1.6):
     # Step 1: Approximate Keypoint Location
 
-    keypoints = determinate_keypoints(img, scale)
+    keypoints = determinateKeypoints(img, scale)
+
     return 0
 
 
