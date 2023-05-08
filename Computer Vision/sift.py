@@ -49,11 +49,13 @@ def load_and_show_images(image1_name, image2_name):
     return frame
 
 
-def filtrarKeypoints(keypoints:list):
+def filtrarKeypoints(keypoints:list, DoG:list):
 
     pass
 
+def assignOrientation(keypoint:list):
 
+    pass
 def determinateKeypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4):
 
     imgCopy=np.copy(img)
@@ -120,52 +122,75 @@ def determinateKeypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocat
 
                 #los prints son TEMPORALES PORQUE LOS IF SE UNIRAN EN UNO UNA VEZ COMPROBADO QUE VAN todos los condicionales max y min se uniran en uno max y otro min
 
+                subMatriz=DoG[capaDoG][i-1:i+2, j-1:j+2]
+
+                valorMaxPosterior = np.max(subMatriz)
+
+                valorMinPosterior = np.min(subMatriz)
 
                 #si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ACTUAL
-                if img[i][j] == max(DoG[capaDoG][i-1][j-1], DoG[capaDoG][i-1][j], DoG[capaDoG][i][j+1],
+                if valorMaxPosterior == max(DoG[capaDoG][i-1][j-1], DoG[capaDoG][i-1][j], DoG[capaDoG][i][j+1],
                                     DoG[capaDoG][i][j-1], DoG[capaDoG][i][j+1], DoG[capaDoG][i+1][j-1],
                                     DoG[capaDoG][i+1][j], DoG[capaDoG][i+1][j+1]):
                     print("max de la capa ACTUAL")
-                    #keyPoints.append((i, j))
+                    #keyPoints.append((capaDoG, (i, j)))#añadimos en que scala de DoG se encuntra para luego las orientaciones
 
-                if img[i][j] == min(DoG[capaDoG][i-1][j-1], DoG[capaDoG][i-1][j], DoG[capaDoG][i][j+1], DoG[capaDoG][i][j-1],
+                if valorMinPosterior == min(DoG[capaDoG][i-1][j-1], DoG[capaDoG][i-1][j], DoG[capaDoG][i][j+1], DoG[capaDoG][i][j-1],
                                     DoG[capaDoG][i][j+1], DoG[capaDoG][i+1][j-1], DoG[capaDoG][i+1][j],
                                     DoG[capaDoG][i+1][j+1]):
                     print("min de la capa ACTUAL")
                     #keyPoints.append((i, j))
 
+                subMatriz = DoG[capaDoG-1][i - 1:i + 2, j - 1:j + 2]
+
+                valorMaxPosterior = np.max(subMatriz)
+
+                valorMinPosterior = np.min(subMatriz)
+
+
                 # si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ANTERIOR
-                if img[i][j] == max(DoG[capaDoG-1][i - 1][j - 1], DoG[capaDoG-1][i - 1][j], DoG[capaDoG-1][i][j + 1],
+                if valorMaxPosterior == max(DoG[capaDoG-1][i - 1][j - 1], DoG[capaDoG-1][i - 1][j], DoG[capaDoG-1][i][j + 1],
                                     DoG[capaDoG-1][i][j - 1], DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i + 1][j - 1],
                                     DoG[capaDoG-1][i + 1][j], DoG[capaDoG-1][i + 1][j + 1], DoG[capaDoG-1][i][j]):
                     print("max de la capa ANTERIOR")
+                    #
 
-                if img[i][j] == min(DoG[capaDoG-1][i - 1][j - 1], DoG[capaDoG-1][i - 1][j], DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i][j - 1],
+                if valorMinPosterior == min(DoG[capaDoG-1][i - 1][j - 1], DoG[capaDoG-1][i - 1][j], DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i][j - 1],
                                     DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i + 1][j - 1], DoG[capaDoG-1][i + 1][j],
                                     DoG[capaDoG-1][i + 1][j + 1], DoG[capaDoG-1][i][j]):
                     print("min de la capa ANTERIOR")
 
+                subMatriz = DoG[capaDoG+1][i - 1:i + 2, j - 1:j + 2]
+
+                valorMaxPosterior = np.max(subMatriz)
+
+                valorMinPosterior = np.min(subMatriz)
+
                 # si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA POSTERIOR
-                if img[i][j] == max(DoG[capaDoG + 1][i - 1][j - 1], DoG[capaDoG + 1][i - 1][j],
+                if valorMaxPosterior == max(DoG[capaDoG + 1][i - 1][j - 1], DoG[capaDoG + 1][i - 1][j],
                                     DoG[capaDoG + 1][i][j + 1], DoG[capaDoG + 1][i][j - 1], DoG[capaDoG + 1][i][j + 1],
                                     DoG[capaDoG + 1][i + 1][j - 1], DoG[capaDoG + 1][i + 1][j],
                                     DoG[capaDoG + 1][i + 1][j + 1], DoG[capaDoG + 1][i][j]):
                     print("max de la capa POSTERIROR")
 
-                if img[i][j] == min(DoG[capaDoG + 1][i - 1][j - 1], DoG[capaDoG + 1][i - 1][j],
+                if valorMinPosterior == min(DoG[capaDoG + 1][i - 1][j - 1], DoG[capaDoG + 1][i - 1][j],
                                     DoG[capaDoG + 1][i][j + 1], DoG[capaDoG + 1][i][j - 1],
                                     DoG[capaDoG + 1][i][j + 1], DoG[capaDoG + 1][i + 1][j - 1],
                                     DoG[capaDoG + 1][i + 1][j],
                                     DoG[capaDoG + 1][i + 1][j + 1], DoG[capaDoG + 1][i][j]):
                     print("min de la capa POSTERIOR")
 
-    return keyPoints
+    return keyPoints, DoG
 
 
 def sift(img: np.array, scale=1.6):
     # Step 1: Approximate Keypoint Location
 
-    keypoints = determinateKeypoints(img, scale)
+    keyPoints, DoG = determinateKeypoints(img, scale)
+
+    #reducir los outliers en los keypoints
+    #keypoints = filtrarKeypoints(keyPoints, DoG)
+
 
     return 0
 
