@@ -32,54 +32,51 @@ def load_and_show_images(image1_name, image2_name):
     print("Showing base images: ")
     img1 = read_image(image1_name)
     img2 = read_image(image2_name)
-    show_image(img1, title_img_name + "Imatge1 base")
-    show_image(img2, title_img_name + "Imatge2 base")
+    #show_image(img1, title_img_name + "Imatge1 base")
+    #show_image(img2, title_img_name + "Imatge2 base")
 
     # GRAY IMAGES:
     print("Showing gray images: ")
     img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
     img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-    show_image(img1_gray, title_img_name + "Gray image 1")
-    show_image(img2_gray, title_img_name + "Gray image 2")
+    #show_image(img1_gray, title_img_name + "Gray image 1")
+    #show_image(img2_gray, title_img_name + "Gray image 2")
 
     # Concatenate both images in one to see both of them at the same time and work with them as a single frame.
     frame = cv2.hconcat((img1, img2))  # Building the frame with both images (in RGB, not in Gray).
     show_image(frame, title_img_name + "Frame in RGB")
 
-    return frame
+    return frame, img1_gray, img2_gray
 
 
-def filtrarKeypoints(keypoints:list, DoG:list):
-
-    pass
-
-def assignOrientation(keypoint:list):
+def filtrarKeypoints(keyPoints:list, DoG:list):
 
     pass
-def determinateKeypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4):
+
+def assignOrientation(keyPoints:list, DoG:list):
+
+    pass
+def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_ocatavas:int, kernelSize:int):
 
     imgCopy=np.copy(img)
 
     # Obtenemos la Gaussiana con sigma inicial de 0.7071876 por el video
-    ultimoSigma=0.7071876
-    #G = np.random.normal(loc=0, scale=ultimoSigma)
+    sigmaInicial=0.7071876
 
-    # Convolucionamos la imagen con la Gaussiana como mascara
-    # L(x, y, sigma) = G(x, y, sigma) * I(x, y) --> Donde '*' es el operador de la convolución
-    # (Aplicar filtro de Gaussianas a la imagen, en este caso)
-    # Como la convolución NO es commutativa,
-    # haremos I '*' G, para aplicar los cambios a I (Aplicar el filtro Gaussiano a la Imagen)
-    #L = np.convolve(img, G, mode=mode)
+    # generamos Gausian KERNEL de 1 dimension
+    G = cv2.getGaussianKernel(kernelSize, sigmaInicial)
+    G = np.outer(G, G)  # genera Gaussian Kernel de 2 dimensiones
 
     DoG = []
 
+    #creamos diferentes octavas con diferentes scales para obtener las diferencias de Gaussianas
     for ocatavActual in range(num_ocatavas):
 
-        #generamos Gausiana
-        G = np.random.normal(loc=0, scale=ultimoSigma)
+        # convolucionamos, -1 indica queremos un resultado del mismo tamaño de la imagen
+        L = cv2.filter2D(imgCopy, -1, G)
 
-        # haremos I '*' G, para aplicar los cambios a I (Aplicar el filtro Gaussiano a la Imagen)
-        L = np.convolve(imgCopy, G, mode=mode)
+        # nueva sigma, se pone +1 porque se necesita el numeron de ocatavas, en octava 0 llevamos 1 octava
+        nuevaSigma = pow(k, ocatavActual+1) * sigmaInicial
 
         # Calculamos octavas hasta el maximo especificado en el hyperparametro
         for scale in range(max_scale):
@@ -90,10 +87,11 @@ def determinateKeypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocat
             Lant = L
 
             #generamos la nueva Gausiana con el anterior sigma por k, como cada iteracion se hace kAnterior*k, es com estar haciendo k^2->k^3...
-            G = np.random.normal(scale=ultimoSigma*k)
+            G = cv2.getGaussianKernel(kernelSize, nuevaSigma)
+            G = np.outer(G, G)  # genera Gaussian Kernel de 2 dimensiones
 
-            #nueva convolucion
-            L = np.convolve(imgCopy, G, mode=mode)
+            # convolucionamos, -1 indica que queremos un resultado del mismo tamaño de la imagen
+            L = cv2.filter2D(imgCopy, -1, G)
 
             #calculo diferencia de Gaussianas
             D = L-Lant
@@ -101,14 +99,14 @@ def determinateKeypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocat
             #guardamos las octavas para luego sacar los keypoints
             DoG.append(D)
 
-            # en cada nueva octaba, el scale se duplica, uamos shift porque va mas rapido moviendo un bit
-            #scale = scale << 1
+            #nueva sigma, se pone +1 porque se necesita el numeron de scales, en scale 0 llevamos 1 scale
+            nuevaSigma *= pow(k, scale+1)
 
-        #se reduce la resolucion a la mitad
-        imgCopy=imgCopy[int(imgCopy.shape[0]/2), int(imgCopy.shape[1]/2)]
+        #se reduce la resolucion a la mitad de la octava anterior, para esto se necesita mantener la informacion original, img
+        #se subtituye los valores de los pixeles de n columnas, cada octava tiene la mitad de innfromacion de la aterior,
+        #esto significa el doble de columnas son subtituidas en cada octava
+        imgCopy[:, 1::pow(2, ocatavActual+1)]=img[:, 0::pow(2, ocatavActual+1)]
 
-        #cuando terminamos una octava, la siguiente empieza con k multiplicada por numero de octava, por tema de que se ha reducido la resolucion de la imagen a la mitad
-        ultimoSigma=pow(k, ocatavActual)
 
 
 
@@ -117,87 +115,45 @@ def determinateKeypoints(img:np.array, k=1.6, mode='same', max_scale=3, num_ocat
     #ahora iremos mirando los puntos caracteristicos de cada capa segun su capa anterior y posterir, por ello no miramos la primera ni la ultima
     for capaDoG in range(1, len(DoG)):
         #iteramos pixel a pixel miranod 3(x)x3(y)x3(capa, z)-1(pixel que escogemos para mirar a su alrededor) pixeles
-        for i in range(1, capaDoG.shape[0]):
-            for j in range(1, capaDoG.shape[1]):
+        for i in range(1, DoG[capaDoG].shape[0]):
+            for j in range(1, DoG[capaDoG].shape[1]):
 
                 #los prints son TEMPORALES PORQUE LOS IF SE UNIRAN EN UNO UNA VEZ COMPROBADO QUE VAN todos los condicionales max y min se uniran en uno max y otro min
 
-                subMatriz=DoG[capaDoG][i-1:i+2, j-1:j+2]
-
-                valorMaxPosterior = np.max(subMatriz)
-
-                valorMinPosterior = np.min(subMatriz)
+                subMatrizActual=DoG[capaDoG][i-1:i+2, j-1:j+2]
+                #print(subMatrizActual)
+                subMatrizAnterior = DoG[capaDoG - 1][i - 1:i + 2, j - 1:j + 2]
+               # print(subMatrizAnterior)
+                subMatrizPosterior = DoG[capaDoG + 1][i - 1:i + 2, j - 1:j + 2]
+                #print(subMatrizPosterior)
 
                 #si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ACTUAL
-                if valorMaxPosterior == max(DoG[capaDoG][i-1][j-1], DoG[capaDoG][i-1][j], DoG[capaDoG][i][j+1],
-                                    DoG[capaDoG][i][j-1], DoG[capaDoG][i][j+1], DoG[capaDoG][i+1][j-1],
-                                    DoG[capaDoG][i+1][j], DoG[capaDoG][i+1][j+1]):
-                    print("max de la capa ACTUAL")
-                    #keyPoints.append((capaDoG, (i, j)))#añadimos en que scala de DoG se encuntra para luego las orientaciones
+                if max(np.max(subMatrizActual), np.max(subMatrizAnterior),np.max(subMatrizPosterior)) == DoG[capaDoG][i, j]:
+                    keyPoints.append((capaDoG, (i, j)))#añadimos en que scala de DoG se encuntra para luego las orientaciones
 
-                if valorMinPosterior == min(DoG[capaDoG][i-1][j-1], DoG[capaDoG][i-1][j], DoG[capaDoG][i][j+1], DoG[capaDoG][i][j-1],
-                                    DoG[capaDoG][i][j+1], DoG[capaDoG][i+1][j-1], DoG[capaDoG][i+1][j],
-                                    DoG[capaDoG][i+1][j+1]):
-                    print("min de la capa ACTUAL")
-                    #keyPoints.append((i, j))
-
-                subMatriz = DoG[capaDoG-1][i - 1:i + 2, j - 1:j + 2]
-
-                valorMaxPosterior = np.max(subMatriz)
-
-                valorMinPosterior = np.min(subMatriz)
-
-
-                # si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ANTERIOR
-                if valorMaxPosterior == max(DoG[capaDoG-1][i - 1][j - 1], DoG[capaDoG-1][i - 1][j], DoG[capaDoG-1][i][j + 1],
-                                    DoG[capaDoG-1][i][j - 1], DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i + 1][j - 1],
-                                    DoG[capaDoG-1][i + 1][j], DoG[capaDoG-1][i + 1][j + 1], DoG[capaDoG-1][i][j]):
-                    print("max de la capa ANTERIOR")
-                    #
-
-                if valorMinPosterior == min(DoG[capaDoG-1][i - 1][j - 1], DoG[capaDoG-1][i - 1][j], DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i][j - 1],
-                                    DoG[capaDoG-1][i][j + 1], DoG[capaDoG-1][i + 1][j - 1], DoG[capaDoG-1][i + 1][j],
-                                    DoG[capaDoG-1][i + 1][j + 1], DoG[capaDoG-1][i][j]):
-                    print("min de la capa ANTERIOR")
-
-                subMatriz = DoG[capaDoG+1][i - 1:i + 2, j - 1:j + 2]
-
-                valorMaxPosterior = np.max(subMatriz)
-
-                valorMinPosterior = np.min(subMatriz)
-
-                # si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA POSTERIOR
-                if valorMaxPosterior == max(DoG[capaDoG + 1][i - 1][j - 1], DoG[capaDoG + 1][i - 1][j],
-                                    DoG[capaDoG + 1][i][j + 1], DoG[capaDoG + 1][i][j - 1], DoG[capaDoG + 1][i][j + 1],
-                                    DoG[capaDoG + 1][i + 1][j - 1], DoG[capaDoG + 1][i + 1][j],
-                                    DoG[capaDoG + 1][i + 1][j + 1], DoG[capaDoG + 1][i][j]):
-                    print("max de la capa POSTERIROR")
-
-                if valorMinPosterior == min(DoG[capaDoG + 1][i - 1][j - 1], DoG[capaDoG + 1][i - 1][j],
-                                    DoG[capaDoG + 1][i][j + 1], DoG[capaDoG + 1][i][j - 1],
-                                    DoG[capaDoG + 1][i][j + 1], DoG[capaDoG + 1][i + 1][j - 1],
-                                    DoG[capaDoG + 1][i + 1][j],
-                                    DoG[capaDoG + 1][i + 1][j + 1], DoG[capaDoG + 1][i][j]):
-                    print("min de la capa POSTERIOR")
+                elif min(np.min(subMatrizActual), np.min(subMatrizAnterior), np.min(subMatrizPosterior)) == DoG[capaDoG][i, j]:
+                    keyPoints.append((capaDoG, (i, j)))  # añadimos en que scala de DoG se encuntra para luego las orientaciones
 
     return keyPoints, DoG
 
 
-def sift(img: np.array, scale=1.6):
+def sift(img: np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4, kernelSize=3):
     # Step 1: Approximate Keypoint Location
 
-    keyPoints, DoG = determinateKeypoints(img, scale)
+    keyPoints, DoG = determinateKeypoints(img, k, mode, max_scale, num_ocatavas, kernelSize)
 
     #reducir los outliers en los keypoints
     #keypoints = filtrarKeypoints(keyPoints, DoG)
 
+    #asignar orientacion a los keypoints
+    assignOrientation(keyPoints, DoG)
 
     return 0
 
 
 if __name__ == '__main__':
 
-    folder = 'img/base/'
+    folder = 'Computer Vision/img/base/'
 
     # cargamos los nombres de las imagenes
     image_names = load_images_from_folder(folder)
@@ -210,4 +166,7 @@ if __name__ == '__main__':
     #       LOAD AND SHOW IMAGES
     # ================================
     for im1_name, im2_name in zip(image_names[0::2], image_names[1::2]):
-        frame = load_and_show_images(folder + im1_name, folder + im2_name)
+        #devuelve un frame con las 2 imagenes unidas y carga las 2 imagenes en gris
+        frame, imgGray1, imgGray2 = load_and_show_images((folder + im1_name), (folder + im2_name))
+        sift(imgGray1)
+        sift(imgGray2)
