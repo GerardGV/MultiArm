@@ -228,6 +228,9 @@ if __name__ == '__main__':
     # Order names of the images because in some OS they are ordered different, so we order them alphabetically.
     image_names = sorted(image_names)
     print(image_names)
+    # Use only the new images:
+    image_names = image_names[6:]
+    print("New images that will be used in this execution: ", image_names)
     # ================================
     #       LOAD AND SHOW IMAGES
     # ================================
