@@ -269,7 +269,7 @@ def estimate_camera_pose_and_draw(img1, img2):
     K = camera_internals_if_we_DONT_know_K(img1)
     # Estimate the Essential Matrix:
     E = K.T.dot(F.dot(K))
-    """
+
     R1, R2, t = extractCameraPoses(E)
     t = t[:, np.newaxis]
   
@@ -287,8 +287,10 @@ def estimate_camera_pose_and_draw(img1, img2):
 
             plotCamera(np.eye(3, 3), np.zeros((3, )), axs[i, j])
             plotCamera(R_, t_[:, 0], axs[i, j])
-            count += 1"""
-    checkForCheiralityCondition(E, pts1, pts2, K)
+            count += 1
+    return E, pts1, pts2, K
+
+
 def checkForCheiralityCondition(E, pts1, pts2, K):
 
     _, R, t, mask = cv2.recoverPose(E, pts1, pts2, K)
@@ -300,7 +302,8 @@ def checkForCheiralityCondition(E, pts1, pts2, K):
 
     plotCamera(np.eye(3, 3), np.zeros((3,)), ax)
     plotCamera(R, t[:, 0], ax)
-    firstReconstruction(pts1, pts2, K, R, t)
+    return R, t
+
 
 # ==============================
 #   A FIRST RECONSTRUCTION
@@ -335,21 +338,23 @@ def firstReconstruction(pts1, pts2, K, R, t):
 
 
 def getTriangulatedPoints(img1pts, img2pts, K, R, t, triangulateFunc):
-    img1ptsHom = cv2.convertPointsToHomogeneous(img1pts[:, 0, :])
-    img2ptsHom = cv2.convertPointsToHomogeneous(img2pts[:, 0, :])
+    img1ptsHom = cv2.convertPointsToHomogeneous(img1pts)[:, 0, :]
+    img2ptsHom = cv2.convertPointsToHomogeneous(img2pts)[:, 0, :]
 
     img1ptsNorm = (np.linalg.inv(K).dot(img1ptsHom.T)).T
     img2ptsNorm = (np.linalg.inv(K).dot(img2ptsHom.T)).T
 
-    img1ptsNorm = cv2.convertPointsFromHomogeneous(img1ptsNorm[:, 0, :])
-    img2ptsNorm = cv2.convertPointsFromHomogeneous(img2ptsNorm[:, 0, :])
+    img1ptsNorm = cv2.convertPointsFromHomogeneous(img1ptsNorm)[:, 0, :]
+    img2ptsNorm = cv2.convertPointsFromHomogeneous(img2ptsNorm)[:, 0, :]
 
     pts4d = triangulateFunc(np.eye(3, 4), np.hstack((R,t)), img1ptsNorm.T, img2ptsNorm.T)
     pts3d = cv2.convertPointsFromHomogeneous(pts4d.T)[:, 0, :]
 
     return pts3d
 
-
+# ===================================
+#       BUNDLE ADJUSTMENT
+# ===================================
 
 
 if __name__ == '__main__':
@@ -377,6 +382,8 @@ if __name__ == '__main__':
         # pts1, pts2 = fundamental_matrix_find_kp_and_match(folder + im1_name, folder + im2_name)
         # least_median_squares_estimation(img1, img2, pts1, pts2)
         # ransac_estimation(img1, img2, pts1, pts2)
-        estimate_camera_pose_and_draw(img1, img2)
+        E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2)
+        R, t = checkForCheiralityCondition(E, pts1, pts2, K)
+        firstReconstruction(pts1, pts2, K, R, t)
 
     print("End of the program.")
