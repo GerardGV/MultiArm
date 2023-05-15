@@ -53,7 +53,13 @@ def filtrarKeypoints(keyPoints:list, DoG:list):
 
     pass
 
-def assignOrientation(keyPoints:list, DoG:list):
+def assignOrientation(keyPoints:list, DoG:list, radi=2):
+
+    orientacio=[]
+
+    for infoKeypoint in keyPoints:
+        for i in range(0, radi):
+
 
     pass
 def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_ocatavas:int, kernelSize:int):
@@ -113,10 +119,10 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
     keyPoints=[]
 
     #ahora iremos mirando los puntos caracteristicos de cada capa segun su capa anterior y posterir, por ello no miramos la primera ni la ultima
-    for capaDoG in range(1, len(DoG)):
+    for capaDoG in range(1, len(DoG)-1):
         #iteramos pixel a pixel miranod 3(x)x3(y)x3(capa, z)-1(pixel que escogemos para mirar a su alrededor) pixeles
-        for i in range(1, DoG[capaDoG].shape[0]):
-            for j in range(1, DoG[capaDoG].shape[1]):
+        for i in range(1, DoG[capaDoG].shape[0]-1):
+            for j in range(1, DoG[capaDoG].shape[1]-1):
 
                 #los prints son TEMPORALES PORQUE LOS IF SE UNIRAN EN UNO UNA VEZ COMPROBADO QUE VAN todos los condicionales max y min se uniran en uno max y otro min
 
@@ -128,11 +134,21 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
                 #print(subMatrizPosterior)
 
                 #si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ACTUAL
-                if max(np.max(subMatrizActual), np.max(subMatrizAnterior),np.max(subMatrizPosterior)) == DoG[capaDoG][i, j]:
-                    keyPoints.append((capaDoG, (i, j)))#añadimos en que scala de DoG se encuntra para luego las orientaciones
+                if DoG[capaDoG][i,j] != 0.0 and max(np.max(subMatrizActual), np.max(subMatrizAnterior),np.max(subMatrizPosterior)) == DoG[capaDoG][i,j]:
+                    #concatenar las submatrizes
+                    subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
 
-                elif min(np.min(subMatrizActual), np.min(subMatrizAnterior), np.min(subMatrizPosterior)) == DoG[capaDoG][i, j]:
-                    keyPoints.append((capaDoG, (i, j)))  # añadimos en que scala de DoG se encuntra para luego las orientaciones
+                    #si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
+                    if np.count_nonzero(subMatriz == DoG[capaDoG][i,j]) == 1:
+                        keyPoints.append((capaDoG, (i, j)))#añadimos en que scala de DoG se encuntra para luego las orientaciones
+
+                elif DoG[capaDoG][i,j] != 0.0 and min(np.min(subMatrizActual), np.min(subMatrizAnterior), np.min(subMatrizPosterior)) == DoG[capaDoG][i, j]:
+                    # concatenar las submatrizes
+                    subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
+
+                    # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
+                    if np.count_nonzero(subMatriz == DoG[capaDoG][i, j]) == 1:
+                        keyPoints.append((capaDoG, (i, j)))  # añadimos en que scala de DoG se encuntra para luego las orientaciones
 
     return keyPoints, DoG
 
