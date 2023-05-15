@@ -2,9 +2,14 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 import os
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
+import plotly.graph_objects as go
+
 
 
 def show_image(img, title="Imatge", color=False):
+    plt.figure()
     if color:
         plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     else:
@@ -91,10 +96,10 @@ def brute_force_SIFT(im1, im2):
 # FUNDEMENTAL MATRIX:
 # ============================================
 
-def fundamental_matrix_find_kp_and_match(im_name1, im_name2):
+def fundamental_matrix_find_kp_and_match(img1, img2):
     # Implementació més a força bruta i que no trobarà els millors resultats.
-    img1 = cv2.imread(im_name1, 0)
-    img2 = cv2.imread(im_name2, 0)
+    #img1 = cv2.imread(im_name1, 0)
+    #img2 = cv2.imread(im_name2, 0)
 
     sift = cv2.SIFT_create()
 
@@ -174,6 +179,7 @@ def ransac_estimation(img1, img2, pts1, pts2):
 
     final_frame_RANSAC = draw_epipolar_lines(img1, img2, pts1, pts2, F, mask)
     show_image(final_frame_RANSAC, "RANSAC epipolar lines Image: ")
+    return F, mask, final_frame_RANSAC
 
 
 # =============================================
@@ -214,9 +220,141 @@ def plotCamera(R,t,ax,scale=0.5, depth=0.5, faceColor='grey'):
     ax.plot3D(xs=axes[0, 2:4], ys=axes[1, 2:4], zs=axes[2, 2:4], c='g')
     ax.plot3D(xs=axes[0, 4:], ys=axes[1, 4:], zs=axes[2, 4:], c='b')
 
-    # Generant 5 cantonades del polígon de la càmera
-    #pt1 =
+    # Generant 5 cantonades del polígon de la càmera (centre + 4 cantonades)
+    pt1 = np.array([[0, 0, 0]]).T  # Centre de la càmera
+    pt2 = np.array([[scale, -scale, depth]]).T  # A dalt a la dreta
+    pt3 = np.array([[scale, scale, depth]]).T  # A baix a la dreta
+    pt4 = np.array([[-scale, -scale, depth]]).T  # A dalt a l'esquerra
+    pt5 = np.array([[-scale, scale, depth]]).T  # A baix a l'esquerra
+    pts = np.concatenate((pt1, pt2, pt3, pt4, pt5), axis=-1)
 
+    # Passar les coordenades càmera a coordenades món.
+    pts = R.T.dot(pts) + C[:, np.newaxis]
+    ax.scatter3D(xs=pts[0, :], ys=pts[1, :], zs=pts[2, :], c='k')
+
+    # Vèrtexs pel polígon que es crearà a continuació.
+    vertexs = [[pts[:, 0], pts[:, 1], pts[:, 2]], [pts[:, 0], pts[:, 2], pts[:, -1]],
+                [pts[:, 0], pts[:, -1], pts[:, -2]], [pts[:, 0], pts[:, -2], pts[:, 1]]]
+
+    # Generant el nou polígon
+    ax.add_collection3d(Poly3DCollection(vertexs, facecolors=faceColor, linewidths=1, edgecolors='k', alpha=.25))
+
+
+# Full process till ransac:
+def full_ransac_estimation(img1, img2):
+    pts1, pts2 = fundamental_matrix_find_kp_and_match(img1, img2)
+    F, mask, final_frame_RANSAC = ransac_estimation(img1, img2, pts1, pts2)
+    return F, mask, final_frame_RANSAC, pts1, pts2
+
+
+def camera_internals_if_we_DONT_know_K(img1):
+    width, height, _ = img1.shape
+    focal_length = np.maximum(width, height)
+    center = (height/2, width/2)
+
+    K = np.array(
+        [[focal_length, 0, center[0]],
+         [0, focal_length, center[1]],
+         [0, 0, 1]], dtype="double")
+    return K
+
+
+# ==============================================
+# ESTIMATE CAMERA POSE FROM ESSENTIAL MATRIX
+# ==============================================
+
+# Triar quina de les 4 configuracions és la bona per al nostre moviment de càmera.
+def estimate_camera_pose_and_draw(img1, img2):
+    F, mask, final_frame_RANSAC, pts1, pts2 = full_ransac_estimation(img1, img2)
+    K = camera_internals_if_we_DONT_know_K(img1)
+    # Estimate the Essential Matrix:
+    E = K.T.dot(F.dot(K))
+
+    R1, R2, t = extractCameraPoses(E)
+    t = t[:, np.newaxis]
+  
+    # Variable axs per múltiples eixos:
+    fig, axs = plt.subplots(2, 2, figsize=(20, 15))
+    count = 1
+    for i, R_ in enumerate([R1, R2]):
+        for j, t_ in enumerate([t, -t]):
+
+            axs[i, j] = fig.add_subplot(2, 2, count, projection='3d')
+            axs[i, j].set_xlabel('X')
+            axs[i, j].set_ylabel('Y')
+            axs[i, j].set_zlabel('Z')
+            axs[i, j].set_title('Configuració: ' + str(count))
+
+            plotCamera(np.eye(3, 3), np.zeros((3, )), axs[i, j])
+            plotCamera(R_, t_[:, 0], axs[i, j])
+            count += 1
+    return E, pts1, pts2, K
+
+
+def checkForCheiralityCondition(E, pts1, pts2, K):
+
+    _, R, t, mask = cv2.recoverPose(E, pts1, pts2, K)
+    fig = plt.figure(figsize=(9, 6))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+
+    plotCamera(np.eye(3, 3), np.zeros((3,)), ax)
+    plotCamera(R, t[:, 0], ax)
+    return R, t
+
+
+# ==============================
+#   A FIRST RECONSTRUCTION
+# ==============================
+
+def firstReconstruction(pts1, pts2, K, R, t):
+    R_t_0 = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])  # First image
+    R_t_1 = np.empty((3, 4))  # Second image
+
+    R_t_1[:3, :3] = np.matmul(R, R_t_0[:3, :3])
+    R_t_1[:3, :3] = R_t_0[:3, :3] + np.matmul(R_t_0[:3, :3], t.ravel())
+
+    print("The R_t_0 \n", str(R_t_0))
+    print("The R_t_1 \n", str(R_t_1))
+
+    P1 = np.matmul(K, R_t_0)
+    P2 = np.matmul(K, R_t_1)
+
+    print("The Projection Matrix 1: \n", str(P1))
+    print("The Projection Matrix 2: \n", str(P2))
+
+    pts3d = getTriangulatedPoints(pts1, pts2, K, R, t, cv2.triangulatePoints)
+
+    fig = go.Figure(data=[go.Scatter3d(x=pts3d[:, 0], y=pts3d[:, 1], z=pts3d[:, 2], mode='markers', marker=dict(
+            size=2,
+            color='red',
+            opacity=0.8
+        ))])
+    fig.update_layout(autosize=False, width=900, height=900)
+    fig.show()
+
+
+
+def getTriangulatedPoints(img1pts, img2pts, K, R, t, triangulateFunc):
+    img1ptsHom = cv2.convertPointsToHomogeneous(img1pts)[:, 0, :]
+    img2ptsHom = cv2.convertPointsToHomogeneous(img2pts)[:, 0, :]
+
+    img1ptsNorm = (np.linalg.inv(K).dot(img1ptsHom.T)).T
+    img2ptsNorm = (np.linalg.inv(K).dot(img2ptsHom.T)).T
+
+    img1ptsNorm = cv2.convertPointsFromHomogeneous(img1ptsNorm)[:, 0, :]
+    img2ptsNorm = cv2.convertPointsFromHomogeneous(img2ptsNorm)[:, 0, :]
+
+    pts4d = triangulateFunc(np.eye(3, 4), np.hstack((R,t)), img1ptsNorm.T, img2ptsNorm.T)
+    pts3d = cv2.convertPointsFromHomogeneous(pts4d.T)[:, 0, :]
+
+    return pts3d
+
+# ===================================
+#       BUNDLE ADJUSTMENT
+# ===================================
 
 
 if __name__ == '__main__':
@@ -237,12 +375,15 @@ if __name__ == '__main__':
     for im1_name, im2_name in zip(image_names[0::2], image_names[1::2]):
         # 1. Feature Matching and Outlier rejection using RANSAC
         img1, img2, frame = load_and_plot_images(folder + im1_name, folder + im2_name)
-        frame_SIFT = extract_keypoints_feature_descriptors_and_matching(img1, img2)
-        extract_keypoints_with_one_SIFT(img1, img2)
-        brute_force_SIFT(img1, img2)
+        # frame_SIFT = extract_keypoints_feature_descriptors_and_matching(img1, img2)
+        # extract_keypoints_with_one_SIFT(img1, img2)
+        # brute_force_SIFT(img1, img2)
         # 2. Estimating Fundamental Matrix
-        pts1, pts2 = fundamental_matrix_find_kp_and_match(folder + im1_name, folder + im2_name)
-        least_median_squares_estimation(img1, img2, pts1, pts2)
-        ransac_estimation(img1, img2, pts1, pts2)
+        # pts1, pts2 = fundamental_matrix_find_kp_and_match(folder + im1_name, folder + im2_name)
+        # least_median_squares_estimation(img1, img2, pts1, pts2)
+        # ransac_estimation(img1, img2, pts1, pts2)
+        E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2)
+        R, t = checkForCheiralityCondition(E, pts1, pts2, K)
+        firstReconstruction(pts1, pts2, K, R, t)
 
     print("End of the program.")
