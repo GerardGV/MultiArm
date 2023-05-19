@@ -7,6 +7,8 @@ import open3d as o3d
 import plotly.graph_objects as go
 
 
+# Funció bàsica per tal de mostrar totes les imatges que s'utilitzin en aquesta implementació.
+# Ens permet posar títols a les imatges que es mostrin i triar si volem la imatge en color o en grisos (Per defecte).
 def show_image(img, title="Imatge", color=False):
     plt.figure()
     if color:
@@ -17,6 +19,7 @@ def show_image(img, title="Imatge", color=False):
     plt.show()
 
 
+# Carregar tots els noms de les imatges d'un directori donat. Retorna una llista amb els noms de les imatges.
 def load_images_from_folder(folder):
     image_names = []  # List where we are going to save the names of the images in the folder
     for path in os.listdir(folder):
@@ -25,13 +28,16 @@ def load_images_from_folder(folder):
     return image_names
 
 
+# Donats dos noms d'imatges, les llegeix, retorna i retorna un frame amb les dues imatges concatenades i les visualitza
+# per tal de veure amb quines imatges treballarem en aquesta iteració.
 def load_and_plot_images(image_name1="/img/base/img1_1_glasses_openEyes_Pol.jpeg",
                          image_name2="/img/base/img1_2_glasses_openEyes_Pol.jpeg"):
     img1 = cv2.imread(image_name1)
     img2 = cv2.imread(image_name2)
 
-    img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-    img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    # Opcional
+    # img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+    # img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
     # cv2.imshow(img1_gray)
     # cv2.imshow(img2_gray)
 
@@ -95,6 +101,9 @@ def brute_force_SIFT(im1, im2):
 # FUNDEMENTAL MATRIX:
 # ============================================
 
+# Es tracta de la funció principal per tal d'extreure els Keypoints i descriptors de les imatges mitjançant SIFT, a
+# continuació, mitjançant FLANN, es realitza un primer matching per després aplicar Lowe's per quedar-se amb els
+# "good matches". Retorna els pts1 i pts2 (punts característics 2D de cada imatge)
 def fundamental_matrix_find_kp_and_match(img1, img2):
     # Implementació més a força bruta i que no trobarà els millors resultats.
     # img1 = cv2.imread(im_name1, 0)
@@ -125,6 +134,8 @@ def fundamental_matrix_find_kp_and_match(img1, img2):
     return pts1, pts2
 
 
+# Funció que NOMÉS dibuixa en les imatges donades, les línies donades i retorna les imatges amb les línies per tal
+# de visualitzar-les després. En el nostre cas l'utilitzem per visualitzar les línies epipolars.
 def drawlines(img1, img2, lines, pts1, pts2):
     r, c, _ = img1.shape
     # img1 = cv2.cvtColor(img1, cv2.COLOR_GRAY2BGR)
@@ -150,6 +161,9 @@ def drawlines(img1, img2, lines, pts1, pts2):
 # To do efficient estimations of the fundamental matrix. Both are robust
 # We will have less execution time with RANSAC than with LMS
 
+
+# Funció que, juntament amb la funció draw_lines(), dibuixa les línies epipolars de les dues imatges i les ajunta en un
+# mateix frame el qual retorna.
 def draw_epipolar_lines(img1, img2, pts1, pts2, F, mask):
     # Select only inlier points:
     pts1_filter = pts1[mask.ravel() == 1]
@@ -170,6 +184,8 @@ def draw_epipolar_lines(img1, img2, pts1, pts2, F, mask):
     return final_frame
 
 
+# Es realitza la Least Median Estimation donades les imatges i els punts característics. Útil tenir les estimacions
+# separades per tal de poder fer les gràfiques comparatives. S'ha de tenir en compte que LMS és més lent que RANSAC.
 def least_median_squares_estimation(img1, img2, pts1, pts2):
     F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_LMEDS)
 
@@ -177,6 +193,8 @@ def least_median_squares_estimation(img1, img2, pts1, pts2):
     show_image(final_frame_LMS, "Least Median Squares Image: ")
 
 
+# De la mateixa manera que amb la funció anterior, realitzem una estimació eficient de la matriu fonamental mitjançant
+# Random sample consensus (RANSAC).
 def ransac_estimation(img1, img2, pts1, pts2):
     F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.RANSAC)
 
@@ -244,13 +262,15 @@ def plotCamera(R, t, ax, scale=0.5, depth=0.5, faceColor='grey'):
     ax.add_collection3d(Poly3DCollection(vertexs, facecolors=faceColor, linewidths=1, edgecolors='k', alpha=.25))
 
 
-# Full process till ransac:
+# Full process till ransac: (Funció que agrupa tot el process fet fins ara per tal de facilitar les següents proves)
 def full_ransac_estimation(img1, img2):
     pts1, pts2 = fundamental_matrix_find_kp_and_match(img1, img2)
     F, mask, final_frame_RANSAC = ransac_estimation(img1, img2, pts1, pts2)
     return F, mask, final_frame_RANSAC, pts1, pts2
 
 
+# Important funció en la qual generem una K sense saber cap propietat de la càmera, només basant-nos en una de
+# les imatges. És útil pq ens permet continuar sense saber cap valor de la càmera.
 def camera_internals_if_we_DONT_know_K(img1):
     width, height, _ = img1.shape
     focal_length = np.maximum(width, height)
@@ -268,6 +288,9 @@ def camera_internals_if_we_DONT_know_K(img1):
 # ==============================================
 
 # Triar quina de les 4 configuracions és la bona per al nostre moviment de càmera.
+# Donades dues imatges, calcular SIFT -> MATCHING -> Estimació RANSAC, generar una estimació de K sense saber
+# valors de la càmera, extreure les posicions de la càmera, mostrar les 4 configuracions de la càmera proposades a
+# l'hora de realitzar les fotografies.
 def estimate_camera_pose_and_draw(img1, img2):
     F, mask, final_frame_RANSAC, pts1, pts2 = full_ransac_estimation(img1, img2)
     K = camera_internals_if_we_DONT_know_K(img1)
@@ -291,9 +314,12 @@ def estimate_camera_pose_and_draw(img1, img2):
             plotCamera(np.eye(3, 3), np.zeros((3,)), axs[i, j])
             plotCamera(R_, t_[:, 0], axs[i, j])
             count += 1
+    plt.show()
     return E, pts1, pts2, K
 
 
+# Mitjançant aquesta funció, calculem i visualitzem quina de les 4 configuracions de càmera de la funció anterior ha
+# triat l'algorisme segons els punts d'interés i característiques de la càmera introduits.
 def checkForCheiralityCondition(E, pts1, pts2, K):
     _, R, t, mask = cv2.recoverPose(E, pts1, pts2, K)
     fig = plt.figure(figsize=(9, 6))
@@ -304,6 +330,7 @@ def checkForCheiralityCondition(E, pts1, pts2, K):
 
     plotCamera(np.eye(3, 3), np.zeros((3,)), ax)
     plotCamera(R, t[:, 0], ax)
+    plt.show()
     return R, t
 
 
@@ -311,6 +338,9 @@ def checkForCheiralityCondition(E, pts1, pts2, K):
 #   A FIRST RECONSTRUCTION
 # ==============================
 
+# Funció mitjançant es fa una primera reconstrucció, obtenint un mapa de punts 3D, visualitzant per consola les
+# diferents matrius calculades i finalment visualitzant una primera reconstrucció en el navegador mitjançant el mapa
+# de punts calculat.
 def firstReconstruction(pts1, pts2, K, R, t):
     R_t_0 = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0]])  # First image
     R_t_1 = np.empty((3, 4))  # Second image
@@ -338,7 +368,7 @@ def firstReconstruction(pts1, pts2, K, R, t):
     fig.show()
 
 
-
+# Funció necessaria per tal de calcular els punts 3d donats uns punts 2d, conf de la càmera i una funció de triangulació
 def getTriangulatedPoints(img1pts, img2pts, K, R, t, triangulateFunc):
     img1ptsHom = cv2.convertPointsToHomogeneous(img1pts)[:, 0, :]
     img2ptsHom = cv2.convertPointsToHomogeneous(img2pts)[:, 0, :]
@@ -356,8 +386,18 @@ def getTriangulatedPoints(img1pts, img2pts, K, R, t, triangulateFunc):
 
 
 # ===================================
-#       BUNDLE ADJUSTMENT
+#       BUNDLE ADJUSTMENT / DEBUGGING ZONE
 # ===================================
+
+"""
+ A partir d'aquí comença la zona de codi perillós. Entrar sota la teva responsabilitat.
+ Són intents de texturitzar / crear una mesh / algo per tal de generar un model 3D texturitzat.
+ També s'han copiat funcions existents i modificat per tal de debugar sense petar el codi que ja funciona. Permetint 
+ afegir returns extres, modificar els tipus de variables etc per tal d'intentar que funcioni la texturització.
+ Aquestes funcions tenen com a prefix TEMP (temporal).
+"""
+
+
 def texture_mapping_sift(model_3d, matches, keypoints, texture_images):
     # Crear una malla 3D a partir del modelo 3D reconstruido
     vertices = np.array(model_3d)
@@ -393,7 +433,8 @@ def texture_mapping_sift(model_3d, matches, keypoints, texture_images):
             continue
         point_2d = keypoints[0][query_idx].pt
         image_index = 0 if point_2d[0] < texture_images[0].shape[1] else 1
-        texture[point_3d, 0] = cv2.cvtColor(texture_images[image_index][int(point_2d[1]), int(point_2d[0])], cv2.COLOR_BGR2RGB)
+        texture[point_3d, 0] = cv2.cvtColor(texture_images[image_index][int(point_2d[1]), int(point_2d[0])],
+                                            cv2.COLOR_BGR2RGB)
 
     # Asignar la textura a la malla
     mesh.texture = o3d.geometry.Image(texture)
@@ -404,7 +445,6 @@ def texture_mapping_sift(model_3d, matches, keypoints, texture_images):
     vis.add_geometry(mesh)
     vis.run()
     vis.destroy_window()
-
 
 
 def TEMP_fundamental_matrix_find_kp_and_match(img1, img2):
@@ -436,14 +476,24 @@ def TEMP_fundamental_matrix_find_kp_and_match(img1, img2):
             matchesMini.append(n)
     pts1 = np.int32(pts1)
     pts2 = np.int32(pts2)
-    return pts1, pts2, matches, [keypt1,keypt2], matchesMini
+    return pts1, pts2, matches, [keypt1, keypt2], matchesMini
 
+
+# Funció per convertir els matches donats per FLANN amb la seva estructura característica de tuples a una feta de
+# llistes. Utilitzada a l'hora de debugar i anar provant altres funcions que necessitaves com a input una llista de
+# matches en comptes d'una tupla de tuples
 def convert_matches_to_list(matches):
     matches_list = []
     for match_tuple in matches:
         for match in match_tuple:
             matches_list.append(cv2.DMatch(match.queryIdx, match.trainIdx, match.distance))
     return matches_list
+
+
+# ====================================================
+#           MAIN - EXECUCIÓ PRINCIPAL
+# ====================================================
+
 if __name__ == '__main__':
     print('Starting...')
     folder = 'img/base/'
@@ -453,7 +503,8 @@ if __name__ == '__main__':
     # Order names of the images because in some OS they are ordered different, so we order them alphabetically.
     image_names = sorted(image_names)
     print(image_names)
-    # Use only the new images:
+
+    # Use only the new images: -- Triar quines imatges voldrem fer servir en aquesta execució
     image_names = image_names[18:]
     print("New images that will be used in this execution: ", image_names)
     # ================================
@@ -470,11 +521,14 @@ if __name__ == '__main__':
         # least_median_squares_estimation(img1, img2, pts1, pts2)
         # ransac_estimation(img1, img2, pts1, pts2)
 
-
-        #E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2)
-        #R, t = checkForCheiralityCondition(E, pts1, pts2, K)
-        #firstReconstruction(pts1, pts2, K, R, t)
-
+        # ====================== INICI SIFT -> Mapa de punts 3D ==============================
+        # A "Estimate_camera_pose_and_draw() ja es realitza full_ransac_estimation(SIFT->Matching->RANSAC)
+        E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2)
+        R, t = checkForCheiralityCondition(E, pts1, pts2, K)
+        firstReconstruction(pts1, pts2, K, R, t)
+        # ====================== FI INICI SIFT -> Mapa de punts 3D ===========================
+        """
+        # FALTA DEBUGAR CORRECTAMENT: 
         E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2)
         R, t = checkForCheiralityCondition(E, pts1, pts2, K)
         pts3d = getTriangulatedPoints(pts1, pts2, K, R, t, cv2.triangulatePoints)
@@ -483,7 +537,7 @@ if __name__ == '__main__':
         texture_images = [img1, img2]
         # matchList = convert_matches_to_list(matches)
         texture_mapping_sift(pts3d, matchesMini, keypoints, texture_images)
-
-
+        """
 
     print("End of the program.")
+    # Si es veu aquest print és que tot ha anat bé :) (igual que si es veu Process finished with exit code 0.
