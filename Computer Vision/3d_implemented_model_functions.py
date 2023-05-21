@@ -1,3 +1,4 @@
+import time
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -109,6 +110,7 @@ def fundamental_matrix_find_kp_and_match(img1, img2, method="sift"):
     # img1 = cv2.imread(im_name1, 0)
     # img2 = cv2.imread(im_name2, 0)
     method = method.lower()
+    start_time_algorithm = time.time()
     if method == "sift":
         algorithm = cv2.SIFT_create()
     elif method == "harris":
@@ -122,6 +124,10 @@ def fundamental_matrix_find_kp_and_match(img1, img2, method="sift"):
     # Find Keypoints and descriptors with SIFT / the selected algorithm
     keypt1, descr1 = algorithm.detectAndCompute(img1, None)
     keypt2, descr2 = algorithm.detectAndCompute(img2, None)
+    end_algorithm_time = time.time()
+
+    print("Número de keypoints de la primera imatge: ", len(keypt1))
+    print("Número de keypoints de la segona imatge: ", len(keypt2))
 
     # FLANN parameters:
     FLANN_INDEX_KDTREE = 1
@@ -131,7 +137,7 @@ def fundamental_matrix_find_kp_and_match(img1, img2, method="sift"):
     matches = flann.knnMatch(descr1, descr2, k=2)
     pts1 = []
     pts2 = []
-
+    print("Número de matches després del flann (knnMatch): ", len(matches))
     # Ratio test as per Lowe's paper:
     for i, (m, n) in enumerate(matches):
         if m.distance < 0.8 * n.distance:
@@ -139,6 +145,11 @@ def fundamental_matrix_find_kp_and_match(img1, img2, method="sift"):
             pts1.append(keypt1[m.queryIdx].pt)
     pts1 = np.int32(pts1)
     pts2 = np.int32(pts2)
+    print("Número de 'good' matches després del Lowe's ratio: ", len(pts1))
+    end_algorithm_and_matching_time = time.time()
+
+    print("Temps d'execució de l'algorisme ", method, ": ", end_algorithm_time - start_time_algorithm, " segons.")
+    print("Temps d'execució de l'algorisme ", method, " i del matching (+ Lowe's): ", end_algorithm_and_matching_time - start_time_algorithm, " segons.")
     return pts1, pts2
 
 
@@ -301,6 +312,7 @@ def camera_internals_if_we_DONT_know_K(img1):
 # l'hora de realitzar les fotografies.
 def estimate_camera_pose_and_draw(img1, img2, method="sift"):
     F, mask, final_frame_RANSAC, pts1, pts2 = full_ransac_estimation(img1, img2, method)
+    print("Número matches/punts desprésd e full RANSAC: ", len(pts1))
     K = camera_internals_if_we_DONT_know_K(img1)
     # Estimate the Essential Matrix:
     E = K.T.dot(F.dot(K))
@@ -366,7 +378,7 @@ def firstReconstruction(pts1, pts2, K, R, t):
     print("The Projection Matrix 2: \n", str(P2))
 
     pts3d = getTriangulatedPoints(pts1, pts2, K, R, t, cv2.triangulatePoints)
-
+    print("Número de punts3D: ", len(pts3d))
     fig = go.Figure(data=[go.Scatter3d(x=pts3d[:, 0], y=pts3d[:, 1], z=pts3d[:, 2], mode='markers', marker=dict(
         size=2,
         color='red',
@@ -635,11 +647,12 @@ if __name__ == '__main__':
     print(image_names)
 
     # Use only the new images: -- Triar quines imatges voldrem fer servir en aquesta execució
-    image_names = image_names[14:17]
+    image_names = image_names[14:16]
     print("New images that will be used in this execution: ", image_names)
     # ================================
     #       LOAD AND SHOW IMAGES
     # ================================
+
     for im1_name, im2_name in zip(image_names[0::2], image_names[1::2]):
         # 1. Feature Matching and Outlier rejection using RANSAC
         img1, img2, frame = load_and_plot_images(folder + im1_name, folder + im2_name)
@@ -655,10 +668,12 @@ if __name__ == '__main__':
         #brute_force_Harris(img2)
         # ====================== INICI SIFT -> Mapa de punts 3D ==============================
         # A "Estimate_camera_pose_and_draw() ja es realitza full_ransac_estimation(SIFT->Matching->RANSAC)
-        E, pts1, pts2, K = estimate_camera_pose_and_draw_ORB(img1, img2)
-        #E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2, method)
+        start_time = time.time()
+        # E, pts1, pts2, K = estimate_camera_pose_and_draw_ORB(img1, img2)
+        E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2, method)
         R, t = checkForCheiralityCondition(E, pts1, pts2, K)
         firstReconstruction(pts1, pts2, K, R, t)
+        end_time = time.time()
         # ====================== FI INICI SIFT -> Mapa de punts 3D ===========================
         """
         # FALTA DEBUGAR CORRECTAMENT: 
@@ -671,6 +686,6 @@ if __name__ == '__main__':
         # matchList = convert_matches_to_list(matches)
         texture_mapping_sift(pts3d, matchesMini, keypoints, texture_images)
         """
-
+        print("Temps d'execució del SIFT + Matching + Reconstrucció: ", end_time-start_time, " segons")
     print("End of the program.")
     # Si es veu aquest print és que tot ha anat bé :) (igual que si es veu Process finished with exit code 0.
