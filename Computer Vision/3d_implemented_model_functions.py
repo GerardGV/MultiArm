@@ -104,16 +104,24 @@ def brute_force_SIFT(im1, im2):
 # Es tracta de la funció principal per tal d'extreure els Keypoints i descriptors de les imatges mitjançant SIFT, a
 # continuació, mitjançant FLANN, es realitza un primer matching per després aplicar Lowe's per quedar-se amb els
 # "good matches". Retorna els pts1 i pts2 (punts característics 2D de cada imatge)
-def fundamental_matrix_find_kp_and_match(img1, img2):
+def fundamental_matrix_find_kp_and_match(img1, img2, method="sift"):
     # Implementació més a força bruta i que no trobarà els millors resultats.
     # img1 = cv2.imread(im_name1, 0)
     # img2 = cv2.imread(im_name2, 0)
+    method = method.lower()
+    if method == "sift":
+        algorithm = cv2.SIFT_create()
+    elif method == "harris":
+        algorithm = cv2.cornerHarris()
+    elif method == "orb":
+        algorithm = cv2.ORB_create()
+    else:
+        print("Incorrect method, using SIFT as default")
+        algorithm = cv2.SIFT_create()
 
-    sift = cv2.SIFT_create()
-
-    # Find Keypoints and descriptors with SIFT
-    keypt1, descr1 = sift.detectAndCompute(img1, None)
-    keypt2, descr2 = sift.detectAndCompute(img2, None)
+    # Find Keypoints and descriptors with SIFT / the selected algorithm
+    keypt1, descr1 = algorithm.detectAndCompute(img1, None)
+    keypt2, descr2 = algorithm.detectAndCompute(img2, None)
 
     # FLANN parameters:
     FLANN_INDEX_KDTREE = 1
@@ -263,8 +271,8 @@ def plotCamera(R, t, ax, scale=0.5, depth=0.5, faceColor='grey'):
 
 
 # Full process till ransac: (Funció que agrupa tot el process fet fins ara per tal de facilitar les següents proves)
-def full_ransac_estimation(img1, img2):
-    pts1, pts2 = fundamental_matrix_find_kp_and_match(img1, img2)
+def full_ransac_estimation(img1, img2, method="sift"):
+    pts1, pts2 = fundamental_matrix_find_kp_and_match(img1, img2, method)
     F, mask, final_frame_RANSAC = ransac_estimation(img1, img2, pts1, pts2)
     return F, mask, final_frame_RANSAC, pts1, pts2
 
@@ -291,8 +299,8 @@ def camera_internals_if_we_DONT_know_K(img1):
 # Donades dues imatges, calcular SIFT -> MATCHING -> Estimació RANSAC, generar una estimació de K sense saber
 # valors de la càmera, extreure les posicions de la càmera, mostrar les 4 configuracions de la càmera proposades a
 # l'hora de realitzar les fotografies.
-def estimate_camera_pose_and_draw(img1, img2):
-    F, mask, final_frame_RANSAC, pts1, pts2 = full_ransac_estimation(img1, img2)
+def estimate_camera_pose_and_draw(img1, img2, method="sift"):
+    F, mask, final_frame_RANSAC, pts1, pts2 = full_ransac_estimation(img1, img2, method)
     K = camera_internals_if_we_DONT_know_K(img1)
     # Estimate the Essential Matrix:
     E = K.T.dot(F.dot(K))
@@ -397,7 +405,18 @@ def getTriangulatedPoints(img1pts, img2pts, K, R, t, triangulateFunc):
  Aquestes funcions tenen com a prefix TEMP (temporal).
 """
 
+def lowes(keypt1, keypt2, matches):
+    pts1 = []
+    pts2 = []
 
+    # Ratio test as per Lowe's paper:
+    for i, (m, n) in enumerate(matches):
+        if m.distance < 0.8 * n.distance:
+            pts2.append(keypt2[m.trainIdx].pt)
+            pts1.append(keypt1[m.queryIdx].pt)
+    pts1 = np.int32(pts1)
+    pts2 = np.int32(pts2)
+    return pts1, pts2
 def texture_mapping_sift(model_3d, matches, keypoints, texture_images):
     # Crear una malla 3D a partir del modelo 3D reconstruido
     vertices = np.array(model_3d)
@@ -490,6 +509,116 @@ def convert_matches_to_list(matches):
     return matches_list
 
 
+
+def brute_force_Harris(im1):
+    gray = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
+    # find Harris corners
+    gray = np.float32(gray)
+    dst = cv2.cornerHarris(gray, 2, 3, 0.04)
+    dst = cv2.dilate(dst, None)
+    ret, dst = cv2.threshold(dst, 0.01 * dst.max(), 255, 0)
+    dst = np.uint8(dst)
+    # find centroids
+    ret, labels, stats, centroids = cv2.connectedComponentsWithStats(dst)
+    # define the criteria to stop and refine the corners
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.001)
+    corners = cv2.cornerSubPix(gray, np.float32(centroids), (5, 5), (-1, -1), criteria)
+    # Now draw them
+    res = np.hstack((centroids, corners))
+    res = np.intp(res)
+    im1[res[:, 1], res[:, 0]] = [0, 0, 255]
+    im1[res[:, 3], res[:, 2]] = [0, 255, 0]
+
+    show_image(im1, "Harris image: ", False)
+    show_image(im1, "Harris image COLOR: ", True)
+
+def brute_force_ORB(im1, im2):
+    sift = cv2.ORB_create()
+
+    # Find keypoints
+    keypoint1, descriptor1 = sift.detectAndCompute(im1, None)
+    keypoint2, descriptor2 = sift.detectAndCompute(im2, None)
+
+    # Create BF matcher object
+    #   NOTE:
+    #       * cv2.NORM_L2: It is good for SIFT, SURF, etc.
+    #       * cv2.NORM_HAMMING: It is good for binary string-based descriptors like ORB, BRIEF, BRISK
+    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+
+    matches = bf.match(descriptor1, descriptor2)
+
+    matches = sorted(matches, key=lambda x: x.distance)
+
+    SIFT_matches = cv2.drawMatches(im1, keypoint1, im2, keypoint2, matches[:200], None, flags=2)
+    show_image(SIFT_matches, "ORB matches: ")
+    return keypoint1, keypoint2, matches
+
+
+
+def full_ransac_estimation_ORB(img1, img2):
+    #kp1, kp2, matches = brute_force_ORB(img1, img2)
+    #pts1, pts2 = lowes(kp1, kp2, matches)
+    pts1, pts2 = fundamental_matrix_find_kp_and_match_ORB(img1, img2)
+    F, mask, final_frame_RANSAC = ransac_estimation(img1, img2, pts1, pts2)
+    return F, mask, final_frame_RANSAC, pts1, pts2
+
+def estimate_camera_pose_and_draw_ORB(img1, img2):
+    F, mask, final_frame_RANSAC, pts1, pts2 = full_ransac_estimation_ORB(img1, img2)
+    K = camera_internals_if_we_DONT_know_K(img1)
+    # Estimate the Essential Matrix:
+    E = K.T.dot(F.dot(K))
+
+    R1, R2, t = extractCameraPoses(E)
+    t = t[:, np.newaxis]
+
+    # Variable axs per múltiples eixos:
+    fig, axs = plt.subplots(2, 2, figsize=(20, 15))
+    count = 1
+    for i, R_ in enumerate([R1, R2]):
+        for j, t_ in enumerate([t, -t]):
+            axs[i, j] = fig.add_subplot(2, 2, count, projection='3d')
+            axs[i, j].set_xlabel('X')
+            axs[i, j].set_ylabel('Y')
+            axs[i, j].set_zlabel('Z')
+            axs[i, j].set_title('Configuració: ' + str(count))
+
+            plotCamera(np.eye(3, 3), np.zeros((3,)), axs[i, j])
+            plotCamera(R_, t_[:, 0], axs[i, j])
+            count += 1
+    plt.show()
+    return E, pts1, pts2, K
+
+def fundamental_matrix_find_kp_and_match_ORB(img1, img2):
+    # Implementació més a força bruta i que no trobarà els millors resultats.
+    # img1 = cv2.imread(im_name1, 0)
+    # img2 = cv2.imread(im_name2, 0)
+    algorithm = cv2.ORB_create()
+
+    # Find Keypoints and descriptors with SIFT / the selected algorithm
+    keypt1, descr1 = algorithm.detectAndCompute(img1, None)
+    keypt2, descr2 = algorithm.detectAndCompute(img2, None)
+
+    # FLANN parameters:
+    FLANN_INDEX_LSH = 6
+    index_params = dict(algorithm=FLANN_INDEX_LSH,
+                        table_number=6,  # was 12
+                        key_size=12,  # was 20
+                        multi_probe_level=1)  # was 2
+    search_params = dict(checks=50)
+    flann = cv2.FlannBasedMatcher(index_params, search_params)
+    matches = flann.knnMatch(descr1, descr2, k=2)
+    pts1 = []
+    pts2 = []
+
+    # Ratio test as per Lowe's paper:
+    for i, (m, n) in enumerate(matches):
+        if m.distance < 0.8 * n.distance:
+            pts2.append(keypt2[m.trainIdx].pt)
+            pts1.append(keypt1[m.queryIdx].pt)
+    pts1 = np.int32(pts1)
+    pts2 = np.int32(pts2)
+    return pts1, pts2
+
 # ====================================================
 #           MAIN - EXECUCIÓ PRINCIPAL
 # ====================================================
@@ -497,6 +626,7 @@ def convert_matches_to_list(matches):
 if __name__ == '__main__':
     print('Starting...')
     folder = 'img/base/'
+    method = "sift"
     image_names = load_images_from_folder(folder)
     print(image_names)
 
@@ -505,7 +635,7 @@ if __name__ == '__main__':
     print(image_names)
 
     # Use only the new images: -- Triar quines imatges voldrem fer servir en aquesta execució
-    image_names = image_names[18:]
+    image_names = image_names[14:17]
     print("New images that will be used in this execution: ", image_names)
     # ================================
     #       LOAD AND SHOW IMAGES
@@ -516,14 +646,17 @@ if __name__ == '__main__':
         # frame_SIFT = extract_keypoints_feature_descriptors_and_matching(img1, img2)
         # extract_keypoints_with_one_SIFT(img1, img2)
         # brute_force_SIFT(img1, img2)
+
         # 2. Estimating Fundamental Matrix
         # pts1, pts2 = fundamental_matrix_find_kp_and_match(folder + im1_name, folder + im2_name)
         # least_median_squares_estimation(img1, img2, pts1, pts2)
         # ransac_estimation(img1, img2, pts1, pts2)
-
+        #brute_force_Harris(img1)
+        #brute_force_Harris(img2)
         # ====================== INICI SIFT -> Mapa de punts 3D ==============================
         # A "Estimate_camera_pose_and_draw() ja es realitza full_ransac_estimation(SIFT->Matching->RANSAC)
-        E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2)
+        E, pts1, pts2, K = estimate_camera_pose_and_draw_ORB(img1, img2)
+        #E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2, method)
         R, t = checkForCheiralityCondition(E, pts1, pts2, K)
         firstReconstruction(pts1, pts2, K, R, t)
         # ====================== FI INICI SIFT -> Mapa de punts 3D ===========================
