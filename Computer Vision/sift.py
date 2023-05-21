@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -54,55 +56,189 @@ def filtrarKeypoints(keyPoints:list, DoG:list):
 
     pass
 
-#ESTRUCTURAS
-#keyPoints: list[capaDog, tupla(coordenadas)]
-#scales: list[sigma, imagenSuavizada]
-#DoG: list[dict{'D':matrizDoG, 'scales':tupla(indicesScalesProgenitoras)}]
-def assignOrientation(keyPoints:list, scales:list, num_bins=36):
 
-    scale = 1
+def assignOrientation(keyPoints:list, imgSuavizadas:list, num_scales:int, escala=2, num_bins=36):
+    # ESTRUCTURAS
+    # keyPoints: list[indiceImagenSuavizada, tupla(coordenadas)]
+    # imgSuavizadas: list[matrizImagenSuavizada]
 
+    #descriptorSize:si la window es de 8x8 y el descriptorSize es de 2, 2x2, esto hara que que hayan 4 descriptores
+    octava=1
+    orientaciones = []
     #calculo de magnitudes y orientaciones
     for infoKeypoint in keyPoints:
 
-        # creamos un numpy array con 36 ellementos, 1 por cada bin, cada bin por cada 10 grados
+        # creamos un numpy array con 36 elementos, 1 por cada bin, cada bin por cada 10 grados
         orientation_histogram = np.zeros(num_bins)
 
-        #NO HACE FALTA GUARDAR LA TUPLA DE LAS SCALES GENERADORAS DE LA DoG, en su lugar guardar en lista de keypoints el scale al que pertenece, no el DoG
+        #caclulo de area alrededor del keypoint a observar, 1.5 veces sigma de la scale
+        window=int(1.5*escala*octava)*3
 
-        #si el valor del keypoint es superior que los valores del mismo en DoG superior y inferior, escogemos la imagen suavizada, scale con k inferior
-        #if DoG[infoKeypoint[0]]['D'][infoKeypoint[1][0]][infoKeypoint[1][1]] == max(DoG[infoKeypoint[0]]['D'][infoKeypoint[1][0]][infoKeypoint[1][1]], DoG[infoKeypoint[0]-1]['D'][infoKeypoint[1][0]][infoKeypoint[1][1]], DoG[infoKeypoint[0]+1]['D'][infoKeypoint[1][0]][infoKeypoint[1][1]]):
-            #scale=1
-        #else:
-            #scale=0
+        #controlamos que no se salga de la imagen la region
+        filaIni = 0 if infoKeypoint[1][0]-window < 0 else infoKeypoint[1][0]-window
+        filaFi =  imgSuavizadas[infoKeypoint[0]].shape[0] if infoKeypoint[1][0]+window > imgSuavizadas[infoKeypoint[0]].shape[0] else infoKeypoint[1][0]+window
 
-        #caclulode vecinos que observar segun la scala del keypoint, 1.5 veces sigma de la scale
-        radio=int(1.5*infoKeypoint[0])
+        colIni = 0 if infoKeypoint[1][1]-window < 0 else infoKeypoint[1][1]-window
+        colFi=  imgSuavizadas[infoKeypoint[0]].shape[0] if infoKeypoint[1][1]+window > imgSuavizadas[infoKeypoint[0]].shape[1] else infoKeypoint[1][1]+window
 
-        for i in range(infoKeypoint[1][1]-radio, infoKeypoint[1][1]+radio):
-            for j in range(infoKeypoint[1][1]-radio, infoKeypoint[1][1]+radio):
+        neighborhood = imgSuavizadas[infoKeypoint[0]][filaIni:filaFi, colIni:colFi]
 
-                magnitud=math.sqrt(pow(scales[DoG[infoKeypoint[0]]['scales'][scale]][1][i+1][j]-scales[DoG[infoKeypoint[0]]['scales'][scale]][1][i-1][j], 2) + pow(scales[DoG[infoKeypoint[0]]['scales'][scale]][1][i][j+1]-scales[DoG[infoKeypoint[0]]['scales'][scale]][1][i][j-1], 2))
-                orientacio=math.atan(pow(scales[DoG[infoKeypoint[0]]['scales'][scale]][1][i][j+1]-scales[DoG[infoKeypoint[0]]['scales'][scale]][1][i][j-1], 2) / pow(scales[DoG[infoKeypoint[0]]['scales'][scale]][1][i+1][j]-scales[DoG[infoKeypoint[0]]['scales'][scale]][1][i-1][j], 2))
+        # Calcular los gradientes en x e y utilizando el filtro de Sobel
+        gradient_x = cv2.Sobel(neighborhood, cv2.CV_64F, 1, 0, ksize=3)
+        gradient_y = cv2.Sobel(neighborhood, cv2.CV_64F, 0, 1, ksize=3)
 
-                #ponemos valor absoluto a la orientacion en caso de que de un angulo negativo y dividimos entre el numero de bins para que no salga de este rango
-                if orientacio != 0:
-                    bin_index = int(abs(orientacio) / (360 / num_bins))
-                else:
-                    bin_index = int(360/ (360 / num_bins))#si la orientacion es 0 equivale a 360 grados, subtituimos para evitar dividir 0, error
+        # Calcular la magnitud y dirección de los gradientes
+        gradient_magnitude = np.sqrt(gradient_x ** 2 + gradient_y ** 2)
+        gradient_orientation = np.arctan2(gradient_y, gradient_x) * (180 / np.pi)
 
-                #añadimos la orientacion ponderada segun la media de la sigma de la scale de esta y su magnitud
-                orientation_histogram[bin_index] += statistics.mean([1.5 * scales[DoG[infoKeypoint[0]]['scales'][scale]][0], magnitud]) * orientacio
+        indices = (np.absolute(gradient_orientation) / (360 / num_bins)).astype(int)
+        pesos = (1.5*escala*octava + gradient_magnitude) / 2
+        #valores = pesos * ((gradient_orientation + 360) % 360) #sumamos 360 para cambiar los angulos negativos y el modulo de 360 para que ningun angulo pase de 360 grados
 
-        plt.hist(orientation_histogram, bins=num_bins)
-        plt.show()
+        orientation_histogram[indices] += pesos
 
-        #creacion nuevo keypoint con la orientacion que en el histograma tiene mas de 80%, mismas coordenadas, diferente angulo
+        #seleccionamos el pico maximo
+        maxPeakIndex=np.argmax(orientation_histogram)
+        #lista donde tenemos los indices del angulo maximo y los que superan un 0,8 del maximo, multiplicados x el rango de angulos que representa cada uno
+        #peaks=[maxPeakIndex*int(360/num_bins)] + list(np.where((orientation_histogram >= 0.8 * orientation_histogram[maxPeakIndex]) &
+                                    #(orientation_histogram != orientation_histogram[maxPeakIndex]))[0]*int(360/num_bins))
 
-        #creacion descriptor
+        #orientaciones.append(peaks)
+        orientaciones.append(maxPeakIndex*int(360/num_bins))
+        #plt.hist(orientation_histogram, bins=num_bins)
+        #plt.show()
 
-    pass
+        #cada num_scales se suma 1 octava
+        octava+=infoKeypoint[0]%num_scales
 
+
+    return orientaciones
+
+def descriptors(keyPoints, imgSuavizadas, orientationAngles:list):
+    # ESTRUCTURAS
+    # keyPoints: list[indiceImagenSuavizada, tupla(coordenadas)]
+    # imgSuavizadas: list[matrizImagenSuavizada]
+
+    descriptores=[]
+
+    #calculo de orientaciones
+    for infoKeypoint in keyPoints:
+        # Calcular los gradientes en x e y utilizando el filtro de Sobel
+        gradient_x = cv2.Sobel(imgSuavizadas[infoKeypoint[0]], cv2.CV_64F, 1, 0, ksize=3)
+        gradient_y = cv2.Sobel(imgSuavizadas[infoKeypoint[0]], cv2.CV_64F, 0, 1, ksize=3)
+        gradient_orientation = np.arctan2(gradient_y, gradient_x) * (180 / np.pi)
+        orientation_histogram = np.zeros(8)
+
+        #en una vecindad de 16x16 calcularemos descriptores de 4x4 y sus histogramas de orientacion
+        for i in range(0, 16, 4):
+            for j in range(0, 16, 4):
+                # creamos un numpy array con 8 elementos para el orientation histogram de cada bloque
+                orientation_histogram = np.zeros(8)
+                areaDescriptor=gradient_orientation[infoKeypoint[1][0]-i:infoKeypoint[1][0]+i, infoKeypoint[1][1]-j:infoKeypoint[1][1]+j]
+
+    return descriptores
+
+def generateDescriptors(keypoints, angulos, gaussian_images, window_width=4, num_bins=8, scale_multiplier=3, descriptor_max_value=0.2, maxEscalas=3):
+    """Generate descriptors for each keypoint
+    """
+    # keyPoints: list[indiceImagenSuavizada, tupla(coordenadas)]
+    # gaussian_images: list[matrizImagenSuavizada]
+    descriptors = []
+    octava=1
+    float_tolerance=0.000001
+
+    for keypoint, angulo in zip(keypoints, angulos):
+        octava += keypoints[0] % maxEscalas
+
+        #octave, layer, scale = unpackOctave(keypoint)
+        #gaussian_image = gaussian_images[octave + 1, layer]
+        num_rows, num_cols = gaussian_images[keypoints[0]].shape
+
+        scale = 2 * octava
+
+        point = round(scale * np.array(keypoint[1])).astype('int')
+        bins_per_degree = num_bins / 360.
+        angle = 360. - angulo
+        cos_angle = math.cos(math.deg2rad(angle))
+        sin_angle = math.sin(math.deg2rad(angle))
+        weight_multiplier = -0.5 / ((0.5 * window_width) ** 2)
+        row_bin_list = []
+        col_bin_list = []
+        magnitude_list = []
+        orientation_bin_list = []
+        histogram_tensor = np.zeros((window_width + 2, window_width + 2, num_bins))   # first two dimensions are increased by 2 to account for border effects
+
+        # Descriptor window size (described by half_width) follows OpenCV convention
+        hist_width = scale_multiplier * 0.5 * scale * keypoint.size
+        half_width = int(round(hist_width * math.sqrt(2) * (window_width + 1) * 0.5))   # sqrt(2) corresponds to diagonal length of a pixel
+        half_width = int(min(half_width, math.sqrt(num_rows ** 2 + num_cols ** 2)))     # ensure half_width lies within image
+
+        for row in range(-half_width, half_width + 1):
+            for col in range(-half_width, half_width + 1):
+                row_rot = col * sin_angle + row * cos_angle
+                col_rot = col * cos_angle - row * sin_angle
+                row_bin = (row_rot / hist_width) + 0.5 * window_width - 0.5
+                col_bin = (col_rot / hist_width) + 0.5 * window_width - 0.5
+                if row_bin > -1 and row_bin < window_width and col_bin > -1 and col_bin < window_width:
+                    window_row = int(round(point[1] + row))
+                    window_col = int(round(point[0] + col))
+                    if window_row > 0 and window_row < num_rows - 1 and window_col > 0 and window_col < num_cols - 1:
+                        dx = gaussian_images[keypoints[0]][window_row, window_col + 1] - gaussian_images[keypoints[0]][window_row, window_col - 1]
+                        dy = gaussian_images[keypoints[0]][window_row - 1, window_col] - gaussian_images[keypoints[0]][window_row + 1, window_col]
+                        gradient_magnitude = math.sqrt(dx * dx + dy * dy)
+                        gradient_orientation = math.rad2deg(math.arctan2(dy, dx)) % 360
+                        weight = math.exp(weight_multiplier * ((row_rot / hist_width) ** 2 + (col_rot / hist_width) ** 2))
+                        row_bin_list.append(row_bin)
+                        col_bin_list.append(col_bin)
+                        magnitude_list.append(weight * gradient_magnitude)
+                        orientation_bin_list.append((gradient_orientation - angle) * bins_per_degree)
+
+        for row_bin, col_bin, magnitude, orientation_bin in zip(row_bin_list, col_bin_list, magnitude_list, orientation_bin_list):
+            # Smoothing via trilinear interpolation
+            # Notations follows https://en.wikipedia.org/wiki/Trilinear_interpolation
+            # Note that we are really doing the inverse of trilinear interpolation here (we take the center value of the cube and distribute it among its eight neighbors)
+            row_bin_floor, col_bin_floor, orientation_bin_floor = np.floor([row_bin, col_bin, orientation_bin]).astype(int)
+            row_fraction, col_fraction, orientation_fraction = row_bin - row_bin_floor, col_bin - col_bin_floor, orientation_bin - orientation_bin_floor
+            if orientation_bin_floor < 0:
+                orientation_bin_floor += num_bins
+            if orientation_bin_floor >= num_bins:
+                orientation_bin_floor -= num_bins
+
+            c1 = magnitude * row_fraction
+            c0 = magnitude * (1 - row_fraction)
+            c11 = c1 * col_fraction
+            c10 = c1 * (1 - col_fraction)
+            c01 = c0 * col_fraction
+            c00 = c0 * (1 - col_fraction)
+            c111 = c11 * orientation_fraction
+            c110 = c11 * (1 - orientation_fraction)
+            c101 = c10 * orientation_fraction
+            c100 = c10 * (1 - orientation_fraction)
+            c011 = c01 * orientation_fraction
+            c010 = c01 * (1 - orientation_fraction)
+            c001 = c00 * orientation_fraction
+            c000 = c00 * (1 - orientation_fraction)
+
+            histogram_tensor[row_bin_floor + 1, col_bin_floor + 1, orientation_bin_floor] += c000
+            histogram_tensor[row_bin_floor + 1, col_bin_floor + 1, (orientation_bin_floor + 1) % num_bins] += c001
+            histogram_tensor[row_bin_floor + 1, col_bin_floor + 2, orientation_bin_floor] += c010
+            histogram_tensor[row_bin_floor + 1, col_bin_floor + 2, (orientation_bin_floor + 1) % num_bins] += c011
+            histogram_tensor[row_bin_floor + 2, col_bin_floor + 1, orientation_bin_floor] += c100
+            histogram_tensor[row_bin_floor + 2, col_bin_floor + 1, (orientation_bin_floor + 1) % num_bins] += c101
+            histogram_tensor[row_bin_floor + 2, col_bin_floor + 2, orientation_bin_floor] += c110
+            histogram_tensor[row_bin_floor + 2, col_bin_floor + 2, (orientation_bin_floor + 1) % num_bins] += c111
+
+        descriptor_vector = histogram_tensor[1:-1, 1:-1, :].flatten()  # Remove histogram borders
+        # Threshold and normalize descriptor_vector
+        threshold = np.linalg.norm(descriptor_vector) * descriptor_max_value
+        descriptor_vector[descriptor_vector > threshold] = threshold
+        descriptor_vector /= max(np.linalg.norm(descriptor_vector), float_tolerance)
+        # Multiply by 512, round, and saturate between 0 and 255 to convert from float32 to unsigned char (OpenCV convention)
+        descriptor_vector = round(512 * descriptor_vector)
+        descriptor_vector[descriptor_vector < 0] = 0
+        descriptor_vector[descriptor_vector > 255] = 255
+        descriptors.append(descriptor_vector)
+    return np.array(descriptors, dtype='float32')
 def determinateKeypoints2(img:np.array, k:float, mode:str, max_scale:int, num_ocatavas:int, kernelSize:int):
     imgCopy=np.copy(img)
 
@@ -185,60 +321,50 @@ def determinateKeypoints2(img:np.array, k:float, mode:str, max_scale:int, num_oc
 
         # para mirar vecindad evitaremos los bordes, fila 0 y n, col 0 y n
         for i in range(1, img.shape[0] - 1):
-            for j in range(1, img.shape[1]  - 1):
+            for j in range(1, img.shape[1] - 1):
 
-                subMatrizActual = DoG[0][i - 1:i + 2, j - 1:j + 2]
-                subMatrizAnterior = DoG[1][i - 1:i + 2, j - 1:j + 2]
-                subMatrizPosterior = DoG[2][i - 1:i + 2, j - 1:j + 2]
+                maxUtil=0
+                minUtil=math.inf
+
+                if DoG[1][i, j] != 0:#valor 0 no esta admintido como keypoint
+
+                    subMatrizAnterior = DoG[0][i - 1:i + 2, j - 1:j + 2]
+                    subMatrizActual = DoG[1][i - 1:i + 2, j - 1:j + 2]
+                    subMatrizPosterior = DoG[2][i - 1:i + 2, j - 1:j + 2]
 
 
-                #esta comparacion tiene utilidad para ahorrar una comparacion con las DoG 1,2,3 ya tendremos la comparacion de 1 con 2
-                maxUtil= max(np.max(subMatrizActual), np.max(subMatrizPosterior))
+                    #esta comparacion tiene utilidad para ahorrar una comparacion con las DoG 1,2,3 ya tendremos la comparacion de 1 con 2
+                    maxUtil= max(np.max(subMatrizActual), np.max(subMatrizPosterior))
 
-                #si no cumple ser el maximo entre las 2 capas no hace falta continuar porque no sera el max
-                if maxUtil == DoG[1][i,j]:
-                    if DoG[1][i,j] == max(np.max(subMatrizActual), np.max(subMatrizAnterior)):
+                    #si no cumple ser el maximo entre las 2 capas no hace falta continuar porque no sera el max
+                    if maxUtil == DoG[1][i, j] and DoG[1][i,j] == max(np.max(subMatrizActual), np.max(subMatrizAnterior)):
 
-                        # concatenar las submatrizes
-                        subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
-
-                        # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
-                        if np.count_nonzero(subMatriz == DoG[1][i, j]) == 1:
-                            keyPoints.append(((0, 1), (i,j)))  # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 1, estara entre las escalas 0 y 2
-                else:
-                    minUtil = min(np.min(subMatrizActual), np.min(subMatrizPosterior))
-
-                    if minUtil == DoG[1][i,j]:
-                        if DoG[1][i,j] == min(np.max(subMatrizActual), np.min(subMatrizAnterior)):
                             # concatenar las submatrizes
                             subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
 
                             # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
                             if np.count_nonzero(subMatriz == DoG[1][i, j]) == 1:
-                                keyPoints.append(((0, 1), (i, j)))  # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 1, estara entre las escalas 0 y 2
+                                keyPoints.append(((0, 1), (i,j)))  # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 1, estara entre las escalas 0 y 2
+
+                    elif np.count_nonzero(subMatrizPosterior) == len(subMatrizPosterior):#si haya lgun 0 en la siguiente DoG scale se pondra como valor min, asi que no la queremos ni ver
+                        minUtil = min(np.min(subMatrizActual), np.min(subMatrizPosterior))
+
+                        if minUtil == DoG[1][i, j]:
+                            if DoG[1][i,j] == min(np.max(subMatrizActual), np.min(subMatrizAnterior)):
+                                # concatenar las submatrizes
+                                subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
+
+                                # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
+                                if np.count_nonzero(subMatriz == DoG[1][i, j]) == 1:
+                                    keyPoints.append(((0, 1), (i, j)))  # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 1, estara entre las escalas 0 y 2
 
                 #se compara con la siguiente scale de las DoG
                 for scaleDoG in range(2, len(DoG)-1):
+                     if DoG[1][i, j] != 0:#valor 0 no esta admintido como keypoint
+                        subMatrizPosterior = DoG[scaleDoG + 1][i - 1:i + 2, j - 1:j + 2]
+                        maxUtil = max(maxUtil, np.max(subMatrizPosterior))
 
-                    subMatrizPosterior = DoG[scaleDoG + 1][i - 1:i + 2, j - 1:j + 2]
-                    maxUtil = max(maxUtil, np.max(subMatrizPosterior))
-
-                    if maxUtil == DoG[scaleDoG][i, j]:
-
-                        subMatrizActual = DoG[scaleDoG][i - 1:i + 2, j - 1:j + 2]
-                        subMatrizAnterior = DoG[scaleDoG][i - 1:i + 2, j - 1:j + 2]
-
-                        # concatenar las submatrizes
-                        subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
-
-                        # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
-                        if np.count_nonzero(subMatriz == DoG[scaleDoG][i, j]) == 1:
-                            keyPoints.append(((0, 1), (i, j)))  # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 1, estara entre las escalas 0 y 2
-                    else:
-
-                        minUtil = min(minUtil, np.min(subMatrizPosterior))
-
-                        if minUtil == DoG[scaleDoG][i, j]:
+                        if maxUtil == DoG[scaleDoG][i, j]:
 
                             subMatrizActual = DoG[scaleDoG][i - 1:i + 2, j - 1:j + 2]
                             subMatrizAnterior = DoG[scaleDoG][i - 1:i + 2, j - 1:j + 2]
@@ -249,12 +375,28 @@ def determinateKeypoints2(img:np.array, k:float, mode:str, max_scale:int, num_oc
                             # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
                             if np.count_nonzero(subMatriz == DoG[scaleDoG][i, j]) == 1:
                                 keyPoints.append(((0, 1), (i, j)))  # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 1, estara entre las escalas 0 y 2
+                        elif np.count_nonzero(subMatrizPosterior) == len(subMatrizPosterior):
+
+                            minUtil = min(minUtil, np.min(subMatrizPosterior))
+
+                            if minUtil == DoG[scaleDoG][i, j] :
+
+                                subMatrizActual = DoG[scaleDoG][i - 1:i + 2, j - 1:j + 2]
+                                subMatrizAnterior = DoG[scaleDoG][i - 1:i + 2, j - 1:j + 2]
+
+                                # concatenar las submatrizes
+                                subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
+
+                                # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
+                                if np.count_nonzero(subMatriz == DoG[scaleDoG][i, j]) == 1:
+                                    keyPoints.append(((0, 1), (i, j)))  # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 1, estara entre las escalas 0 y 2
 
         # se reduce la resolucion a la mitad de la octava anterior, para esto se necesita mantener la informacion original, img
         # se subtituye los valores de los pixeles de n columnas, cada octava tiene la mitad de innfromacion de la aterior,
         # esto significa el doble de columnas son subtituidas en cada octava
         imgCopy[:, 1::pow(2, ocatavActual + 1)] = img[:, 0::pow(2, ocatavActual + 1)]
 
+    return keyPoints, scales
 
 def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_ocatavas:int, kernelSize:int):
 
@@ -266,6 +408,7 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
 
     DoG = []
     scales = []
+    keyPoints = []
     #creamos diferentes octavas con diferentes scales para obtener las diferencias de Gaussianas
     for ocatavActual in range(num_ocatavas):
 
@@ -279,7 +422,7 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
         L = cv2.filter2D(imgCopy, -1, G)
 
         # guardamos la imagent suavizada, L, con sus sigma para luego calcular orientacion
-        scales.append((nuevaSigma, L))
+        scales.append(L)
 
         # nueva sigma, se pone +1 porque se necesita el numeron de scales, en scale 0 llevamos 1 scale
         nuevaSigma *= pow(k, exponenteK+1)
@@ -297,7 +440,7 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
 
             # convolucionamos, -1 indica que queremos un resultado del mismo tamaño de la imagen
             L = cv2.filter2D(imgCopy, -1, G)
-            scales.append((nuevaSigma, L))
+            scales.append(L)
 
             #calculo diferencia de Gaussianas
             D = L-Lant
@@ -315,7 +458,7 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
         imgCopy[:, 1::pow(2, ocatavActual+1)]=img[:, 0::pow(2, ocatavActual+1)]
 
 
-    keyPoints=[]
+
 
     #ahora iremos mirando los puntos caracteristicos de cada capa segun su capa anterior y posterir, por ello no miramos la primera ni la ultima
     for capaDoG in range(1, len(DoG)-1):
@@ -323,26 +466,27 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
         for i in range(1, DoG[capaDoG].shape[0]-1):
             for j in range(1, DoG[capaDoG].shape[1]-1):
 
-                subMatrizActual=DoG[capaDoG][i-1:i+2, j-1:j+2]
-                subMatrizAnterior = DoG[capaDoG - 1][i - 1:i + 2, j - 1:j + 2]
-                subMatrizPosterior = DoG[capaDoG + 1][i - 1:i + 2, j - 1:j + 2]
+                if DoG[capaDoG][i, j] != 0:#0 no puede ser un keypoint porque significa que no hay diferencia entre escalas
+                    subMatrizActual=DoG[capaDoG][i-1:i+2, j-1:j+2]
+                    subMatrizAnterior = DoG[capaDoG - 1][i - 1:i + 2, j - 1:j + 2]
+                    subMatrizPosterior = DoG[capaDoG + 1][i - 1:i + 2, j - 1:j + 2]
 
-                #si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ACTUAL
-                if DoG[capaDoG][i, j] != 0 and max(np.max(subMatrizActual), np.max(subMatrizAnterior),np.max(subMatrizPosterior)) == DoG[capaDoG][i,j]:
-                    #concatenar las submatrizes
-                    subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
+                    #si el pixel es el maximo o el minimo de su alrededor en la capa o SCALA ACTUAL
+                    if max(np.max(subMatrizActual), np.max(subMatrizAnterior),np.max(subMatrizPosterior)) == DoG[capaDoG][i,j]:
+                        #concatenar las submatrizes
+                        subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
 
-                    #si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
-                    if np.count_nonzero(subMatriz == DoG[capaDoG][i,j]) == 1:
-                        keyPoints.append(((capaDoG, capaDoG+1), (i, j))) # añadimos en que scala se encuntra para luego las orientaciones, sabemos que si es la DoG 5, estara entre las escalas 5 y 6
+                        #si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
+                        if np.count_nonzero(subMatriz == DoG[capaDoG][i,j]) == 1:
+                            keyPoints.append((capaDoG-1, (i, j))) # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 5, estara entre las escalas 5 y 6
 
-                elif DoG[capaDoG][i, j] != 0 and min(np.min(subMatrizActual), np.min(subMatrizAnterior), np.min(subMatrizPosterior)) == DoG[capaDoG][i, j]:
-                    # concatenar las submatrizes
-                    subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
+                    elif min(np.min(subMatrizActual), np.min(subMatrizAnterior), np.min(subMatrizPosterior)) == DoG[capaDoG][i, j]:
+                        # concatenar las submatrizes
+                        subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
 
-                    # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
-                    if np.count_nonzero(subMatriz == DoG[capaDoG][i, j]) == 1:
-                        keyPoints.append(((capaDoG, capaDoG+1), (i, j))) # añadimos en que scala se encuntra para luego las orientaciones, sabemos que si es la DoG 5, estara entre las escalas 5 y 6
+                        # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
+                        if np.count_nonzero(subMatriz == DoG[capaDoG][i, j]) == 1:
+                            keyPoints.append((capaDoG-1, (i, j))) # añadimos en que scala se encuntra para luego las orientaciones, sabemos que si es la DoG 5, estara entre las escalas 5 y 6, consideramos que l 5
 
     return keyPoints, scales
 
@@ -350,14 +494,20 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
 def sift(img: np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4, kernelSize=3):
     # Step 1: Approximate Keypoint Location
 
+    t0 = time.time()
     keyPoints, scales = determinateKeypoints(img, k, mode, max_scale, num_ocatavas, kernelSize)
+    print(time.time() - t0)
+
+    #t0=time.time()
+    #keyPoints2, scales2 = determinateKeypoints2(img, k, mode, max_scale, num_ocatavas, kernelSize)
+    #print(time.time()-t0)
 
     #reducir los outliers en los keypoints
     #keypoints = filtrarKeypoints(keyPoints, DoG)
 
     #asignar orientacion a los keypoints
-    assignOrientation(keyPoints, scales)
-
+    orientaciones = assignOrientation(keyPoints, scales, max_scale)
+    descriptores = generateDescriptors(keyPoints,orientaciones, scales, max_scale=max_scale)
     return 0
 
 
@@ -367,11 +517,11 @@ if __name__ == '__main__':
 
     # cargamos los nombres de las imagenes
     image_names = load_images_from_folder(folder)
-    print(image_names)
+    #print(image_names)
 
     # ordenamos los nombres de las imagenes
     image_names = sorted(image_names)
-    print(image_names)
+    #print(image_names)
     # ================================
     #       LOAD AND SHOW IMAGES
     # ================================
