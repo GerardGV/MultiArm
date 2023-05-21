@@ -76,10 +76,10 @@ def assignOrientation(keyPoints:list, imgSuavizadas:list, num_scales:int, escala
 
         #controlamos que no se salga de la imagen la region
         filaIni = 0 if infoKeypoint[1][0]-window < 0 else infoKeypoint[1][0]-window
-        filaFi = 0 if infoKeypoint[1][0]+window > imgSuavizadas[infoKeypoint[0]].shape[0] else infoKeypoint[1][0]+window
+        filaFi =  imgSuavizadas[infoKeypoint[0]].shape[0] if infoKeypoint[1][0]+window > imgSuavizadas[infoKeypoint[0]].shape[0] else infoKeypoint[1][0]+window
 
         colIni = 0 if infoKeypoint[1][1]-window < 0 else infoKeypoint[1][1]-window
-        colFi= 0 if infoKeypoint[1][1]+window > imgSuavizadas[infoKeypoint[0]].shape[1] else infoKeypoint[1][1]+window
+        colFi=  imgSuavizadas[infoKeypoint[0]].shape[0] if infoKeypoint[1][1]+window > imgSuavizadas[infoKeypoint[0]].shape[1] else infoKeypoint[1][1]+window
 
         neighborhood = imgSuavizadas[infoKeypoint[0]][filaIni:filaFi, colIni:colFi]
 
@@ -93,18 +93,18 @@ def assignOrientation(keyPoints:list, imgSuavizadas:list, num_scales:int, escala
 
         indices = (np.absolute(gradient_orientation) / (360 / num_bins)).astype(int)
         pesos = (1.5*escala*octava + gradient_magnitude) / 2
-        valores = pesos * ((gradient_orientation + 360) % 360) #sumamos 360 para cambiar los angulos negativos y el modulo de 360 para que ningun angulo pase de 360 grados
+        #valores = pesos * ((gradient_orientation + 360) % 360) #sumamos 360 para cambiar los angulos negativos y el modulo de 360 para que ningun angulo pase de 360 grados
 
-        orientation_histogram[indices] += valores
+        orientation_histogram[indices] += pesos
 
         #seleccionamos el pico maximo
         maxPeakIndex=np.argmax(orientation_histogram)
         #lista donde tenemos los indices del angulo maximo y los que superan un 0,8 del maximo, multiplicados x el rango de angulos que representa cada uno
-        peaks=[maxPeakIndex*int(360/num_bins)] + list(np.where((orientation_histogram >= 0.8 * orientation_histogram[maxPeakIndex]) &
-                                    (orientation_histogram != orientation_histogram[maxPeakIndex]))[0]*int(360/num_bins))
+        #peaks=[maxPeakIndex*int(360/num_bins)] + list(np.where((orientation_histogram >= 0.8 * orientation_histogram[maxPeakIndex]) &
+                                    #(orientation_histogram != orientation_histogram[maxPeakIndex]))[0]*int(360/num_bins))
 
-        orientaciones.append(peaks)
-
+        #orientaciones.append(peaks)
+        orientaciones.append(maxPeakIndex*int(360/num_bins))
         #plt.hist(orientation_histogram, bins=num_bins)
         #plt.show()
 
@@ -127,15 +127,118 @@ def descriptors(keyPoints, imgSuavizadas, orientationAngles:list):
         gradient_x = cv2.Sobel(imgSuavizadas[infoKeypoint[0]], cv2.CV_64F, 1, 0, ksize=3)
         gradient_y = cv2.Sobel(imgSuavizadas[infoKeypoint[0]], cv2.CV_64F, 0, 1, ksize=3)
         gradient_orientation = np.arctan2(gradient_y, gradient_x) * (180 / np.pi)
+        orientation_histogram = np.zeros(8)
 
-        #se posiciona en la fila y columna donde empieza la zona alrededor del keypoint, descriptor area
-        for i in range(0, nFilasYColumnas*descriptorSize+1, nFilasYColumnas):
-            for j in range(0, nFilasYColumnas*descriptorSize+1, nFilasYColumnas):
-                pass
+        #en una vecindad de 16x16 calcularemos descriptores de 4x4 y sus histogramas de orientacion
+        for i in range(0, 16, 4):
+            for j in range(0, 16, 4):
+                # creamos un numpy array con 8 elementos para el orientation histogram de cada bloque
+                orientation_histogram = np.zeros(8)
+                areaDescriptor=gradient_orientation[infoKeypoint[1][0]-i:infoKeypoint[1][0]+i, infoKeypoint[1][1]-j:infoKeypoint[1][1]+j]
 
     return descriptores
 
+def generateDescriptors(keypoints, angulos, gaussian_images, window_width=4, num_bins=8, scale_multiplier=3, descriptor_max_value=0.2, maxEscalas=3):
+    """Generate descriptors for each keypoint
+    """
+    # keyPoints: list[indiceImagenSuavizada, tupla(coordenadas)]
+    # gaussian_images: list[matrizImagenSuavizada]
+    descriptors = []
+    octava=1
+    float_tolerance=0.000001
 
+    for keypoint, angulo in zip(keypoints, angulos):
+        octava += keypoints[0] % maxEscalas
+
+        #octave, layer, scale = unpackOctave(keypoint)
+        #gaussian_image = gaussian_images[octave + 1, layer]
+        num_rows, num_cols = gaussian_images[keypoints[0]].shape
+
+        scale = 2 * octava
+
+        point = round(scale * np.array(keypoint[1])).astype('int')
+        bins_per_degree = num_bins / 360.
+        angle = 360. - angulo
+        cos_angle = math.cos(math.deg2rad(angle))
+        sin_angle = math.sin(math.deg2rad(angle))
+        weight_multiplier = -0.5 / ((0.5 * window_width) ** 2)
+        row_bin_list = []
+        col_bin_list = []
+        magnitude_list = []
+        orientation_bin_list = []
+        histogram_tensor = np.zeros((window_width + 2, window_width + 2, num_bins))   # first two dimensions are increased by 2 to account for border effects
+
+        # Descriptor window size (described by half_width) follows OpenCV convention
+        hist_width = scale_multiplier * 0.5 * scale * keypoint.size
+        half_width = int(round(hist_width * math.sqrt(2) * (window_width + 1) * 0.5))   # sqrt(2) corresponds to diagonal length of a pixel
+        half_width = int(min(half_width, math.sqrt(num_rows ** 2 + num_cols ** 2)))     # ensure half_width lies within image
+
+        for row in range(-half_width, half_width + 1):
+            for col in range(-half_width, half_width + 1):
+                row_rot = col * sin_angle + row * cos_angle
+                col_rot = col * cos_angle - row * sin_angle
+                row_bin = (row_rot / hist_width) + 0.5 * window_width - 0.5
+                col_bin = (col_rot / hist_width) + 0.5 * window_width - 0.5
+                if row_bin > -1 and row_bin < window_width and col_bin > -1 and col_bin < window_width:
+                    window_row = int(round(point[1] + row))
+                    window_col = int(round(point[0] + col))
+                    if window_row > 0 and window_row < num_rows - 1 and window_col > 0 and window_col < num_cols - 1:
+                        dx = gaussian_images[keypoints[0]][window_row, window_col + 1] - gaussian_images[keypoints[0]][window_row, window_col - 1]
+                        dy = gaussian_images[keypoints[0]][window_row - 1, window_col] - gaussian_images[keypoints[0]][window_row + 1, window_col]
+                        gradient_magnitude = math.sqrt(dx * dx + dy * dy)
+                        gradient_orientation = math.rad2deg(math.arctan2(dy, dx)) % 360
+                        weight = math.exp(weight_multiplier * ((row_rot / hist_width) ** 2 + (col_rot / hist_width) ** 2))
+                        row_bin_list.append(row_bin)
+                        col_bin_list.append(col_bin)
+                        magnitude_list.append(weight * gradient_magnitude)
+                        orientation_bin_list.append((gradient_orientation - angle) * bins_per_degree)
+
+        for row_bin, col_bin, magnitude, orientation_bin in zip(row_bin_list, col_bin_list, magnitude_list, orientation_bin_list):
+            # Smoothing via trilinear interpolation
+            # Notations follows https://en.wikipedia.org/wiki/Trilinear_interpolation
+            # Note that we are really doing the inverse of trilinear interpolation here (we take the center value of the cube and distribute it among its eight neighbors)
+            row_bin_floor, col_bin_floor, orientation_bin_floor = np.floor([row_bin, col_bin, orientation_bin]).astype(int)
+            row_fraction, col_fraction, orientation_fraction = row_bin - row_bin_floor, col_bin - col_bin_floor, orientation_bin - orientation_bin_floor
+            if orientation_bin_floor < 0:
+                orientation_bin_floor += num_bins
+            if orientation_bin_floor >= num_bins:
+                orientation_bin_floor -= num_bins
+
+            c1 = magnitude * row_fraction
+            c0 = magnitude * (1 - row_fraction)
+            c11 = c1 * col_fraction
+            c10 = c1 * (1 - col_fraction)
+            c01 = c0 * col_fraction
+            c00 = c0 * (1 - col_fraction)
+            c111 = c11 * orientation_fraction
+            c110 = c11 * (1 - orientation_fraction)
+            c101 = c10 * orientation_fraction
+            c100 = c10 * (1 - orientation_fraction)
+            c011 = c01 * orientation_fraction
+            c010 = c01 * (1 - orientation_fraction)
+            c001 = c00 * orientation_fraction
+            c000 = c00 * (1 - orientation_fraction)
+
+            histogram_tensor[row_bin_floor + 1, col_bin_floor + 1, orientation_bin_floor] += c000
+            histogram_tensor[row_bin_floor + 1, col_bin_floor + 1, (orientation_bin_floor + 1) % num_bins] += c001
+            histogram_tensor[row_bin_floor + 1, col_bin_floor + 2, orientation_bin_floor] += c010
+            histogram_tensor[row_bin_floor + 1, col_bin_floor + 2, (orientation_bin_floor + 1) % num_bins] += c011
+            histogram_tensor[row_bin_floor + 2, col_bin_floor + 1, orientation_bin_floor] += c100
+            histogram_tensor[row_bin_floor + 2, col_bin_floor + 1, (orientation_bin_floor + 1) % num_bins] += c101
+            histogram_tensor[row_bin_floor + 2, col_bin_floor + 2, orientation_bin_floor] += c110
+            histogram_tensor[row_bin_floor + 2, col_bin_floor + 2, (orientation_bin_floor + 1) % num_bins] += c111
+
+        descriptor_vector = histogram_tensor[1:-1, 1:-1, :].flatten()  # Remove histogram borders
+        # Threshold and normalize descriptor_vector
+        threshold = np.linalg.norm(descriptor_vector) * descriptor_max_value
+        descriptor_vector[descriptor_vector > threshold] = threshold
+        descriptor_vector /= max(np.linalg.norm(descriptor_vector), float_tolerance)
+        # Multiply by 512, round, and saturate between 0 and 255 to convert from float32 to unsigned char (OpenCV convention)
+        descriptor_vector = round(512 * descriptor_vector)
+        descriptor_vector[descriptor_vector < 0] = 0
+        descriptor_vector[descriptor_vector > 255] = 255
+        descriptors.append(descriptor_vector)
+    return np.array(descriptors, dtype='float32')
 def determinateKeypoints2(img:np.array, k:float, mode:str, max_scale:int, num_ocatavas:int, kernelSize:int):
     imgCopy=np.copy(img)
 
@@ -398,12 +501,13 @@ def sift(img: np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4, kernelS
     #t0=time.time()
     #keyPoints2, scales2 = determinateKeypoints2(img, k, mode, max_scale, num_ocatavas, kernelSize)
     #print(time.time()-t0)
+
     #reducir los outliers en los keypoints
     #keypoints = filtrarKeypoints(keyPoints, DoG)
 
     #asignar orientacion a los keypoints
     orientaciones = assignOrientation(keyPoints, scales, max_scale)
-
+    descriptores = generateDescriptors(keyPoints,orientaciones, scales, max_scale=max_scale)
     return 0
 
 
@@ -413,11 +517,11 @@ if __name__ == '__main__':
 
     # cargamos los nombres de las imagenes
     image_names = load_images_from_folder(folder)
-    print(image_names)
+    #print(image_names)
 
     # ordenamos los nombres de las imagenes
     image_names = sorted(image_names)
-    print(image_names)
+    #print(image_names)
     # ================================
     #       LOAD AND SHOW IMAGES
     # ================================
