@@ -41,7 +41,9 @@ def load_and_show_images(image1_name, image2_name):
     # GRAY IMAGES:
     #print("Showing gray images: ")
     img1_gray = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+    img1_gray=img1_gray.astype('float32')
     img2_gray = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    img2_gray = img2_gray.astype('float32')
     #show_image(img1_gray, title_img_name + "Gray image 1")
     #show_image(img2_gray, title_img_name + "Gray image 2")
 
@@ -398,6 +400,8 @@ def determinateKeypoints2(img:np.array, k:float, mode:str, max_scale:int, num_oc
 
     return keyPoints, scales
 
+
+
 def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_ocatavas:int, kernelSize:int):
 
     imgCopy=np.copy(img)
@@ -457,16 +461,16 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
         #esto significa el doble de columnas son subtituidas en cada octava
         imgCopy[:, 1::pow(2, ocatavActual+1)]=img[:, 0::pow(2, ocatavActual+1)]
 
-
-
-
+    contrast_threshold=0.04
+    threshold = math.floor(0.5 * contrast_threshold / max_scale * 255)
+    #valors= []
     #ahora iremos mirando los puntos caracteristicos de cada capa segun su capa anterior y posterir, por ello no miramos la primera ni la ultima
     for capaDoG in range(1, len(DoG)-1):
         #iteramos pixel a pixel miranod 3(x)x3(y)x3(capa, z)-1(pixel que escogemos para mirar a su alrededor) pixeles
         for i in range(1, DoG[capaDoG].shape[0]-1):
             for j in range(1, DoG[capaDoG].shape[1]-1):
 
-                if DoG[capaDoG][i, j] != 0:#0 no puede ser un keypoint porque significa que no hay diferencia entre escalas
+                if DoG[capaDoG][i, j] != 0 and abs(DoG[capaDoG][i, j]) > threshold:#0 no puede ser un keypoint porque significa que no hay diferencia entre escalas
                     subMatrizActual=DoG[capaDoG][i-1:i+2, j-1:j+2]
                     subMatrizAnterior = DoG[capaDoG - 1][i - 1:i + 2, j - 1:j + 2]
                     subMatrizPosterior = DoG[capaDoG + 1][i - 1:i + 2, j - 1:j + 2]
@@ -479,7 +483,7 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
                         #si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
                         if np.count_nonzero(subMatriz == DoG[capaDoG][i,j]) == 1:
                             keyPoints.append((capaDoG-1, (i, j))) # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 5, estara entre las escalas 5 y 6
-
+                            #valors.append(DoG[capaDoG][i, j] )
                     elif min(np.min(subMatrizActual), np.min(subMatrizAnterior), np.min(subMatrizPosterior)) == DoG[capaDoG][i, j]:
                         # concatenar las submatrizes
                         subMatriz = np.concatenate((subMatrizActual, subMatrizAnterior, subMatrizPosterior), axis=0)
@@ -487,7 +491,7 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
                         # si el pixel es un maximo unico, no aparace el valor de nuevo en la submatriz, se considera key point
                         if np.count_nonzero(subMatriz == DoG[capaDoG][i, j]) == 1:
                             keyPoints.append((capaDoG-1, (i, j))) # añadimos en que scala se encuntra para luego las orientaciones, sabemos que si es la DoG 5, estara entre las escalas 5 y 6, consideramos que l 5
-
+                            #valors.append(DoG[capaDoG][i, j])
     return keyPoints, scales
 
 
