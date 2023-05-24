@@ -1,4 +1,4 @@
-%matplotlib notebook
+#%matplotlib notebook
 
 import cv2
 import numpy as np

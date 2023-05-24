@@ -95,7 +95,7 @@ def brute_force_SIFT(im1, im2):
 
     SIFT_matches = cv2.drawMatches(im1, keypoint1, im2, keypoint2, matches[:200], None, flags=2)
     show_image(SIFT_matches, "SIFT matches: ")
-    return SIFT_matches
+    return SIFT_matches, keypoint1, keypoint2
 
 
 # ============================================
@@ -149,7 +149,8 @@ def fundamental_matrix_find_kp_and_match(img1, img2, method="sift"):
     end_algorithm_and_matching_time = time.time()
 
     print("Temps d'execució de l'algorisme ", method, ": ", end_algorithm_time - start_time_algorithm, " segons.")
-    print("Temps d'execució de l'algorisme ", method, " i del matching (+ Lowe's): ", end_algorithm_and_matching_time - start_time_algorithm, " segons.")
+    print("Temps d'execució de l'algorisme ", method, " i del matching (+ Lowe's): ",
+          end_algorithm_and_matching_time - start_time_algorithm, " segons.")
     return pts1, pts2
 
 
@@ -312,7 +313,9 @@ def camera_internals_if_we_DONT_know_K(img1):
 # l'hora de realitzar les fotografies.
 def estimate_camera_pose_and_draw(img1, img2, method="sift"):
     F, mask, final_frame_RANSAC, pts1, pts2 = full_ransac_estimation(img1, img2, method)
-    print("Número matches/punts desprésd e full RANSAC: ", len(pts1))
+    cv2.imwrite('img/exports/final_frame_RANSAC.jpeg', final_frame_RANSAC)
+
+    print("Número matches/punts després de full RANSAC: ", len(pts1))
     K = camera_internals_if_we_DONT_know_K(img1)
     # Estimate the Essential Matrix:
     E = K.T.dot(F.dot(K))
@@ -334,6 +337,7 @@ def estimate_camera_pose_and_draw(img1, img2, method="sift"):
             plotCamera(np.eye(3, 3), np.zeros((3,)), axs[i, j])
             plotCamera(R_, t_[:, 0], axs[i, j])
             count += 1
+    plt.savefig("configsPossibles.png")
     plt.show()
     return E, pts1, pts2, K
 
@@ -350,6 +354,7 @@ def checkForCheiralityCondition(E, pts1, pts2, K):
 
     plotCamera(np.eye(3, 3), np.zeros((3,)), ax)
     plotCamera(R, t[:, 0], ax)
+    plt.savefig("confCameraTriada.png")
     plt.show()
     return R, t
 
@@ -386,9 +391,11 @@ def firstReconstruction(pts1, pts2, K, R, t):
     ))])
     fig.update_layout(autosize=False, width=900, height=900)
     fig.show()
+    return pts3d
 
 
-# Funció necessaria per tal de calcular els punts 3d donats uns punts 2d, conf de la càmera i una funció de triangulació
+# Funció necessaria per tal de calcular els punts 3d donats uns punts 2d, conf de la càmera i una funció de
+# triangulació.
 def getTriangulatedPoints(img1pts, img2pts, K, R, t, triangulateFunc):
     img1ptsHom = cv2.convertPointsToHomogeneous(img1pts)[:, 0, :]
     img2ptsHom = cv2.convertPointsToHomogeneous(img2pts)[:, 0, :]
@@ -417,6 +424,7 @@ def getTriangulatedPoints(img1pts, img2pts, K, R, t, triangulateFunc):
  Aquestes funcions tenen com a prefix TEMP (temporal).
 """
 
+
 def lowes(keypt1, keypt2, matches):
     pts1 = []
     pts2 = []
@@ -429,6 +437,8 @@ def lowes(keypt1, keypt2, matches):
     pts1 = np.int32(pts1)
     pts2 = np.int32(pts2)
     return pts1, pts2
+
+
 def texture_mapping_sift(model_3d, matches, keypoints, texture_images):
     # Crear una malla 3D a partir del modelo 3D reconstruido
     vertices = np.array(model_3d)
@@ -521,13 +531,14 @@ def convert_matches_to_list(matches):
     return matches_list
 
 
-
 def brute_force_Harris(im1):
     gray = cv2.cvtColor(im1, cv2.COLOR_BGR2GRAY)
     # find Harris corners
     gray = np.float32(gray)
     dst = cv2.cornerHarris(gray, 2, 3, 0.04)
+    print("Corner harris dist: ", len(dst))
     dst = cv2.dilate(dst, None)
+    print("Corner harris dist després dilate: ", len(dst))
     ret, dst = cv2.threshold(dst, 0.01 * dst.max(), 255, 0)
     dst = np.uint8(dst)
     # find centroids
@@ -538,11 +549,14 @@ def brute_force_Harris(im1):
     # Now draw them
     res = np.hstack((centroids, corners))
     res = np.intp(res)
+    print("Res Hariis: ", len(res))
     im1[res[:, 1], res[:, 0]] = [0, 0, 255]
     im1[res[:, 3], res[:, 2]] = [0, 255, 0]
 
     show_image(im1, "Harris image: ", False)
-    show_image(im1, "Harris image COLOR: ", True)
+    # show_image(im1, "Harris image COLOR: ", True)
+    return im1
+
 
 def brute_force_ORB(im1, im2):
     sift = cv2.ORB_create()
@@ -566,13 +580,13 @@ def brute_force_ORB(im1, im2):
     return keypoint1, keypoint2, matches
 
 
-
 def full_ransac_estimation_ORB(img1, img2):
-    #kp1, kp2, matches = brute_force_ORB(img1, img2)
-    #pts1, pts2 = lowes(kp1, kp2, matches)
+    # kp1, kp2, matches = brute_force_ORB(img1, img2)
+    # pts1, pts2 = lowes(kp1, kp2, matches)
     pts1, pts2 = fundamental_matrix_find_kp_and_match_ORB(img1, img2)
     F, mask, final_frame_RANSAC = ransac_estimation(img1, img2, pts1, pts2)
     return F, mask, final_frame_RANSAC, pts1, pts2
+
 
 def estimate_camera_pose_and_draw_ORB(img1, img2):
     F, mask, final_frame_RANSAC, pts1, pts2 = full_ransac_estimation_ORB(img1, img2)
@@ -600,16 +614,22 @@ def estimate_camera_pose_and_draw_ORB(img1, img2):
     plt.show()
     return E, pts1, pts2, K
 
+
 def fundamental_matrix_find_kp_and_match_ORB(img1, img2):
     # Implementació més a força bruta i que no trobarà els millors resultats.
     # img1 = cv2.imread(im_name1, 0)
     # img2 = cv2.imread(im_name2, 0)
+    start_orb = time.time()
     algorithm = cv2.ORB_create()
 
     # Find Keypoints and descriptors with SIFT / the selected algorithm
     keypt1, descr1 = algorithm.detectAndCompute(img1, None)
     keypt2, descr2 = algorithm.detectAndCompute(img2, None)
-
+    print("Time ORB: ", time.time() - start_orb)
+    print("Keypoints 1 ORB: ", len(keypt1))
+    print("Keypoints 2 ORB: ", len(keypt2))
+    showKeyPoints(img1, keypt1, 'img/exports/', 'orb_img1_keypoints.jpeg')
+    showKeyPoints(img2, keypt2, 'img/exports/', 'orb_img2_keypoints.jpeg')
     # FLANN parameters:
     FLANN_INDEX_LSH = 6
     index_params = dict(algorithm=FLANN_INDEX_LSH,
@@ -621,6 +641,7 @@ def fundamental_matrix_find_kp_and_match_ORB(img1, img2):
     matches = flann.knnMatch(descr1, descr2, k=2)
     pts1 = []
     pts2 = []
+    print("MATCHES  ORB: ", len(matches))
 
     # Ratio test as per Lowe's paper:
     for i, (m, n) in enumerate(matches):
@@ -629,8 +650,53 @@ def fundamental_matrix_find_kp_and_match_ORB(img1, img2):
             pts1.append(keypt1[m.queryIdx].pt)
     pts1 = np.int32(pts1)
     pts2 = np.int32(pts2)
+
+    print("Good matches: ", len(pts2))
+
     return pts1, pts2
 
+
+def harrisImplementation(inputFolder, img_name, expFolder):
+    # path to input image specified and
+    # image is loaded with imread command
+    image = cv2.imread(inputFolder + img_name)
+
+    # convert the input image into
+    # grayscale color space
+    operatedImage = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # modify the data type
+    # setting to 32-bit floating point
+    operatedImage = np.float32(operatedImage)
+
+    # apply the cv2.cornerHarris method
+    # to detect the corners with appropriate
+    # values as input parameters
+    dest = cv2.cornerHarris(operatedImage, 2, 5, 0.07)
+
+    # Results are marked through the dilated corners
+    dest = cv2.dilate(dest, None)
+    print("Longitud de dest Harris img -> ", img_name, ": ", len(dest))
+    temp = dest > 0.01 * dest.max()
+    print("Operació rara: ", np.count_nonzero(temp))
+    # Reverting back to the original image,
+    # with optimal threshold value
+    temp = image
+    image[dest > 0.01 * dest.max()] = [0, 0, 255]
+    resta = image[:,:, 2] - temp[:,:,2]
+    print("Resta img: ",(image.shape[0] * image.shape[1]) - (np.count_nonzero(image[:,:,2] -255)))
+    cv2.imwrite(expFolder + img_name, image)
+    # the window showing output image with corners
+    cv2.imshow('Image with Borders', image)
+
+    # De-allocate any associated memory usage
+    if cv2.waitKey(0) & 0xff == 27:
+        cv2.destroyAllWindows()
+
+def showKeyPoints(img, keypoints, expfolder, im_name):
+
+    img_SIFT_1 = cv2.drawKeypoints(img, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+    cv2.imwrite(expfolder + im_name, img_SIFT_1)
 # ====================================================
 #           MAIN - EXECUCIÓ PRINCIPAL
 # ====================================================
@@ -638,6 +704,7 @@ def fundamental_matrix_find_kp_and_match_ORB(img1, img2):
 if __name__ == '__main__':
     print('Starting...')
     folder = 'img/base/'
+    expFolder = 'img/exports/'
     method = "sift"
     image_names = load_images_from_folder(folder)
     print(image_names)
@@ -647,7 +714,7 @@ if __name__ == '__main__':
     print(image_names)
 
     # Use only the new images: -- Triar quines imatges voldrem fer servir en aquesta execució
-    image_names = image_names[14:16]
+    image_names = image_names[16:18]
     print("New images that will be used in this execution: ", image_names)
     # ================================
     #       LOAD AND SHOW IMAGES
@@ -656,24 +723,36 @@ if __name__ == '__main__':
     for im1_name, im2_name in zip(image_names[0::2], image_names[1::2]):
         # 1. Feature Matching and Outlier rejection using RANSAC
         img1, img2, frame = load_and_plot_images(folder + im1_name, folder + im2_name)
-        # frame_SIFT = extract_keypoints_feature_descriptors_and_matching(img1, img2)
-        # extract_keypoints_with_one_SIFT(img1, img2)
-        # brute_force_SIFT(img1, img2)
-
+        """
+        frame_SIFT = extract_keypoints_feature_descriptors_and_matching(img1, img2)
+        cv2.imwrite(expFolder+'frameSIFT_imgs.jpeg', frame_SIFT)
+        extract_keypoints_with_one_SIFT(img1, img2)
+        a, kp1_sift, kp2_sift = brute_force_SIFT(img1, img2)
+        showKeyPoints(img1, kp1_sift, expFolder, 'keypoints_RAW_SIFT_'+im1_name)
+        showKeyPoints(img2, kp2_sift, expFolder, 'keypoints_RAW_SIFT_'+im2_name)
+        """
         # 2. Estimating Fundamental Matrix
         # pts1, pts2 = fundamental_matrix_find_kp_and_match(folder + im1_name, folder + im2_name)
         # least_median_squares_estimation(img1, img2, pts1, pts2)
         # ransac_estimation(img1, img2, pts1, pts2)
-        #brute_force_Harris(img1)
-        #brute_force_Harris(img2)
+        # harrisImplementation(folder, im1_name, expFolder)
+        # harrisImplementation(folder, im2_name, expFolder)
+        # img1_harris = brute_force_Harris(img1)
+        # img2_harris = brute_force_Harris(img2)
+        # HARRIS_matches = cv2.drawMatches(img1_harris, keypoint1, img2_harris, keypoint2, matches[:200], None, flags=2)
+        # show_image(SIFT_matches, "SIFT matches: ")
         # ====================== INICI SIFT -> Mapa de punts 3D ==============================
         # A "Estimate_camera_pose_and_draw() ja es realitza full_ransac_estimation(SIFT->Matching->RANSAC)
         start_time = time.time()
-        # E, pts1, pts2, K = estimate_camera_pose_and_draw_ORB(img1, img2)
+        #E, pts1, pts2, K = estimate_camera_pose_and_draw_ORB(img1, img2)
         E, pts1, pts2, K = estimate_camera_pose_and_draw(img1, img2, method)
         R, t = checkForCheiralityCondition(E, pts1, pts2, K)
         firstReconstruction(pts1, pts2, K, R, t)
         end_time = time.time()
+        
+        print("Temps d'execució del SIFT + Matching + Reconstrucció: ", end_time-start_time, " segons")
+        
+
         # ====================== FI INICI SIFT -> Mapa de punts 3D ===========================
         """
         # FALTA DEBUGAR CORRECTAMENT: 
@@ -686,6 +765,7 @@ if __name__ == '__main__':
         # matchList = convert_matches_to_list(matches)
         texture_mapping_sift(pts3d, matchesMini, keypoints, texture_images)
         """
-        print("Temps d'execució del SIFT + Matching + Reconstrucció: ", end_time-start_time, " segons")
     print("End of the program.")
     # Si es veu aquest print és que tot ha anat bé :) (igual que si es veu Process finished with exit code 0.
+
+
