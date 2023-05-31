@@ -1,5 +1,8 @@
+import time
+
 import cv2
 import numpy as np
+import json
 # import plotly.graph_objects as go
 
 # ===========================================================
@@ -122,12 +125,26 @@ def firstReconstruction(img1, pts1, pts2):
     """
     return pts3d
 
-
-if __name__ == '__main__':
+def img_to_3d_points():
     img1 = cv2.imread('img/base/img08_V2_1_face_Pol_sense_sostre.jpeg')
     img2 = cv2.imread('img/base/img08_V2_2_face_Pol_sense_sostre.jpeg')
 
     keypoints1, descriptors1, keypoints2, descriptors2 = sift(img1, img2)
     pts1, pts2 = matching(keypoints1, descriptors1, keypoints2, descriptors2)
     pts3D = firstReconstruction(img1, pts1, pts2)
-    # return pts3D
+    return pts3D
+
+if __name__ == '__main__':
+    """"""
+    for i in range(0,10):
+        pts3D = img_to_3d_points()
+        print("Len pts3D: ", len(pts3D))
+        print(pts3D)
+        """
+        coords = pts3D.tolist()
+        coordenadas = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
+        coords_json = json.dumps(coords)
+        # print(coords_json)
+        # return pts3D
+        """
+        time.sleep(5)

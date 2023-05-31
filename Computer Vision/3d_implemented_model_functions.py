@@ -337,7 +337,7 @@ def estimate_camera_pose_and_draw(img1, img2, method="sift"):
             plotCamera(np.eye(3, 3), np.zeros((3,)), axs[i, j])
             plotCamera(R_, t_[:, 0], axs[i, j])
             count += 1
-    plt.savefig("configsPossibles.png")
+    plt.savefig("img/exports/configsPossibles.png")
     plt.show()
     return E, pts1, pts2, K
 
@@ -354,7 +354,7 @@ def checkForCheiralityCondition(E, pts1, pts2, K):
 
     plotCamera(np.eye(3, 3), np.zeros((3,)), ax)
     plotCamera(R, t[:, 0], ax)
-    plt.savefig("confCameraTriada.png")
+    plt.savefig("img/exports/confCameraTriada.png")
     plt.show()
     return R, t
 

@@ -1,3 +1,27 @@
+import requests
+import json
+
+url = "https://europe-west1-sistemas-multimedia.cloudfunctions.net/modeling"
+payload = {
+    "data": "your data"
+}
+headers = {
+    "Content-Type": "application/json",
+    "X-User-Email": "janrubiorico@gmail.com"  # Replace with the authorized email
+}
+
+response = requests.post(url, data=json.dumps(payload), headers=headers)
+
+# Process the response
+if response.status_code == 200:
+    result = response.json()
+    print(result)
+else:
+    print("Error:", response.status_code, response.text)
+
+
+
+"""
 #%matplotlib notebook
 
 import cv2
@@ -93,4 +117,4 @@ img2 = cv2.imread('img/base/img10_2_rotated_only_face.jpeg', 0)
 points_3d = create_3d_model(img1, img2)
 visualize_3d_model(points_3d)
 print(points_3d)
-
+"""
