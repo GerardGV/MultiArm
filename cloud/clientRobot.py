@@ -45,6 +45,7 @@ def communicationRobot(socketUser):
             print(jsonData)
 
             if instruction == "MOVE":
+                print(jsonData["message"])
                 #Sending coordenates to arduino
                 pass
 

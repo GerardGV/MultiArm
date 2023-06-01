@@ -63,6 +63,6 @@ def communicationClient(socketUser, instruccions="NAN", message="NAN"):
 if __name__ == '__main__':
 
     socketClient=connectionSocket(IP, PORT)
-
-    communicationClient(socketClient, instruccions="PHOTO")
+    pointsList=[[1,2,3], [2,3,4],[2,2,2]]
+    communicationClient(socketClient, instruccions="MOVE")
 
