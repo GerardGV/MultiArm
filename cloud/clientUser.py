@@ -32,29 +32,37 @@ def connectionSocket(ip, port:int):
     s.connect((ip, port))
     return s
 
-def communication(sent:bool, socketUser, instruccions="Nan", message="Nan"):
+def communicationClient(socketUser, instruccions="NAN", message="NAN"):
+    """
+    :param socketUser:
+    :param instruccions: It could NAN, TOOLCHG, MOVE, PHOTO, TURN_OFF
+    :param message: any type of data to be sent
+    :return:
+    """
+    # data set to json
+    json_data = jsonSetUp(instruccions, message)
 
-    #It's going to be listening or It's gointo to sent a message
-    if sent == True:
-        # data set to json
-        json_data = jsonSetUp(instruccions, message)
 
+    if instruccions == "MOVE" or instruccions == "TOOLCHG":
         # sending data through TCP socket connection
         socketUser.send(json_data.encode())  # encode transform data to binary
 
-    else:
-        #It's listening until recive data from server
-        while True:
-            serverData = socketUser.recv(1024).decode()
-            if serverData:
-                print("Data from SERVER")
-                jsonData = json.loads(serverData)
-                print(jsonData["message"])
-                break
+    elif instruccions == "PHOTO":
+        # sending data through TCP socket connection
+        socketUser.send(json_data.encode())  # encode transform data to binary
+
+        #Socket block until recive data
+        serverData = socketUser.recv(1024).decode()
+        jsonData = json.loads(serverData)
+        print(jsonData["message"])
+
+        #return
+
+
 
 if __name__ == '__main__':
 
     socketClient=connectionSocket(IP, PORT)
 
-    communication(False, socketClient)
+    communicationClient(socketClient, instruccions="PHOTO")
 

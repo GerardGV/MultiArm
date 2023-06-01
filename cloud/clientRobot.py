@@ -31,29 +31,47 @@ def connectionSocket(ip, port:int):
     s.connect((ip, port))
     return s
 
-def communication(sent:bool, socketUser, instruccions="Nan", message="Nan"):
+def communicationRobot(socketUser):
+    """
+     instruction: It could NAN, TOOLCHG, MOVE, PHOTO, TURN_OFF
+    """
+    #It's listening until recive data from server
+    while True:
+        serverData = socketUser.recv(1024)
+        if serverData:
 
-    #It's going to be listening or It's gointo to sent a message
-    if sent == True:
-        # data set to json
-        json_data = jsonSetUp(instruccions, message)
-        print(json_data)
-        # sending data through TCP socket connection
-        socketUser.send(json_data.encode())  # encode transform data to binary
+            jsonData = json.loads(serverData.decode())
+            instruction=jsonData["instruction"]
+            print(instruction)
 
-    else:
-        #It's listening until recive data from server
-        while True:
-            serverData = socketUser.recv(1024).decode()
-            if serverData:
-                print("Data from SERVER")
-                jsonData = json.loads(serverData)
-                print(jsonData["message"])
-                break
+            if instruction == "MOVE":
+                #Sending coordenates to arduino
+                pass
+
+            elif instruction == "TOOLCHG":
+                pass
+
+            elif instruction == "PHOTO":
+                #Getting images
+
+                images="IMAGES"
+
+                # data set to json
+                json_data = jsonSetUp("NAN", images)
+                print(json_data)
+
+                # sending data through TCP socket connection
+                socketUser.send(json_data.encode())  # encode transform data to binary
+
+                pass
+
+            elif instruction == "TURN_OFF":
+                #robot turn off
+                pass
 
 if __name__ == '__main__':
 
     socketClient=connectionSocket(IP, PORT)
 
-    communication(True, socketClient, message="PRUEBA ENVIADA DESDE ROBOT")
+    communicationRobot(socketClient)
 
