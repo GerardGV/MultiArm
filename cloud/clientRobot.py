@@ -39,10 +39,10 @@ def communicationRobot(socketUser):
     while True:
         serverData = socketUser.recv(1024)
         if serverData:
-
+            print("DATA RECIBIDA")
             jsonData = json.loads(serverData.decode())
             instruction=jsonData["instruction"]
-            print(instruction)
+            print(jsonData)
 
             if instruction == "MOVE":
                 #Sending coordenates to arduino
