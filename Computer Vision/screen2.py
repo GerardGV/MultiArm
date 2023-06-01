@@ -108,14 +108,13 @@ def reset(map3dDots, entireDrawLinePointsList, drawLinePoints, lineToDraw, point
     return map3dDots, entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList
 
 
-def realitzar_fotos(map3dDotsList, conn=False):
+def realitzar_fotos(map3dDots, map3dDotsList, conn=False):
     if not conn:
         pts3d = img_to_3d_points()
     else:
         pts3d = np.array(map3dDotsList)
     pts3d += 2
     pts3d *= 10
-    map3dDots.empty()
     for pt in pts3d:
         pt2d = convert_to_2d([pt[0], pt[1], pt[2]])
         # dot = SpriteObject(screen.get_width() // 3, screen.get_height() // 3, (255, 0, 0))
@@ -201,16 +200,20 @@ while run:
                 print("Enviant punts al robot . . .")
                 toSend = entireDrawLinePointsList[-1]
                 # pointsSentList.append(toSend)
+                sendToSocket = []
                 for elem in toSend:
                     obj = SpriteObject(elem[0][0], elem[0][1], ORANGE)
                     pointsSent.add(obj)
                     elem[1].kill()
                     elem[1] = obj
                     pointsSentList.append(elem)
+                    sendToSocket.append([elem[0][0], elem[0][1], 27])
 
                 # Enviar els punts al ROBOT
                 if connected:
-                    communicationClient(socket_conn, "MOVE", pointsSentList)
+                    print("Exemple de punts enviats: ", sendToSocket)
+                    communicationClient(socket_conn, "MOVE", sendToSocket)
+                    print("Punts enviats finalment . . .")
 
             # Comprovar si s'ha fet clic en el tercer botó de text.
             # TODO. RESET
@@ -225,10 +228,13 @@ while run:
                 cameraUsed = True
                 # Enviar els punts al ROBOT
                 if connected:
+                    print("Pido fotso")
                     map3dDotsList = communicationClient(socket_conn, "PHOTO")
-                    map3dDots = realitzar_fotos(map3dDotsList, connected)
-
-                map3dDots = realitzar_fotos(map3dDots, connected)
+                    print("Rebent punts 3D . . .")
+                    map3dDots = realitzar_fotos(map3dDots, map3dDotsList, connected)
+                    print("Punts rebuts . . .")
+                else:
+                    map3dDots = realitzar_fotos(map3dDots, map3dDots, connected)
 
         elif event.type == pygame.MOUSEBUTTONUP:
             buttonDown = False

@@ -32,42 +32,43 @@ def connectionSocket(ip, port:int):
     s.connect((ip, port))
     return s
 
-def communicationClient(socketUser, instruccions="NAN", message="NAN"):
+def communicationClient(socketUser, instructions="NAN", message="NAN"):
     """
     :param socketUser:
-    :param instruccions: It could NAN, TOOLCHG, MOVE, PHOTO, TURN_OFF
-    :param message: any type of data to be sent
+    :param instructions: Puede ser NAN, TOOLCHG, MOVE, PHOTO, TURN_OFF
+    :param message: Cualquier tipo de dato para ser enviado
     :return:
     """
-    # data set to json
-    json_data = jsonSetUp(instruccions, message)
+    # Configurar los datos en formato JSON
+    json_data = jsonSetUp(instructions, message)
 
-
-    if instruccions == "MOVE" or instruccions == "TOOLCHG":
-        # sending data through TCP socket connection
+    if instructions == "MOVE" or instructions == "TOOLCHG":
+        # Enviar datos a través de la conexión TCP del socket
         print("Json data: ", json_data)
-        socketUser.send(json_data.encode())  # encode transform data to binary
+        socketUser.send(json_data.encode())  # Codificar para convertir los datos a binario
 
-    elif instruccions == "PHOTO":
-        # sending data through TCP socket connection
-        socketUser.send(json_data.encode())  # encode transform data to binary
+    elif instructions == "PHOTO":
+        # Enviar datos a través de la conexión TCP del socket
+        socketUser.send(json_data.encode())  # Codificar para convertir los datos a binario
 
         # Tamaño máximo de los datos a recibir en un solo bloque
         buffer_size = 1024
         # Variable para almacenar los datos recibidos
-        received_data = ""
-
-        # Recibir los datos en un bucle hasta que se complete la cadena JSON
+        received_data = b""  # Usar bytes en lugar de cadena para concatenar datos
+        it = 0
         while True:
             # Recibir datos del socket
-            data = socketUser.recv(buffer_size).decode()
-
-            # Si no se reciben más datos, salir del bucle
+            data = socketUser.recv(buffer_size)
+            print("Num de recv: ", it)
+            it += 1
             if not data:
                 break
 
             # Concatenar los datos recibidos
             received_data += data
+
+        # Decodificar la cadena completa de datos recibidos
+        received_data = received_data.decode()
 
         # Imprimir los datos recibidos
         print("Server data:", received_data)
