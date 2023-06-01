@@ -2,7 +2,7 @@ import pygame
 import numpy as np
 import math
 from tractament_imatges import img_to_3d_points
-DOT_COLOR = (255, 0, 0)
+DOT_COLOR = (255, 100, 127)
 width, height = 400, 300
 screen = pygame.display.set_mode((width, height))
 clock = pygame.time.Clock()
