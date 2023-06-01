@@ -1,34 +1,35 @@
+import numpy as np
 import pygame
 from tractament_imatges import img_to_3d_points
+from clientUser import *
 
 
+PORT=3389
+IP='34.172.166.240'
+
+
+# Creem la classe SpriteObject, la qual s'utilitza durant tota l'aplicació per tal de visualitzar i interactuar amb
+# els punts que es visualitzaran, ja siguin els punts 3D donats per l'algorisme SIFT implementat durant l'assignatura
+# de Visió per Computador com els punts dibuixats pel cirurgià.
 class SpriteObject(pygame.sprite.Sprite):
     def __init__(self, sprite_x, sprite_y, color, surf=5):
         super().__init__()
         self.surf = surf
         self.original_image = pygame.Surface((5, 5), pygame.SRCALPHA)
-        # self.original_image = pygame.Surface((self.surf, self.surf), pygame.SRCALPHA)
         pygame.draw.circle(self.original_image, color, (2.5, 2.5), 2)
-        # pygame.draw.circle(self.original_image, color, (self.surf/2., self.surf/2.), 2)
         self.hover_image = pygame.Surface((5, 5), pygame.SRCALPHA)
-        # self.hover_image = pygame.Surface((self.surf, self.surf), pygame.SRCALPHA)
         pygame.draw.circle(self.hover_image, color, (2.5, 2.5), 2)
-        # pygame.draw.circle(self.hover_image, color, (self.surf/2., self.surf/2.), 2)
         pygame.draw.circle(self.hover_image, (0, 255, 255), (2.5, 2.5), 2, 4)
-        # pygame.draw.circle(self.hover_image, (0, 255, 255), (self.surf/2., self.surf/2.), 2, 4)
         self.image = self.original_image
         self.rect = self.image.get_rect(center=(sprite_x, sprite_y))
         self.hover = False
         self.inLine = False  # Posem a True si està a la línia actual pintada. Posar a False en cas que es cliqui
         # el botó d'esborrar línia actual.
-
     def update(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_buttons = pygame.mouse.get_pressed()
-
         # self.hover = self.rect.collidepoint(mouse_pos)
         self.hover = self.rect.collidepoint(mouse_pos) and any(mouse_buttons)
-
         self.image = self.hover_image if self.hover else self.original_image
 
     def select(self):
@@ -74,18 +75,7 @@ buttonDown = False
 timerDown = 0
 
 saveCurrentLine = False
-
 cameraUsed = False
-
-"""
-SCALE = 10
-for obj in map3dDots:
-    obj.surf = SCALE
-    obj.original_image = pygame.transform.scale_by(obj.original_image, SCALE)
-    x = obj.rect.x * SCALE
-    y = obj.rect.y * SCALE - height
-    screen.blit(obj.original_image, (x, y))
-"""
 
 # PALETA DE COLORS:
 WHITE = (255, 255, 255)
@@ -94,8 +84,9 @@ RED = (255, 0, 0)
 ORANGE = (255, 140, 0)
 
 # Carregar imatges dels botons.
-image1 = pygame.image.load("img/app/bisturi3.jpg")
+image1 = pygame.image.load("img/app/bisturi.png")
 image2 = pygame.image.load("img/app/rotulador.png")
+image3 = pygame.image.load("img/app/apagar.png")
 
 
 # Función para mostrar texto en un botón
@@ -105,15 +96,6 @@ def draw_button_text(text, x, y):
     button_rect = button_text.get_rect()
     button_rect.center = (x, y)
     screen.blit(button_text, button_rect)
-
-
-def seleccionar_bisturi():
-    pass
-
-
-def seleccionar_rotulador():
-    pass
-
 
 def reset(map3dDots, entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList):
     # map3dDots.empty()  # Treure si no volem fer el reset de càmera
@@ -126,8 +108,11 @@ def reset(map3dDots, entireDrawLinePointsList, drawLinePoints, lineToDraw, point
     return map3dDots, entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList
 
 
-def realitzar_fotos(map3dDots):
-    pts3d = img_to_3d_points()
+def realitzar_fotos(map3dDotsList, conn=False):
+    if not conn:
+        pts3d = img_to_3d_points()
+    else:
+        pts3d = np.array(map3dDotsList)
     pts3d += 2
     pts3d *= 10
     map3dDots.empty()
@@ -139,6 +124,11 @@ def realitzar_fotos(map3dDots):
     return map3dDots
 
 
+connected = True
+try:
+    socket_conn = connectionSocket(IP, PORT)
+except ConnectionRefusedError:
+    connected = False
 # ===================================================
 #                    MAIN LOOP
 # ===================================================
@@ -149,8 +139,9 @@ while run:
     screen.fill((255, 255, 255))
 
     # Dibuixar botons d'imatges.
-    screen.blit(image1, (screen_width - 150, screen_height - 150))
-    screen.blit(image2, (screen_width - 150, screen_height - 300))
+    screen.blit(image1, (screen_width - 100, screen_height - 150))
+    screen.blit(image2, (screen_width - 100, screen_height - 250))
+    screen.blit(image3, (screen_width - 100, screen_height - 350))  # Apagar
 
     # Dibuixar botons de text.
     pygame.draw.rect(screen, RED, (screen_width - 150, screen_height - 450, 120, 40))  # Eliminar últim.
@@ -173,15 +164,26 @@ while run:
             buttonDown = True
             mouse_pos = pygame.mouse.get_pos()
             # Comprovar si s'ha fet clic en el primer botó d'imatge.
-            if screen_width - 150 <= mouse_pos[0] <= screen_width - 30 and screen_height - 150 <= mouse_pos[
-                1] <= screen_height - 30:
+            if screen_width - 100 <= mouse_pos[0] <= screen_width - 50 and screen_height - 150 <= mouse_pos[
+                1] <= screen_height - 100:
                 print("Primer botó clicat --> Seleccionar el bisturí.")
-                seleccionar_bisturi()
+                # Enviar al ROBOT ordre de canviar capçal
+                if connected:
+                    communicationClient(socket_conn, "TOOLCHG")
             # Comprovar si s'ha fet clic en el segon botó d'imatge.
-            elif screen_width - 150 <= mouse_pos[0] <= screen_width - 30 and screen_height - 300 <= mouse_pos[
-                1] <= screen_height - 180:
+            elif screen_width - 100 <= mouse_pos[0] <= screen_width - 50 and screen_height - 250 <= mouse_pos[
+                1] <= screen_height - 200:
                 print("Segon botó clicat --> Seleccionar el rotulador.")
-                seleccionar_rotulador()
+                # Enviar al ROBOT ordre de canviar capçal
+                if connected:
+                    communicationClient(socket_conn, "TOOLCHG")
+            elif screen_width - 100 <= mouse_pos[0] <= screen_width - 50 and screen_height - 350 <= mouse_pos[
+                1] <= screen_height - 300:
+                print("Tercer botó clicat --> Apagar")
+                # Enviar al ROBOT senyal per apagar-se i apagar també l'app
+                if connected:
+                    communicationClient(socket_conn, "TURN_OFF")
+                run = False
             # Comprovar si s'ha fet clic en el primer botó de text.
             # TODO. ELIMINAR ÚLTIM TRAÇ
             elif screen_width - 150 <= mouse_pos[0] <= screen_width - 30 and screen_height - 450 <= mouse_pos[
@@ -206,6 +208,10 @@ while run:
                     elem[1] = obj
                     pointsSentList.append(elem)
 
+                # Enviar els punts al ROBOT
+                if connected:
+                    communicationClient(socket_conn, "MOVE", pointsSentList)
+
             # Comprovar si s'ha fet clic en el tercer botó de text.
             # TODO. RESET
             elif screen_width - 150 <= mouse_pos[0] <= screen_width - 30 and screen_height - 650 <= mouse_pos[
@@ -217,7 +223,13 @@ while run:
             elif screen_width - 150 <= mouse_pos[0] <= screen_width - 30 and screen_height - 750 <= mouse_pos[
                 1] <= screen_height - 710 and not cameraUsed:
                 cameraUsed = True
-                map3dDots = realitzar_fotos(map3dDots)
+                # Enviar els punts al ROBOT
+                if connected:
+                    map3dDotsList = communicationClient(socket_conn, "PHOTO")
+                    map3dDots = realitzar_fotos(map3dDotsList, connected)
+
+                map3dDots = realitzar_fotos(map3dDots, connected)
+
         elif event.type == pygame.MOUSEBUTTONUP:
             buttonDown = False
 
