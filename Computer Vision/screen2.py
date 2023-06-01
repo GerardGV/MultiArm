@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 from tractament_imatges import img_to_3d_points
-from clientUser import *
+from cloud.clientUser import *
 
 
 PORT=3389
