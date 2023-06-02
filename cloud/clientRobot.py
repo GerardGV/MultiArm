@@ -110,14 +110,11 @@ def communicationRobot(socketUser):
 
             elif instruction == "TURN_OFF":
                 # robot turn off
-                json_data = jsonSetUp("NAN", "NAN")
-                print(json_data)
-
-                # sending data through TCP socket connection
-                socketUser.send(json_data.encode())  # encode transform data to binary
+                socketUser.close()
+                break
 
 
 if __name__ == '__main__':
+    # In case you want to test some new feature, use this main function
     socketClient = connectionSocket(IP, PORT)
-
     communicationRobot(socketClient)

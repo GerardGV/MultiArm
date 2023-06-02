@@ -41,8 +41,13 @@ while True:
     if data:
         dataUser = json.loads(data.decode())
 
-        #Shut dawn the server
+        #Shut down the server
         if dataUser["instruction"] == "TURN_OFF":
+            sockListenUser.close()
+            sockListenRobot.close()
+            socketConnListenUser.close()
+            socketConnListenRobot.send(data)# Sending data to turn off the robot
+            socketConnListenRobot.close()
             break
 
         socketConnListenRobot.send(data)
@@ -53,32 +58,30 @@ while True:
         if dataRobot:
             dictDataRobot = json.loads(dataRobot.decode())
             if dictDataRobot["message"] != "NAN":
+
                 # HERE CALL TO CLOUD FUNCIONS
                 params = {
                     'filename1': "image1.jpeg",
                     'filename2': "image2.jpeg"
                 }
+
+                #credentials to call the cloud function
                 credentials = service_account.IDTokenCredentials.from_service_account_file('credentials.json',
                                                                                            target_audience=URL)
-
                 authed_session = AuthorizedSession(credentials)
 
-                resp = authed_session.post(URL, params=params)  # , headers=headers (PARA LA PRIMERA FUNCIÓN)
+                #result of the cloud function
+                resp = authed_session.post(URL, params=params)
                 print(resp.status_code)
 
                 points3d = resp.json()
-                #print(type(points3d))
 
+                #getting 3D points list of the face, There are in a json file
                 dictDataRobot["message"] = points3d["pts3D"]
-                #print(type(dictDataRobot["message"]))
 
+                #Geration of the json string and sending to the User
                 jsonDataRobot = json.dumps(dictDataRobot)
-                #print(type(jsonDataRobot))
-                #print(jsonDataRobot)
                 socketConnListenUser.send(jsonDataRobot.encode())
-                socketConnListenUser.shutdown(socket.SHUT_WR)
-                #socketConnListenUser.send(dictDataRobot)
+                socketConnListenUser.shutdown(socket.SHUT_WR)#End of data sent signal
+
                 print("SENT TO USER")
-
-
-    #time.sleep(0.5)

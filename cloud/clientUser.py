@@ -7,12 +7,12 @@ IP='34.172.166.240'
 
 def jsonSetUp(instruction:str, message):
     """
-    :param instruction: It could NAN, TOOLCHG, MOVE, PHOTO
+    :param instruction: It could NAN, TOOLCHG, MOVE, PHOTO, TURN_OFF
     :param message: any type of data to transmit
     :return: json file with configured parameters
     """
 
-    #dictonary to create json file
+    # dictonary to create json file
     data = {
         "instruction": instruction,
         "message": message
@@ -35,15 +35,15 @@ def connectionSocket(ip, port:int):
 def communicationClient(socketUser, instructions="NAN", message="NAN"):
     """
     :param socketUser:
-    :param instructions: Puede ser NAN, TOOLCHG, MOVE, PHOTO, TURN_OFF
-    :param message: Cualquier tipo de dato para ser enviado
-    :return:
+    :param instructions: It can be NAN, TOOLCHG, MOVE, PHOTO, TURN_OFF
+    :param message: any type of data sent
+    :return: none or 3D pints list in case of PHOTO
     """
-    # Configurar los datos en formato JSON
+    # Json file creation
     json_data = jsonSetUp(instructions, message)
 
-    if instructions == "MOVE" or instructions == "TOOLCHG":
-        # Enviar datos a través de la conexión TCP del socket
+    if instructions == "MOVE" or instructions == "TOOLCHG" or instructions == "TURN_OFF":
+        # Sending json file through a Socket
         print("Json data: ", json_data)
         socketUser.send(json_data.encode())  # Codificar para convertir los datos a binario
 
@@ -51,48 +51,42 @@ def communicationClient(socketUser, instructions="NAN", message="NAN"):
         # Enviar datos a través de la conexión TCP del socket
         socketUser.send(json_data.encode())  # Codificar para convertir los datos a binario
 
-        # Tamaño máximo de los datos a recibir en un solo bloque
+        # How much data it gets from the socket
         buffer_size = 1024
-        # Variable para almacenar los datos recibidos
-        received_data = b""  # Usar bytes en lugar de cadena para concatenar datos
-        it = 0
+
+        received_data = b""  # Data it is going to be received as bytes
+
         while True:
-            # Recibir datos del socket
+            # Receive data from socket connection
             data = socketUser.recv(buffer_size)
-            print("Num de recv: ", it)
-            it += 1
+
             if not data:
                 break
-
-            # Concatenar los datos recibidos
+            # Data concatenation
             received_data += data
 
-        # Decodificar la cadena completa de datos recibidos
+        # Getting data from binary
         received_data = received_data.decode()
 
-        # Imprimir los datos recibidos
         print("Server data:", received_data)
 
         try:
-            # Decodificar la cadena JSON
+            # Json string decode
             jsonData = json.loads(received_data)
 
-            # Acceder al valor "message"
             print("jsonData['message']:", jsonData["message"])
 
-            return jsonData["message"]
+            return jsonData["message"] #returning 3D points of the face, there are inside "message" in json file
 
         except json.JSONDecodeError as e:
             print("JSONDecodeError:", str(e))
             return None
 
+    return None
 
 
 if __name__ == '__main__':
+    #In case you want to test some new feature, use this main function
+    pass
 
-    socketClient=connectionSocket(IP, PORT)
-    pointsList=[[1,2,3], [2,3,4],[2,2,2]]
-    jsonDataMessage = communicationClient(socketClient, instruccions="PHOTO")
-    print("MAIN: JsonData['message']: ", jsonDataMessage)
-    print("MAIN: type(JsonData['message']): ", type(jsonDataMessage))
 
