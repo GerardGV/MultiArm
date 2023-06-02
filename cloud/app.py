@@ -1,14 +1,19 @@
 import numpy as np
 import pygame
 from tractament_imatges import img_to_3d_points
-from cloud.clientUser import *
+from clientUser import *
 
+# Port i ip externa de la màquina virtual (que executa el servidor)
+PORT = 3389
+IP = '34.172.166.240'
 
-PORT=3389
-IP='34.172.166.240'
+# PALETA DE COLORS:
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+ORANGE = (255, 140, 0)
 
-
-# Creem la classe SpriteObject, la qual s'utilitza durant tota l'aplicació per tal de visualitzar i interactuar amb
+# Creem la classe SpriteObject, la qual s'utilitza durant tota l'aplicació per a visualitzar i interactuar amb
 # els punts que es visualitzaran, ja siguin els punts 3D donats per l'algorisme SIFT implementat durant l'assignatura
 # de Visió per Computador com els punts dibuixats pel cirurgià.
 class SpriteObject(pygame.sprite.Sprite):
@@ -25,6 +30,7 @@ class SpriteObject(pygame.sprite.Sprite):
         self.hover = False
         self.inLine = False  # Posem a True si està a la línia actual pintada. Posar a False en cas que es cliqui
         # el botó d'esborrar línia actual.
+
     def update(self):
         mouse_pos = pygame.mouse.get_pos()
         mouse_buttons = pygame.mouse.get_pressed()
@@ -38,76 +44,20 @@ class SpriteObject(pygame.sprite.Sprite):
     def unselect(self):
         self.inLine = False
 
+    # Eliminar el/s punt/s que es trobin en les coordenades x, y de la pantalla.
     def die(self, x, y):
         for lastLineDot in lineToDraw:
             if lastLineDot.rect.x == x and lastLineDot.rect.y == y:
                 lineToDraw.remove(lastLineDot)
 
 
+# Convertir els punts del mapa de punts 3D a punts 2D per tal de poder-los visualitzar per pantalla
 def convert_to_2d(point=[0, 0, 0]):
     return [point[0] * (point[2] * .3), point[1] * (point[2] * .3)]
 
-
-pygame.init()
-screen_width, screen_height = 800, 800
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("MultiArm")
-clock = pygame.time.Clock()
-
-sprite_object = SpriteObject(*screen.get_rect().center, (128, 128, 0))
-
-# TODO. Inicialitzar variables:
-map3dDots = pygame.sprite.Group()
-entireDrawLinePointsList = []
-drawLinePoints = []  # Aqui guardarem la llista de punts per dibuixar
-lineToDraw = pygame.sprite.Group()
-
-pointsSent = pygame.sprite.Group()
-pointsSentList = []
-
-"""Check stillCounting and mouseClickTimer functionality.
-IDEA: When a dot (mapDot) is clicked, we select it and add to the lineToDraw group.
-If we click it again, we should be able to erease it and unselect the mapDot (mapDot.unselect()) to be able to
- select again later. Some time should be given between actions."""
-stillCounting = False
-mouseClickTimer = 0
-buttonDown = False
-timerDown = 0
-
-saveCurrentLine = False
-cameraUsed = False
-
-# PALETA DE COLORS:
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-ORANGE = (255, 140, 0)
-
-# Carregar imatges dels botons.
-image1 = pygame.image.load("img/app/bisturi.png")
-image2 = pygame.image.load("img/app/rotulador.png")
-image3 = pygame.image.load("img/app/apagar.png")
-
-
-# Función para mostrar texto en un botón
-def draw_button_text(text, x, y):
-    font = pygame.font.SysFont(None, 24)
-    button_text = font.render(text, True, BLACK)
-    button_rect = button_text.get_rect()
-    button_rect.center = (x, y)
-    screen.blit(button_text, button_rect)
-
-def reset(map3dDots, entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList):
-    # map3dDots.empty()  # Treure si no volem fer el reset de càmera
-    lineToDraw.empty()
-    pointsSent.empty()
-
-    entireDrawLinePointsList = []  # Treure si no volem fer el reset de càmera.
-    drawLinePoints = []  # Aqui guardarem la llista de punts per dibuixar
-    pointsSentList = []
-    return map3dDots, entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList
-
-
+# Demana al servidor (que demana al robot) el càlcul, mitjançant Visió per Computador, dels punts 3D. En el cas de
+# que el servidor es trobi inoperatiu, s'utilitzarà el codi implementat en local (equivalent al que tenim al cloud)
+# per tal de poder realitzar proves i un test genèric de l'aplicació.
 def realitzar_fotos(map3dDots, map3dDotsList, conn=False):
     if not conn:
         pts3d = img_to_3d_points()
@@ -123,10 +73,57 @@ def realitzar_fotos(map3dDots, map3dDotsList, conn=False):
     return map3dDots
 
 
+# Funció per a mostrar text en un botó
+def draw_button_text(text, x, y):
+    font = pygame.font.SysFont(None, 24)
+    button_text = font.render(text, True, BLACK)
+    button_rect = button_text.get_rect()
+    button_rect.center = (x, y)
+    screen.blit(button_text, button_rect)
+
+
+def reset(entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList):
+    lineToDraw.empty()
+    pointsSent.empty()
+    entireDrawLinePointsList = []  # Es guarden tots els punts dibuixats per l'usuari
+    drawLinePoints = []  # Aqui guardarem la llista de punts per dibuixar
+    pointsSentList = []  # En aquesta llista van els punts que s'envien
+    return entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList
+
+
+# TODO Començament del programa principal, iniciem l'entorn de pygame les diverses variables.
+pygame.init()
+screen_width, screen_height = 800, 800
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("MultiArm")
+clock = pygame.time.Clock()
+
+# TODO. Inicialitzar variables:
+map3dDots = pygame.sprite.Group()
+entireDrawLinePointsList = []
+drawLinePoints = []  # Aqui guardarem la llista de punts per dibuixar
+lineToDraw = pygame.sprite.Group()
+pointsSent = pygame.sprite.Group()
+pointsSentList = []
+
+# Inicialització de les variables abans del bucle principal.
+mouseClickTimer = 0
+buttonDown = False
+timerDown = 0
+cameraUsed = False
+
+# Carregar imatges dels botons.
+image1 = pygame.image.load("img/app/bisturi.png")
+image2 = pygame.image.load("img/app/rotulador.png")
+image3 = pygame.image.load("img/app/apagar.png")
+
+# Realitzar connexió amb el servidor
 connected = True
 try:
     socket_conn = connectionSocket(IP, PORT)
+    print("Connexió amb el servidor realitzada correctament")
 except ConnectionRefusedError:
+    print("Connexió amb el servidor fallada. Començant execució de proves locals . . .")
     connected = False
 # ===================================================
 #                    MAIN LOOP
@@ -135,7 +132,9 @@ except ConnectionRefusedError:
 run = True
 while run:
     clock.tick(60)
-    screen.fill((255, 255, 255))
+    # Omplir la pantalla de blanc (per tant, el primer que es fa és dibuixar la pantalla en blanc on hi
+    # visualitzarem després la resta de components.
+    screen.fill(WHITE)
 
     # Dibuixar botons d'imatges.
     screen.blit(image1, (screen_width - 100, screen_height - 150))
@@ -146,20 +145,20 @@ while run:
     pygame.draw.rect(screen, RED, (screen_width - 150, screen_height - 450, 120, 40))  # Eliminar últim.
     pygame.draw.rect(screen, RED, (screen_width - 150, screen_height - 550, 120, 40))  # Enviar
     pygame.draw.rect(screen, RED, (screen_width - 150, screen_height - 650, 120, 40))  # Reset
-    if not cameraUsed:
+    if not cameraUsed:  # Si encara no hem fet servir el botó de la càmera, el mostrem
         pygame.draw.rect(screen, RED, (screen_width - 150, screen_height - 750, 120, 40))  # Càmera
 
-    # Mostrar texto en los botones de texto
+    # Mostrar text en els botons de text
     draw_button_text("Eliminar últim", screen_width - 90, screen_height - 430)
     draw_button_text("Enviar", screen_width - 90, screen_height - 530)
     draw_button_text("Reset", screen_width - 90, screen_height - 630)
-    if not cameraUsed:
+    if not cameraUsed:  # Si encara no hem fet servir el botó de la càmera mostrarem el text a sobre del botó.
         draw_button_text("Càmera", screen_width - 90, screen_height - 730)  # Càmera
-
+    # Control de tots els esdeveniments que passen cada frame
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT:  # Si es tanca l'aplicació (creu vermella), s'atura el programa.
             run = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == pygame.MOUSEBUTTONDOWN:  # Si es clica el botó del ratolí, mirem si s'ha clicat un botó.
             buttonDown = True
             mouse_pos = pygame.mouse.get_pos()
             # Comprovar si s'ha fet clic en el primer botó d'imatge.
@@ -206,8 +205,9 @@ while run:
                     pointsSent.add(obj)
                     elem[1].kill()
                     elem[1] = obj
-                    pointsSentList.append(elem)
+                    # pointsSentList.append(elem)
                     sendToSocket.append([elem[0][0], elem[0][1], 27])
+                    pointsSentList.append(sendToSocket)
 
                 # Enviar els punts al ROBOT
                 if connected:
@@ -219,16 +219,16 @@ while run:
             # TODO. RESET
             elif screen_width - 150 <= mouse_pos[0] <= screen_width - 30 and screen_height - 650 <= mouse_pos[
                 1] <= screen_height - 610:
-                print("WIP, podria fer un reset, borrant tot menys el núvol de punts.")
-                map3dDots, entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList = reset(
-                    map3dDots, entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList)
+                print("Borrant tot menys el núvol de punts.")
+                entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList = reset(
+                    entireDrawLinePointsList, drawLinePoints, lineToDraw, pointsSent, pointsSentList)
             # TODO. CÀMERA
             elif screen_width - 150 <= mouse_pos[0] <= screen_width - 30 and screen_height - 750 <= mouse_pos[
                 1] <= screen_height - 710 and not cameraUsed:
                 cameraUsed = True
                 # Enviar els punts al ROBOT
                 if connected:
-                    print("Pido fotso")
+                    print("Pido fotos.")
                     map3dDotsList = communicationClient(socket_conn, "PHOTO")
                     print("Rebent punts 3D . . .")
                     map3dDots = realitzar_fotos(map3dDots, map3dDotsList, connected)
@@ -253,14 +253,15 @@ while run:
         elif len(drawLinePoints) > 1:
             entireDrawLinePointsList.append(drawLinePoints)
             drawLinePoints = []
+            # Mostrar el nombre de traçades guardades fins al moment.
             print("Guardat!! Len entireDrawLinePointsList: ", len(entireDrawLinePointsList))
 
-    if timerDown >= 0:
+    if timerDown >= 0:  # Timer del button down.
         timerDown -= 1
         # print(timerDown)
 
     if mouseClickTimer >= 0:
-        mouseClickTimer -= 1  # Timer en el qual comptarem
+        mouseClickTimer -= 1  # Timer en el qual comptarem un temps fins que afectin els clicks (per tal de separar-los)
 
     map3dDots.draw(screen)  # Dibuixar els punts del mapa de punts 3D.
     lineToDraw.draw(screen)  # Dibuixar els punts seleccionats com a lineToDraw.
@@ -282,106 +283,15 @@ while run:
         y_fin_act = drawLinePoints[i + 1][0][1]
         pygame.draw.line(screen, (0, 0, 0), (x_ini_act, y_ini_act), (x_fin_act, y_fin_act), 2)
 
-    for i, item in enumerate(pointsSentList):
-        if i < len(pointsSentList) - 1:
-            next_item = pointsSentList[i + 1]
-        else:
-            # next_item = None
-            break
-        x_ini_sent = item[0][0]
-        y_ini_sent = item[0][1]
-        x_fin_sent = next_item[0][0]
-        y_fin_sent = next_item[0][1]
-        pygame.draw.line(screen, ORANGE, (x_ini_sent, y_ini_sent), (x_fin_sent, y_fin_sent), 2)
-
+    # Dibuixar la línia dels punts enviats per tal de verificar que s'han enviat correctament.
+    for sent in pointsSentList:
+        for i in range(len(sent) - 1):
+            x_ini_sent = sent[i][0]
+            y_ini_sent = sent[i][1]
+            x_fin_sent = sent[i + 1][0]
+            y_fin_sent = sent[i + 1][1]
+            pygame.draw.line(screen, ORANGE, (x_ini_sent, y_ini_sent), (x_fin_sent, y_fin_sent), 2)
     pygame.display.flip()  # Per només actualitzar una part de la pantalla en comptes de tota cada vegada.
 
 pygame.quit()
 exit()
-
-
-"""
-def main_loop():
-    run = True
-    while run:
-        clock.tick(60)
-        screen.fill((255, 255, 255))
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                print("MOUSE BUTTON DOWN DETECTED")
-                # buttonDown = True
-                mouseClickTimer = 5
-                stillCounting = True
-            elif event.type == pygame.MOUSEBUTTONUP and len(drawLinePoints) > 1:
-                saveCurrentLine = True
-                # sleep(0.2)  # Sleep per evitar que al realitzar una nova traçada, el primer punt s'enllaci amb l'últim de
-                # l'anterior.
-            elif pygame.mouse.get_pressed()[0]:
-                try:
-                    buttonDown = True
-                except AttributeError:
-                    pass
-
-        map3dDots.update()
-        for mapDot in map3dDots:
-            if mapDot.hover and mapDot.inLine and mouseClickTimer > 0:
-                mapDot.unselect()
-                print("mapDot UNSELECTED")
-            elif mapDot.hover and not mapDot.inLine and mouseClickTimer <= 0:
-                print("mapDot.hover detected AFTER update")
-                print("Pos: ", mapDot.rect)
-                print("Before mapDot.inLine: ", mapDot.inLine)
-                mapDot.select()
-                print("AFTER mapDot.inLine: ", mapDot.inLine)
-                print("Pos --> (x, y) = (", mapDot.rect[0], ", ", mapDot.rect[1], ").")
-                drawLinePoints.append((mapDot.rect[0], mapDot.rect[1]))
-                lineDot = SpriteObject(mapDot.rect[0] + 2.25, mapDot.rect[1] + 2.25, (0, 0, 0))
-                lineToDraw.add(lineDot)
-            elif buttonDown and timerDown <= 0:
-                print("Pos Ratolí --> (x, y) = (", mapDot.rect[0], ", ", mapDot.rect[1], ").")
-                drawLinePoints.append((pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]))
-                lineDot = SpriteObject(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], (0, 0, 0))
-                lineToDraw.add(lineDot)
-                buttonDown = False
-                timerDown = 5
-        if timerDown >= 0:
-            timerDown -= 1
-            print(timerDown)
-        map3dDots.draw(screen)  # Dibuixar els punts del mapa de punts 3D.
-        lineToDraw.draw(screen)  # Dibuixar els punts seleccionats com a lineToDraw.
-
-        # Dibuixar totes les línies ja guardades:
-        for traçada in entireDrawLinePointsList:
-            for i in range(len(traçada) - 1):
-                x_fin = traçada[i + 1][0]
-                y_fin = traçada[i + 1][1]
-                x_ini = traçada[i][0]
-                y_ini = traçada[i][1]
-                pygame.draw.line(screen, (0, 255, 0), (x_ini, y_ini), (x_fin, y_fin), 2)
-
-        # Dibuixar la línia o traçada actual
-        for i in range(len(drawLinePoints) - 1):
-            x_ini = drawLinePoints[i][0]
-            y_ini = drawLinePoints[i][1]
-            x_fin = drawLinePoints[i + 1][0]
-            y_fin = drawLinePoints[i + 1][1]
-            pygame.draw.line(screen, (0, 0, 0), (x_ini, y_ini), (x_fin, y_fin), 2)
-
-        pygame.display.flip()  # Per només actualitzar una part de la pantalla en comptes de tota cada vegada.
-
-        if saveCurrentLine:
-            saveCurrentLine = False
-            entireDrawLinePointsList.append(drawLinePoints)
-            drawLinePoints = []
-            print("Guardat!! Len entireDrawLinePointsList: ", len(entireDrawLinePointsList))
-
-        if stillCounting:
-            mouseClickTimer -= 1  # Timer en el qual comptarem
-            if mouseClickTimer <= 0:
-                stillCounting = False
-
-    pygame.quit()
-    exit()
-"""
