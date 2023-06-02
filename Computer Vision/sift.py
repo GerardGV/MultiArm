@@ -393,7 +393,7 @@ def determinateKeypoints2(img:np.array, k:float, mode:str, max_scale:int, num_oc
                                 if np.count_nonzero(subMatriz == DoG[scaleDoG][i, j]) == 1:
                                     keyPoints.append(((0, 1), (i, j)))  # añadimos en que scala se encuentra para luego las orientaciones, sabemos que si es la DoG 1, estara entre las escalas 0 y 2
 
-        # se reduce la resolucion a la mitad de la octava anterior, para esto se necesita mantener la informacion original, img
+        # se reduce la resolucion a la mitad de la octava anterior, para esto se necesita mantener la informacion original, imgFaces
         # se subtituye los valores de los pixeles de n columnas, cada octava tiene la mitad de innfromacion de la aterior,
         # esto significa el doble de columnas son subtituidas en cada octava
         imgCopy[:, 1::pow(2, ocatavActual + 1)] = img[:, 0::pow(2, ocatavActual + 1)]
@@ -456,7 +456,7 @@ def determinateKeypoints(img:np.array, k:float, mode:str, max_scale:int, num_oca
             nuevaSigma *= pow(k, exponenteK+1)
 
 
-        #se reduce la resolucion a la mitad de la octava anterior, para esto se necesita mantener la informacion original, img
+        #se reduce la resolucion a la mitad de la octava anterior, para esto se necesita mantener la informacion original, imgFaces
         #se subtituye los valores de los pixeles de n columnas, cada octava tiene la mitad de innfromacion de la aterior,
         #esto significa el doble de columnas son subtituidas en cada octava
         imgCopy[:, 1::pow(2, ocatavActual+1)]=img[:, 0::pow(2, ocatavActual+1)]
@@ -503,7 +503,7 @@ def sift(img: np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4, kernelS
     print(time.time() - t0)
 
     #t0=time.time()
-    #keyPoints2, scales2 = determinateKeypoints2(img, k, mode, max_scale, num_ocatavas, kernelSize)
+    #keyPoints2, scales2 = determinateKeypoints2(imgFaces, k, mode, max_scale, num_ocatavas, kernelSize)
     #print(time.time()-t0)
 
     #reducir los outliers en los keypoints
@@ -517,7 +517,7 @@ def sift(img: np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4, kernelS
 
 if __name__ == '__main__':
 
-    folder = 'Computer Vision/img/base/'
+    folder = 'Computer Vision/imgFaces/base/'
 
     # cargamos los nombres de las imagenes
     image_names = load_images_from_folder(folder)

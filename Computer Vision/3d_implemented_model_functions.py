@@ -31,8 +31,8 @@ def load_images_from_folder(folder):
 
 # Donats dos noms d'imatges, les llegeix, retorna i retorna un frame amb les dues imatges concatenades i les visualitza
 # per tal de veure amb quines imatges treballarem en aquesta iteració.
-def load_and_plot_images(image_name1="/img/base/img1_1_glasses_openEyes_Pol.jpeg",
-                         image_name2="/img/base/img1_2_glasses_openEyes_Pol.jpeg"):
+def load_and_plot_images(image_name1="/imgFaces/base/img1_1_glasses_openEyes_Pol.jpeg",
+                         image_name2="/imgFaces/base/img1_2_glasses_openEyes_Pol.jpeg"):
     img1 = cv2.imread(image_name1)
     img2 = cv2.imread(image_name2)
 
@@ -313,7 +313,7 @@ def camera_internals_if_we_DONT_know_K(img1):
 # l'hora de realitzar les fotografies.
 def estimate_camera_pose_and_draw(img1, img2, method="sift"):
     F, mask, final_frame_RANSAC, pts1, pts2 = full_ransac_estimation(img1, img2, method)
-    cv2.imwrite('img/exports/final_frame_RANSAC.jpeg', final_frame_RANSAC)
+    cv2.imwrite('imgFaces/exports/final_frame_RANSAC.jpeg', final_frame_RANSAC)
 
     print("Número matches/punts després de full RANSAC: ", len(pts1))
     K = camera_internals_if_we_DONT_know_K(img1)
@@ -337,7 +337,7 @@ def estimate_camera_pose_and_draw(img1, img2, method="sift"):
             plotCamera(np.eye(3, 3), np.zeros((3,)), axs[i, j])
             plotCamera(R_, t_[:, 0], axs[i, j])
             count += 1
-    plt.savefig("img/exports/configsPossibles.png")
+    plt.savefig("imgFaces/exports/configsPossibles.png")
     plt.show()
     return E, pts1, pts2, K
 
@@ -354,7 +354,7 @@ def checkForCheiralityCondition(E, pts1, pts2, K):
 
     plotCamera(np.eye(3, 3), np.zeros((3,)), ax)
     plotCamera(R, t[:, 0], ax)
-    plt.savefig("img/exports/confCameraTriada.png")
+    plt.savefig("imgFaces/exports/confCameraTriada.png")
     plt.show()
     return R, t
 
@@ -628,8 +628,8 @@ def fundamental_matrix_find_kp_and_match_ORB(img1, img2):
     print("Time ORB: ", time.time() - start_orb)
     print("Keypoints 1 ORB: ", len(keypt1))
     print("Keypoints 2 ORB: ", len(keypt2))
-    showKeyPoints(img1, keypt1, 'img/exports/', 'orb_img1_keypoints.jpeg')
-    showKeyPoints(img2, keypt2, 'img/exports/', 'orb_img2_keypoints.jpeg')
+    showKeyPoints(img1, keypt1, 'imgFaces/exports/', 'orb_img1_keypoints.jpeg')
+    showKeyPoints(img2, keypt2, 'imgFaces/exports/', 'orb_img2_keypoints.jpeg')
     # FLANN parameters:
     FLANN_INDEX_LSH = 6
     index_params = dict(algorithm=FLANN_INDEX_LSH,
@@ -676,7 +676,7 @@ def harrisImplementation(inputFolder, img_name, expFolder):
 
     # Results are marked through the dilated corners
     dest = cv2.dilate(dest, None)
-    print("Longitud de dest Harris img -> ", img_name, ": ", len(dest))
+    print("Longitud de dest Harris imgFaces -> ", img_name, ": ", len(dest))
     temp = dest > 0.01 * dest.max()
     print("Operació rara: ", np.count_nonzero(temp))
     # Reverting back to the original image,
@@ -684,7 +684,7 @@ def harrisImplementation(inputFolder, img_name, expFolder):
     temp = image
     image[dest > 0.01 * dest.max()] = [0, 0, 255]
     resta = image[:,:, 2] - temp[:,:,2]
-    print("Resta img: ",(image.shape[0] * image.shape[1]) - (np.count_nonzero(image[:,:,2] -255)))
+    print("Resta imgFaces: ",(image.shape[0] * image.shape[1]) - (np.count_nonzero(image[:,:,2] -255)))
     cv2.imwrite(expFolder + img_name, image)
     # the window showing output image with corners
     cv2.imshow('Image with Borders', image)
@@ -703,8 +703,8 @@ def showKeyPoints(img, keypoints, expfolder, im_name):
 
 if __name__ == '__main__':
     print('Starting...')
-    folder = 'img/base/'
-    expFolder = 'img/exports/'
+    folder = 'imgFaces/base/'
+    expFolder = 'imgFaces/exports/'
     method = "sift"
     image_names = load_images_from_folder(folder)
     print(image_names)

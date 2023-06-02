@@ -16,8 +16,8 @@ projectionMatrix = np.matrix([[height/2, 0, width/2],
                              [0, height/2, height/2]])
 
 #load button images
-start_img = pygame.image.load('img/base/img08_V2_1_face_Pol_sense_sostre.jpeg').convert_alpha()
-exit_img = pygame.image.load('img/base/img08_V2_2_face_Pol_sense_sostre.jpeg').convert_alpha()
+start_img = pygame.image.load('imgFaces/base/img08_V2_1_face_Pol_sense_sostre.jpeg').convert_alpha()
+exit_img = pygame.image.load('imgFaces/base/img08_V2_2_face_Pol_sense_sostre.jpeg').convert_alpha()
 
 #create button instances
 #start_button = button.Button(600, 360, start_img, 0.5)
