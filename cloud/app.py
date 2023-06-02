@@ -12,6 +12,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 ORANGE = (255, 140, 0)
+GREEN = (0, 255, 0)
 
 # Creem la classe SpriteObject, la qual s'utilitza durant tota l'aplicació per a visualitzar i interactuar amb
 # els punts que es visualitzaran, ja siguin els punts 3D donats per l'algorisme SIFT implementat durant l'assignatura
@@ -68,7 +69,7 @@ def realitzar_fotos(map3dDots, map3dDotsList, conn=False):
     for pt in pts3d:
         pt2d = convert_to_2d([pt[0], pt[1], pt[2]])
         # dot = SpriteObject(screen.get_width() // 3, screen.get_height() // 3, (255, 0, 0))
-        dot = SpriteObject(pt2d[0], pt2d[1], (255, 0, 0))
+        dot = SpriteObject(pt2d[0], pt2d[1], RED)
         map3dDots.add(dot)
     return map3dDots
 
@@ -273,7 +274,7 @@ while run:
             y_ini_tra = traçada[i][0][1]
             x_fin_tra = traçada[i + 1][0][0]
             y_fin_tra = traçada[i + 1][0][1]
-            pygame.draw.line(screen, (0, 255, 0), (x_ini_tra, y_ini_tra), (x_fin_tra, y_fin_tra), 2)
+            pygame.draw.line(screen, GREEN, (x_ini_tra, y_ini_tra), (x_fin_tra, y_fin_tra), 2)
 
     # Dibuixar la línia o traçada actual
     for i in range(len(drawLinePoints) - 1):
