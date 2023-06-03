@@ -54,7 +54,7 @@ terminal en realitzar les diverses accions.
 
     <img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
 
-3. **Clicar el botó "Càmera"**. <img src="imgFaces/imgREADME/camera_button.png" alt= "Camera button"  />  
+3. **Clicar el botó "Càmera"**. <br/> <img src="imgFaces/imgREADME/camera_button.png" alt= "Camera button"  />  
 Aquest botó envia una petició al servidor per a obtenir el núvol de punts 3D de la cara del pacient. Aleshores el 
 servidor envia al clientRobot l'ordre de realitzar fotos, que fa que el robot faci dues fotografies i les guardi al
 Buket, a continuació, la Cloud Function agafa aquestes dues imatges i começa tots els càlculs de la part de Visió per 
@@ -66,10 +66,20 @@ D'aquesta manera, es carreguen els punts 3D i es visualitza d'una manera similar
 4. **Dibuixar un traç**. A continuació, mitjançant el ratolí es poden dibuixar diferents traçades.  
 <img src="imgFaces/imgREADME/drawing.png" alt= "App: Drawing example"> &nbsp;&nbsp;&nbsp;&nbsp; <img src="imgFaces/imgREADME/drawingDone.png" alt= "App: Drawing Done" style="height:202px;" >
 5. **Eliminar l'últim traç**. En cas d'equivocació, es permet esborrar l'últim traç dibuixat utilitzant el botó "Eliminar últim":
-<img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/>  
-A continuació mostrarem diverses traçades per tal de veure què passa al clicar el botó.  
-6. 
-6. Enviar
+<br/> <img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/>  
+A continuació mostrarem diverses traçades per tal de veure què passa en clicar el botó.
+<img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/> &nbsp;&nbsp;&nbsp;&nbsp; <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;" >  
+Tal com es pot veure en les imatges anteriors, s'ha eliminat l'últim traç referent a la 'M'. Cal tenir en compte, que si es torna a clicar el botó, s'esborraria la 'R', després la 'A' i així succesivament.
+Aquest botó no realitza cap petició al servidor, perquè simplement es tracta d'una funcionalitat extra de la mateixa App.
+6. **Enviar**. Un cop s'estigui segur de que l'última traçada és correcta i és la que volem que el robot realitzi, 
+aleshores es pot clicar el botó "Enviar":
+<br/> <img src="imgFaces/imgREADME/enviar_button.png" alt= "Botó enviar">  <br/>
+Mitjançant aquest botó, si de la imatge anterior en la qual hem eliminat la 'M' que es veia malament, tornéssim a dibuixar una 'M' que ens sembli correcta i vulguem enviar, al clicar el botó enviar es veuria així:
+<br/><img src="imgFaces/imgREADME/drawingSent.png" alt= "Drawing when button send is clicked."/>  
+<br/> En aquest cas, l'aplicació ens indica mitjançant la línia taronja, que aquell traç s'ha enviat. El que realitza per darrere l'aplicació és:
+Tracta els punts, els envia al servidor indicant la instrucció d'enviar, el servidor rep la instrucció i l'envia al clientRobot que finalment l'envia al robot físic que és el que es mourà als punts per tal de replicar 
+la traçada realitzada des de l'aplicació.
+
 
 
 <h1 id="castellano">Test </h1>
