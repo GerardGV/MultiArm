@@ -212,7 +212,7 @@ while run:
 
                 # Enviar els punts al ROBOT
                 if connected:
-                    print("Exemple de punts enviats: ", sendToSocket)
+                    print("Punts enviats: ", sendToSocket)
                     communicationClient(socket_conn, "MOVE", sendToSocket)
                     print("Punts enviats finalment . . .")
 
