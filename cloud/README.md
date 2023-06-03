@@ -7,7 +7,7 @@
 * <a href="#catala">Català</a>
 * <a href="#castellano">Castellano</a>
 * <a href="#english">English</a>
-
+---
 <h1 id="catala"> Sistemes Multimèdia - Projecte al Cloud </h1>
 Per a la realització del nostre projecte de Sistemes Multimèdia, hem volgut realitzar una integració amb els nostres 
 projectes de Robòtica (RLP) i Visió per Computador (VC).
@@ -51,8 +51,12 @@ de l'usuari com del robot.
 succeeix és perquè el primer pas `1.` no s'ha realitzat correctament. En aquest cas, es realitzarà una execució local 
 per tal de provar l'aplicació, però no es podràn realitzar verificacions més enllà dels `prints` que es veuran pel 
 terminal en realitzar les diverses accions. 
-<div style="display:flex; justify-content:center; align-items:center; height:200px;">
-<img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="height:200px; width:auto; margin:auto;"/>
+
+<div style="text-align:center;">
+  <figure>
+    <img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="max-height:200px; width:auto;">
+    <figcaption>Al abrir la app se debería ver así.</figcaption>
+  </figure>
 </div>
 3. **Clicar el botó "Càmera"**.
 
