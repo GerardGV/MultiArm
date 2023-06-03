@@ -52,12 +52,9 @@ succeeix és perquè el primer pas `1.` no s'ha realitzat correctament. En aques
 per tal de provar l'aplicació, però no es podràn realitzar verificacions més enllà dels `prints` que es veuran pel 
 terminal en realitzar les diverses accions. 
 
-<table>
-  <tr>
-    <td align="center">
-    <img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="max-height:200px; width:auto;">    </td>
-  </tr>
-</table>
+<div style="display: flex; justify-content: center;">
+    <img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="max-height:200px; width:auto;">
+</div>
 
 3. **Clicar el botó "Càmera"**.
 
