@@ -58,6 +58,10 @@ terminal en realitzar les diverses accions.
     <figcaption>Al abrir la app se debería ver así.</figcaption>
   </figure>
 </div>
+
+<div style="text-align: center;">
+  <img width="460" height="300" src="https://picsum.photos/460/300">
+</div>
 3. **Clicar el botó "Càmera"**.
 
 
