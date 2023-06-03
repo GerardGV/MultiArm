@@ -64,7 +64,13 @@ D'aquesta manera, es carreguen els punts 3D i es visualitza d'una manera similar
 <img src="imgFaces/imgREADME/camera_clicked.png" alt= "Camera clicked, 3d dotmap visualized" style="height:200px; width: auto; " />
 
 4. **Dibuixar un traç**. A continuació, mitjançant el ratolí es poden dibuixar diferents traçades.  
-<img src="imgFaces/imgREADME/drawing.png" alt= "App: Drawing example"> <img src="imgFaces/imgREADME/drawingDone.png" alt= "App: Drawing Done">  
+<img src="imgFaces/imgREADME/drawing.png" alt= "App: Drawing example"> &nbsp;&nbsp;&nbsp;&nbsp; <img src="imgFaces/imgREADME/drawingDone.png" alt= "App: Drawing Done" style="height:202px;" >
+5. **Eliminar l'últim traç**. En cas d'equivocació, es permet esborrar l'últim traç dibuixat utilitzant el botó "Eliminar últim":
+<img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/>  
+A continuació mostrarem diverses traçades per tal de veure què passa al clicar el botó.  
+6. 
+6. Enviar
+
 
 <h1 id="castellano">Test </h1>
 
