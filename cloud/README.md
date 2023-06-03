@@ -52,10 +52,19 @@ succeeix és perquè el primer pas `1.` no s'ha realitzat correctament. En aques
 per tal de provar l'aplicació, però no es podràn realitzar verificacions més enllà dels `prints` que es veuran pel 
 terminal en realitzar les diverses accions. 
 
-    <img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="height:200px; width: auto; horiz-align: center" />
+    <img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
 
-3. **Clicar el botó "Càmera"**.
+3. **Clicar el botó "Càmera"**. <img src="imgFaces/imgREADME/camera_button.png" alt= "Camera button"  />  
+Aquest botó envia una petició al servidor per a obtenir el núvol de punts 3D de la cara del pacient. Aleshores el 
+servidor envia al clientRobot l'ordre de realitzar fotos, que fa que el robot faci dues fotografies i les guardi al
+Buket, a continuació, la Cloud Function agafa aquestes dues imatges i começa tots els càlculs de la part de Visió per 
+Computador i retorna el núvol de punts al servidor i aquest ho fa a l'aplicació.
 
+D'aquesta manera, es carreguen els punts 3D i es visualitza d'una manera similar a aquesta:  
+<img src="imgFaces/imgREADME/camera_clicked.png" alt= "Camera clicked, 3d dotmap visualized" style="height:200px; width: auto; " />
+
+4. **Dibuixar un traç**. A continuació, mitjançant el ratolí es poden dibuixar diferents traçades.  
+<img src="imgFaces/imgREADME/drawing.png" alt= "App: Drawing example"> <img src="imgFaces/imgREADME/drawingDone.png" alt= "App: Drawing Done">  
 
 <h1 id="castellano">Test </h1>
 
