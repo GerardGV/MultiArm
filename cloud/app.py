@@ -115,7 +115,7 @@ cameraUsed = False
 
 # Carregar imatges dels botons.
 image1 = pygame.image.load("imgFaces/app/bisturi.png")
-image2 = pygame.image.load("imgFaces/app/rotulador.png")
+image2 = pygame.image.load("imgFaces/app/retolador.png")
 image3 = pygame.image.load("imgFaces/app/apagar.png")
 
 # Realitzar connexió amb el servidor
