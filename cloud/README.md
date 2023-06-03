@@ -1,5 +1,4 @@
 
-
 ### Autors | Autores | Authors:
 * Pol Colomer Campoy (1605612)
 * Gerard Josep Guarin Velez (1605947)
@@ -24,7 +23,7 @@ de tal manera que es pugui controlar des de qualsevol part del món amb una conn
 
 A continuació es pot veure l'esquema d'aquesta arquitectura.
 
-<img src=imgFaces/imgREADME/sm_connection_architecture.png alt= "SM Connection Architecture">
+<img src="imgFaces/imgREADME/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
 
 Tal com es pot observar, podem trobar un usuari (User -> `clientUser.py`), el robot (`clientRobot.py`) i al centre de 
 tot, el Cloud, en el nostre cas, **Google Cloud**.
@@ -45,6 +44,25 @@ les imatges que després la Cloud Function utilitza per als càlculs.
 
 ### Flux de treball de l'aplicació.
 
+A continuació intentarem realitzar un petit tutorial o llistat de passos que defineixin el flux de treball de l'aplicació:
+
+1. **Obrir el servidor**. Primerament, s'haurà de confirmar que el servidor estigui obert escoltant les peticions tant 
+de l'usuari com del robot.
+2. **Obrir l'aplicació**. Quan s'obri l'aplicació, pot ser que la pantalla es quedi en negre durant 5 segons. Si això 
+succeeix és perquè el primer pas `1.` no s'ha realitzat correctament. En aquest cas, es realitzarà una execució local 
+per tal de provar l'aplicació, però no es podràn realitzar verificacions més enllà dels `prints` que es veuran pel 
+terminal en realitzar les diverses accions.
+<img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" height= "20%" class="center">
+3. **Clicar el botó "Càmera"**.
+
 <h1 id="castellano">Test </h1>
 
 
+<style>
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+</style>
