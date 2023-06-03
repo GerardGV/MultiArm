@@ -88,11 +88,11 @@ def communicationRobot(socketUser):
                 credentials_file = "credentials.json"   # USAMOS LAS CREDENCIALES QUE TIENEN PERMISO
 
                 # PARÁMETROS PARA LA PRIMERA IMÁGEN
-                file_path = "./img/img08_V2_1_face_Pol_sense_sostre.jpeg"    # NOMBRE IMAGEN 1
+                file_path = "imgFaces/img08_V2_1_face_Pol_sense_sostre.jpeg"  # NOMBRE IMAGEN 1
                 destination_blob_name = "image1.jpeg"   # NOMBRE QUE LA IMAGEN QUE TENDRÁ EN EL BUCKET
 
                 # PARÁMETROS PARA LA SEGUNDA IMÁGEN
-                file_path2 = "./img/img08_V2_2_face_Pol_sense_sostre.jpeg"  # NOMBRE IMAGEN 2
+                file_path2 = "imgFaces/img08_V2_2_face_Pol_sense_sostre.jpeg"  # NOMBRE IMAGEN 2
                 destination_blob_name2 = "image2.jpeg"  # NOMBRE QUE LA IMAGEN QUE TENDRÁ EN EL BUCKET
                 # Getting images
 

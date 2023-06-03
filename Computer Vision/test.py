@@ -111,8 +111,8 @@ def visualize_3d_model(points_3d, threshold=5.0):
     plt.show()
 
 
-img1 = cv2.imread('img/base/img10_1_rotated_only_face.jpeg', 0)
-img2 = cv2.imread('img/base/img10_2_rotated_only_face.jpeg', 0)
+img1 = cv2.imread('imgFaces/base/img10_1_rotated_only_face.jpeg', 0)
+img2 = cv2.imread('imgFaces/base/img10_2_rotated_only_face.jpeg', 0)
 
 points_3d = create_3d_model(img1, img2)
 visualize_3d_model(points_3d)
