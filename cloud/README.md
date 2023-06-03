@@ -68,7 +68,7 @@ D'aquesta manera, es carreguen els punts 3D i es visualitza d'una manera similar
 5. **Eliminar l'últim traç**. En cas d'equivocació, es permet esborrar l'últim traç dibuixat utilitzant el botó "Eliminar últim":
 <br/> <img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/>  
 A continuació mostrarem diverses traçades per tal de veure què passa en clicar el botó.
-<img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/> &nbsp;&nbsp;&nbsp;&nbsp; <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;" >  
+<img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/> &nbsp;&nbsp;&nbsp;&nbsp; <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;">  
 Tal com es pot veure en les imatges anteriors, s'ha eliminat l'últim traç referent a la 'M'. Cal tenir en compte, que si es torna a clicar el botó, s'esborraria la 'R', després la 'A' i així succesivament.
 Aquest botó no realitza cap petició al servidor, perquè simplement es tracta d'una funcionalitat extra de la mateixa App.
 6. **Enviar**. Un cop s'estigui segur que l'última traçada és correcta i és la que volem que el robot realitzi, 
@@ -79,8 +79,17 @@ Mitjançant aquest botó, si de la imatge anterior en la qual hem eliminat la 'M
 <br/> En aquest cas, l'aplicació ens indica mitjançant la línia taronja, que aquell traç s'ha enviat. El que realitza per darrere l'aplicació és:
 Tracta els punts, els envia al servidor indicant la instrucció d'enviar, el servidor rep la instrucció i l'envia al clientRobot que finalment l'envia al robot físic que és el que es mourà als punts per tal de replicar 
 la traçada realitzada des de l'aplicació.
+7. **Reset**. Aquesta funcionalitat, digual manera que la d'Eliminar Últim, no realitza cap petició al Cloud, simplement és una funcionalitat extra de la mateixa aplicació.
+En aquest cas, elimina totes les traçades de la pantalla, tant les enviades com les no enviades. És a dir, torna tot a l'estat del punt `3.` en el qual només es veuen els punts 3D de la part de Visió per Computador i els botons.
+A continuació mostrem el seu funcionament: 
+<img src="imgFaces/imgREADME/preReset.png" alt= "Example Before clicking Reset button" style="height:100px;"/> &nbsp;&nbsp;&nbsp;&nbsp; <img src="imgFaces/imgREADME/postReset.png" alt= "Example after clicking the reset button." style="height:100px;" >
+8. **Botons d'imatge**. Finalment, tenim els botons d'imatge, és a dir, els botons sense text que es tracten dels 3 de la cantonada dreta inferior.
+<br/><img src="imgFaces/imgREADME/imageButtons.png" alt= "Image buttons."/>
+<br/>
+* El primer de tots és el botó d'apagar, el qual envia una instrucció al servidor per apagar-se, el qual envia també al robot la instrucció d'apagar-se i els dos s'apaguen. L'apliació també es tanca.
+* El segon i el tercer funcionen de la mateixa manera. Són els botons de canvi de capçal. Aquests fan que el robot canviï el seu capçal a un retolador i un bisturí, respectivament.
+L'aplicació envia una instrucció de canvi de capçal al servidor, aquest la rep i l'envia al clientRobot, que finalment l'envia al robot i aquest canvia el capçal.
 
 
-
-<h1 id="castellano">Test </h1>
+<h1 id="castellano">Castellano </h1>
 
