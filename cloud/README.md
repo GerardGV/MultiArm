@@ -24,7 +24,6 @@ de tal manera que es pugui controlar des de qualsevol part del món amb una conn
 
 A continuació es pot veure l'esquema d'aquesta arquitectura.
 
-
 <img src=imgFaces/imgREADME/sm_connection_architecture.png alt= "SM Connection Architecture">
 
 Tal com es pot observar, podem trobar un usuari (User -> `clientUser.py`), el robot (`clientRobot.py`) i al centre de 
@@ -43,6 +42,8 @@ visualitzar), per tal que es realitzin tots els càlculs al Cloud.
 Per a fer els càlculs necessaris, es necessiten dues 
 imatges, fetes pel robot. És per això que mitjançant l'API Cloud Storage de GC hem utilitzat el Bucket per guardar-hi 
 les imatges que després la Cloud Function utilitza per als càlculs.
+
+### Flux de treball de l'aplicació.
 
 <h1 id="castellano">Test </h1>
 
