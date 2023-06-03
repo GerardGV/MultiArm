@@ -5,7 +5,7 @@ projectes de Robòtica (RLP) i Visió per Computador (VC).
 Per al que correspòn a aquesta assignatura, hem fet les connexions necessàries per a controlar remotament el 
 robot, des d'una aplicació, que també hem implementat.
 
-<img src="https://picsum.photos/id/237/200/300" alt="Test">
+<img src=imgFaces/imgREADME/sm_connection_architecture.png alt="SM Connection Architecture">
 
 ## Integrants del grup:
 * Pol Colomer Campoy (1605612)
