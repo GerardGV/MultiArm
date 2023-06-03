@@ -119,13 +119,18 @@ image2 = pygame.image.load("imgFaces/app/retolador.png")
 image3 = pygame.image.load("imgFaces/app/apagar.png")
 
 # Realitzar connexió amb el servidor
-connected = True
+connected = False
 try:
     socket_conn = connectionSocket(IP, PORT)
+    connected = True
     print("Connexió amb el servidor realitzada correctament")
 except ConnectionRefusedError:
     print("Connexió amb el servidor fallada. Començant execució de proves locals . . .")
     connected = False
+except TimeoutError:
+    print("Connexió amb el servidor fallada. Començant execució de proves locals . . .")
+    connected = False
+
 # ===================================================
 #                    MAIN LOOP
 # ===================================================
