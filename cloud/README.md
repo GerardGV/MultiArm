@@ -51,7 +51,7 @@ de l'usuari com del robot.
 succeeix és perquè el primer pas `1.` no s'ha realitzat correctament. En aquest cas, es realitzarà una execució local 
 per tal de provar l'aplicació, però no es podràn realitzar verificacions més enllà dels `prints` que es veuran pel 
 terminal en realitzar les diverses accions.
-<img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" id= "little_img" class= "center">
+<img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="height:20%" class= "center">
 3. **Clicar el botó "Càmera"**.
 
 <h1 id="castellano">Test </h1>
@@ -64,5 +64,4 @@ terminal en realitzar les diverses accions.
   margin-right: auto;
   width: 50%;
 }
-.img-little_img { width: auto;  height: 20%; } 
 </style>
