@@ -115,17 +115,22 @@ cameraUsed = False
 
 # Carregar imatges dels botons.
 image1 = pygame.image.load("imgFaces/app/bisturi.png")
-image2 = pygame.image.load("imgFaces/app/rotulador.png")
+image2 = pygame.image.load("imgFaces/app/retolador.png")
 image3 = pygame.image.load("imgFaces/app/apagar.png")
 
 # Realitzar connexió amb el servidor
-connected = True
+connected = False
 try:
     socket_conn = connectionSocket(IP, PORT)
+    connected = True
     print("Connexió amb el servidor realitzada correctament")
 except ConnectionRefusedError:
     print("Connexió amb el servidor fallada. Començant execució de proves locals . . .")
     connected = False
+except TimeoutError:
+    print("Connexió amb el servidor fallada. Començant execució de proves locals . . .")
+    connected = False
+
 # ===================================================
 #                    MAIN LOOP
 # ===================================================
@@ -212,7 +217,7 @@ while run:
 
                 # Enviar els punts al ROBOT
                 if connected:
-                    print("Exemple de punts enviats: ", sendToSocket)
+                    print("Punts enviats: ", sendToSocket)
                     communicationClient(socket_conn, "MOVE", sendToSocket)
                     print("Punts enviats finalment . . .")
 
