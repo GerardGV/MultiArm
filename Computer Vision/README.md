@@ -21,7 +21,7 @@ de control remot per tal de controlar-lo remotament, comptem amb una càmera al 
 la cara del pacient. Justament en aquesta part ens centrarem en aquesta assignatura, perquè volem que el cirurgià des de 
 l'altra punta del món pugui visualitzar un núvol de punts de la cara del pacient per tal de dur a terme l'operació.
 
-### SIFT (Scale Invariant Feature Transform)
+## SIFT (Scale Invariant Feature Transform)
 
 L'algoritme SIFT és especialment útil per detectar punts característics invariants a canvis d'escala, rotació i 
 il·luminació en una imatge. El procés de detecció es realitza mitjançant diverses etapes. Primerament, s'aplica una 
@@ -37,7 +37,7 @@ L'algoritme SIFT ha estat àmpliament utilitzat en diverses aplicacions de visi�
 correspondència d'imatges, el reconeixement d'objectes i la reconstrucció tridimensional. La seva robustesa i 
 invariància a diferents transformacions han contribuït a la seva popularitat i la seva aplicabilitat en diferents àrees.
 
-#### SIFT Manual:
+### SIFT Manual:
 Molt bé, ara que coneixem què és l'algorisme SIFT, explicarem els passos principals en què hem implementat l'algorisme.
 En total consta de 4 passos:
 
