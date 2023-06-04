@@ -239,7 +239,7 @@ server sends the clientRobot the command to take photos, which causes the robot 
 Buket, then the Cloud Function takes these two images and starts all the calculations on the Vision part for
 Computer and returns the point cloud to the server and the server does it to the application.
 
-This loads the 3D points and displays something similar to this:
+This loads the 3D points and displays something similar to this: <br/>
 <img src="imgFaces/imgREADME/camera_clicked.png" alt= "Camera clicked, 3d dotmap visualized" style="height:200px; width: auto; " />
 <br/><br/>
 
