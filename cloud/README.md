@@ -233,7 +233,7 @@ terminal when performing the various actions.
 <img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
 <br/><br/>
 
-3. **Click the "Camera" button**. <br/> <img src="imgFaces/imgREADME/camera_button.png" alt="Camera"/>
+3. **Click the "Camera" button**. <br/> <img src="imgFaces/imgREADME/camera_button.png" alt="Camera"/><br/>
 This button sends a request to the server to get the 3D point cloud of the patient's face. Then the
 server sends the clientRobot the command to take photos, which causes the robot to take two photos and save them to the
 Buket, then the Cloud Function takes these two images and starts all the calculations on the Vision part for
@@ -243,12 +243,12 @@ This loads the 3D points and displays something similar to this:
 <img src="imgFaces/imgREADME/camera_clicked.png" alt= "Camera clicked, 3d dotmap visualized" style="height:200px; width: auto; " />
 <br/><br/>
 
-4. **Draw a stroke**. Then, using the mouse, different paths can be drawn.
+4. **Draw a stroke**. Then, using the mouse, different paths can be drawn.<br/>
 <img src="imgFaces/imgREADME/drawing.png" alt= "App: Drawing example">      <img src="imgFaces/imgREADME/drawingDone.png" alt= "App: Drawing Done" style="height:202px;" > <br/><br/>
-5. **Remove the last stroke**. In case of a mistake, it is possible to delete the last stroke drawn using the "Delete last" button:
-<br/> <img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/>
+5. **Remove the last stroke**. In case of a mistake, it is possible to delete the last stroke drawn using the "Delete last" button:<br/>
+<br/> <img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/><br/>
 Below we will show several traces to see what happens when the button is clicked.
-<img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/>      <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;">
+<img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/>      <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;"><br/><br/>
 As you can see in the previous images, the last stroke referring to the 'M' has been removed. Note that if the button is clicked again, the 'R' will be deleted, then the 'A' and so on.
 This button does not make any request to the server, because it is simply an extra functionality of the App itself.
 <br/><br/>
