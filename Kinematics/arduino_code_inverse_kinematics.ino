@@ -261,33 +261,34 @@ void loop() {
 
   if(isdigit(message_raspberry)){
 
-    float X = float(raspberry_message);
+      float X = float(message_raspberry);
 
-    while (Serial.available() == 0) {
-      // Espera hasta que haya datos disponibles en el búfer de entrada serial
+      while (Serial.available() == 0) {
+        // Espera hasta que haya datos disponibles en el búfer de entrada serial
+      }
+      float Y = Serial.parseFloat();
+
+      while (Serial.available() == 0) {
+        // Espera hasta que haya datos disponibles en el búfer de entrada serial
+      }
+      float Z = Serial.parseFloat();
+
+      while(Serial.available() == 0){
+        char caracter = Serial.read();
+
+        if (isdigit(caracter)) {
+          int numero = numero * 10 + (caracter - '0');
+      }
+
+      calculate(X, Y, Z);
+      delay(1000);
     }
-    float Y = Serial.parseFloat();
-
-    while (Serial.available() == 0) {
-      // Espera hasta que haya datos disponibles en el búfer de entrada serial
-    }
-    float Z = Serial.parseFloat();
-
-    while(Serial.available() == 0){
-      char caracter = Serial.read();
-
-      if (isdigit(caracter)) {
-        numero = numero * 10 + (caracter - '0');
-    }
-
-    calculate(X, Y, Z);
-    delay(1000);
   }
   else{
-    if(raspberry_message == "TOOLCHG"){
+    if(message_raspberry == "TOOLCHG"){
       cabezal();
     }
-    else if(raspberry_message == "TURN_OFF"){
+    else if(message_raspberry == "TURN_OFF"){
       exit(0);
     }
   }
