@@ -67,7 +67,7 @@ D'aquesta manera, es carreguen els punts 3D i es visualitza d'una manera similar
 <img src="imgFaces/imgREADME/drawing.png" alt= "App: Drawing example"> &nbsp;&nbsp;&nbsp;&nbsp; <img src="imgFaces/imgREADME/drawingDone.png" alt= "App: Drawing Done" style="height:202px;" > <br/><br/>
 5. **Eliminar l'últim traç**. En cas d'equivocació, es permet esborrar l'últim traç dibuixat utilitzant el botó "Eliminar últim":
 <br/> <img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/>  
-A continuació mostrarem diverses traçades per tal de veure què passa en clicar el botó.
+A continuació mostrarem diverses traçades per tal de veure què passa en clicar el botó. <br/>
 <img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/> &nbsp;&nbsp;&nbsp;&nbsp; <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;">  
 Tal com es pot veure en les imatges anteriors, s'ha eliminat l'últim traç referent a la 'M'. Cal tenir en compte, que si es torna a clicar el botó, s'esborraria la 'R', després la 'A' i així succesivament.
 Aquest botó no realitza cap petició al servidor, perquè simplement es tracta d'una funcionalitat extra de la mateixa App.
@@ -83,7 +83,7 @@ la traçada realitzada des de l'aplicació.
 <br/><br/>
 7. **Reset**. Aquesta funcionalitat, digual manera que la d'Eliminar Últim, no realitza cap petició al Cloud, simplement és una funcionalitat extra de la mateixa aplicació.
 En aquest cas, elimina totes les traçades de la pantalla, tant les enviades com les no enviades. És a dir, torna tot a l'estat del punt `3.` en el qual només es veuen els punts 3D de la part de Visió per Computador i els botons.
-A continuació mostrem el seu funcionament: 
+A continuació mostrem el seu funcionament: <br/>
 <img src="imgFaces/imgREADME/preReset.png" alt= "Example Before clicking Reset button" style="height:100px;"/> &nbsp;&nbsp;&nbsp;&nbsp; <img src="imgFaces/imgREADME/postReset.png" alt= "Example after clicking the reset button." style="height:100px;" >
 <br/><br/>
 8. **Botons d'imatge**. Finalment, tenim els botons d'imatge, és a dir, els botons sense text que es tracten dels 3 de la cantonada dreta inferior.
@@ -143,22 +143,22 @@ terminal al realizar las diversas acciones.
 <img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
 <br/><br/>
 
-3. **Clicar el botón "Cámara"**. <br/> <img src="imgFaces/imgREADME/camera_button.png" alt="Cámara"/>
+3. **Clicar el botón "Cámara"**. <br/> <img src="imgFaces/imgREADME/camera_button.png" alt="Cámara"/> <br/>
 Este botón envía una petición al servidor para obtener la nube de puntos 3D de la cara del paciente. Entonces el
 servidor envía al clienteRobot el orden de realizar fotos, que hace que el robot haga dos fotografías y las guarde en
 Buket, a continuación, la Cloud Function toma estas dos imágenes y comienza todos los cálculos de la parte de Visión por
 Computador y devuelve la nube de puntos al servidor y éste lo hace en la aplicación.
 
-De este modo, se cargan los puntos 3D y se visualiza de una manera similar a ésta:
+De este modo, se cargan los puntos 3D y se visualiza de una manera similar a ésta: <br/>
 <img src="imgFaces/imgREADME/camera_clicked.png" alt= "Camera clicked, 3d dotmap visualized" style="height:200px; width: auto; " />
 <br/><br/>
 
-4. **Dibujar un trazo**. A continuación, mediante el ratón se pueden dibujar diferentes trazadas.
+4. **Dibujar un trazo**. A continuación, mediante el ratón se pueden dibujar diferentes trazadas. <br/>
 <img src="imgFaces/imgREADME/drawing.png" alt= "App: Drawing example">      <img src="imgFaces/imgREADME/drawingDone.png" alt= "App: Drawing Done" style="height:202px;" > <br/><br/>
 5. **Eliminar el último trazo**. En caso de equivocación, se permite borrar el último trazo dibujado utilizando el botón "Eliminar último":
-<br/> <img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/>
-A continuación mostraremos varias trazadas para ver qué ocurre al pulsar el botón.
-<img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/>      <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;">
+<br/> <img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/> <br/>
+A continuación mostraremos varias trazadas para ver qué ocurre al pulsar el botón. <br/>
+<img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/>      <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;"> <br/>
 Tal y como puede verse en las imágenes anteriores, se ha eliminado el último trazo referente a la 'M'. Hay que tener en cuenta, que si se vuelve a pulsar el botón, se borraría la 'R', después la 'A' y así sucesivamente.
 Este botón no realiza ninguna petición en el servidor, porque simplemente se trata de una funcionalidad extra de la misma App.
 <br/><br/>
@@ -173,7 +173,7 @@ la trazada realizada desde la aplicación.
 <br/><br/>
 7. **Reset**. Esta funcionalidad, igual que la de Eliminar Último, no realiza ninguna petición al Cloud, simplemente es una funcionalidad extra de la misma aplicación.
 En este caso, elimina todos los trazos de la pantalla, tanto los enviados como los no enviados. Es decir, vuelve todo al estado del punto `3.` en el que sólo se ven los puntos 3D de la parte de Visión por Computador y los botones.
-A continuación mostramos su funcionamiento:
+A continuación mostramos su funcionamiento: <br/> <br/>
 <img src="imgFaces/imgREADME/preReset.png" alt= "Example Before clicking Reset button" style="height:100px;"/>      <img src="imgFaces/imgREADME/postReset.png" alt= "Example after clicking the reset button." style="height:100px;" >
 <br/><br/>
 8. **Botones de imagen**. Por último, tenemos los botones de imagen, es decir, los botones sin texto que se tratan de los 3 de la esquina derecha inferior.
