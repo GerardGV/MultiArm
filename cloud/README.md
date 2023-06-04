@@ -94,6 +94,184 @@ A continuació mostrem el seu funcionament:
 <li> El segon i el tercer funcionen de la mateixa manera. Són els botons de canvi de capçal. Aquests fan que el robot canviï el seu capçal a un retolador i un bisturí, respectivament.
 L'aplicació envia una instrucció de canvi de capçal al servidor, aquest la rep i l'envia al clientRobot, que finalment l'envia al robot i aquest canvia el capçal.
 </li></ul>
+ <h1 id="castellano">Sistemas Multimedia - Proyecto en el Cloud</h1> 
 
-<h1 id="castellano">Castellano </h1>
+Para la realización de nuestro proyecto de Sistemas Multimedia, hemos querido realizar una integración con los nuestros
+proyectos de Robótica (RLP) y Visión por Computador (VC).
+Para lo que corresponde a esta asignatura, hemos hecho las conexiones necesarias para controlar remotamente el
+robot, desde una aplicación, que también hemos implementado.
 
+## Arquitectura:
+
+Para poder controlar remotamente el robot, hemos desarrollado una aplicación, la cual permite interactuar con el
+robot. En lugar de permitir una conexión remota desde una red local, hemos estructurado la arquitectura de conexiones
+de modo que se pueda controlar desde cualquier parte del mundo con una conexión a Internet.
+
+A continuación se puede ver el esquema de esa arquitectura.
+
+<img src="imgFaces/imgREADME/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
+
+Tal como se puede observar, podemos encontrar un usuario (User -> `clientUser.py`), el robot (`clientRobot.py`) y en el centro de
+todo, el Cloud, en nuestro caso, **Google Cloud**.
+
+### Estructura de Google Cloud:
+
+En primer lugar, tenemos una instancia de máquina virtual (VM) mediante la API Compute Engine de
+Google Cloud (A partir de ahora, GC), en esta VM tiene una IP externa estática y se encuentra dentro de una VPC Network de GC, en
+la cual le hemos añadido las reglas de Firewall necesarias para permitir conexiones a los puertos que realizaremos para las
+conexiones.
+
+Adicionalmente, tenemos una Cloud Function donde tenemos todo el código desarrollado en el proyecto de Visión por Computador
+(hemos puesto el código que se encuentra en la Cloud Function en el archivo `tractament_imatges.py` para que se pueda
+visualizar), para que se realicen todos los cálculos en Cloud.
+Para realizar los cálculos necesarios, se necesitan dos
+imágenes, hechas por el robot. Es por eso que mediante la API Cloud Storage de GC hemos utilizado el Bucket para guardarlo
+las imágenes que después la Cloud Function utiliza para los cálculos.
+
+### Flujo de trabajo de la aplicación.
+
+A continuación intentaremos realizar un pequeño tutorial o listado de pasos que definan el flujo de trabajo de la aplicación:
+
+1. **Abrir el servidor**. En primer lugar, deberá confirmarse que el servidor esté abierto escuchando las peticiones tanto
+del usuario como del robot.<br/>
+
+2. **Abrir la aplicación**. Cuando se abra la aplicación, puede que la pantalla se quede en negro durante 5 segundos. Si esto
+sucede es porque el primer paso `1.` no se ha realizado correctamente. En este caso, se realizará una ejecución local
+para probar la aplicación, pero no se podrán realizar verificaciones más allá de los `prints` que se verán por el
+terminal al realizar las diversas acciones.
+
+<img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
+<br/><br/>
+
+3. **Clicar el botón "Cámara"**. <br/> <img src="imgFaces/imgREADME/camera_button.png" alt="Cámara"/>
+Este botón envía una petición al servidor para obtener la nube de puntos 3D de la cara del paciente. Entonces el
+servidor envía al clienteRobot el orden de realizar fotos, que hace que el robot haga dos fotografías y las guarde en
+Buket, a continuación, la Cloud Function toma estas dos imágenes y comienza todos los cálculos de la parte de Visión por
+Computador y devuelve la nube de puntos al servidor y éste lo hace en la aplicación.
+
+De este modo, se cargan los puntos 3D y se visualiza de una manera similar a ésta:
+<img src="imgFaces/imgREADME/camera_clicked.png" alt= "Camera clicked, 3d dotmap visualized" style="height:200px; width: auto; " />
+<br/><br/>
+
+4. **Dibujar un trazo**. A continuación, mediante el ratón se pueden dibujar diferentes trazadas.
+<img src="imgFaces/imgREADME/drawing.png" alt= "App: Drawing example">      <img src="imgFaces/imgREADME/drawingDone.png" alt= "App: Drawing Done" style="height:202px;" > <br/><br/>
+5. **Eliminar el último trazo**. En caso de equivocación, se permite borrar el último trazo dibujado utilizando el botón "Eliminar último":
+<br/> <img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/>
+A continuación mostraremos varias trazadas para ver qué ocurre al pulsar el botón.
+<img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/>      <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;">
+Tal y como puede verse en las imágenes anteriores, se ha eliminado el último trazo referente a la 'M'. Hay que tener en cuenta, que si se vuelve a pulsar el botón, se borraría la 'R', después la 'A' y así sucesivamente.
+Este botón no realiza ninguna petición en el servidor, porque simplemente se trata de una funcionalidad extra de la misma App.
+<br/><br/>
+6. **Enviar**. Una vez se esté seguro de que la última trazada es correcta y es la que queremos que el robot realice,
+entonces se puede clicar el botón "Enviar":
+<br/> <img src="imgFaces/imgREADME/enviar_button.png" alt= "Botó enviar">  <br/>
+Mediante este botón, si de la imagen anterior en la que hemos eliminado la 'M' que se veía mal, volviéramos a dibujar una 'M' que nos parezca correcta y queramos enviar, al clicar el botón enviar se vería así:
+<br/><img src="imgFaces/imgREADME/drawingSent.png" alt= "Drawing when button send is clicked."/>
+<br/> En este caso, la aplicación nos indica mediante la línea naranja, que ese trazo se ha enviado. Lo que realiza por detrás de la aplicación es:
+Trata los puntos, los envía al servidor indicando la instrucción de enviar, el servidor recibe la instrucción y la envía al clienteRobot que finalmente le envía al robot físico que es lo que se moverá a los puntos para replicar
+la trazada realizada desde la aplicación.
+<br/><br/>
+7. **Reset**. Esta funcionalidad, igual que la de Eliminar Último, no realiza ninguna petición al Cloud, simplemente es una funcionalidad extra de la misma aplicación.
+En este caso, elimina todos los trazos de la pantalla, tanto los enviados como los no enviados. Es decir, vuelve todo al estado del punto `3.` en el que sólo se ven los puntos 3D de la parte de Visión por Computador y los botones.
+A continuación mostramos su funcionamiento:
+<img src="imgFaces/imgREADME/preReset.png" alt= "Example Before clicking Reset button" style="height:100px;"/>      <img src="imgFaces/imgREADME/postReset.png" alt= "Example after clicking the reset button." style="height:100px;" >
+<br/><br/>
+8. **Botones de imagen**. Por último, tenemos los botones de imagen, es decir, los botones sin texto que se tratan de los 3 de la esquina derecha inferior.
+<br/><img src="imgFaces/imgREADME/imageButtons.png" alt= "Image buttons."/>
+<br/>
+
+<ul>
+ <li>El primero de todos es el botón de apagar, que envía una instrucción al servidor para apagarse, el cual envía también al robot la instrucción de apagarse y los dos se apagan. La aplicación también se cierra.</li> 
+ <li>El segundo y el tercero funcionan de la misma manera. Son los botones de cambio de cabezal. Éstos hacen que el robot cambie su cabezal a un rotulador y un bisturí, respectivamente.
+La aplicación envía una instrucción de cambio de cabezal al servidor, éste la recibe y la envía al clienteRobot, que finalmente la envía al robot y éste cambia el cabezal.
+</li></ul>
+ <h1 id="english">Multimedia Systems - Cloud Project</h1> 
+
+For the realization of our Multimedia Systems project, we wanted to carry out an integration with ours Robotics (RLP) and Computer Vision (VC) projects.
+For what corresponds to this subject, we have made the necessary connections to remotely control the
+robot, from an application, which we have also implemented.
+
+## Architecture:
+
+In order to be able to remotely control the robot, we have developed an application, which allows you to interact with it
+robot Instead of allowing a remote connection from a local network, we structured the connection architecture
+so that it can be controlled from anywhere in the world with an Internet connection.
+
+Below you can see the outline of this architecture.
+
+<img src="imgFaces/imgREADME/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
+
+As you can see, we can find a user (User -> `clientUser.py`), the robot (`clientRobot.py`) and in the center of
+everything, the Cloud, in our case, **Google Cloud**.
+
+### Structure of Google Cloud:
+
+First, we instantiate a virtual machine (VM) using the Compute Engine API
+Google Cloud (Henceforth GC), in this VM has a static external IP and is inside a GC VPC Network, in
+to which we have added the necessary Firewall rules to allow connections to the ports we will make for them
+connections
+
+Additionally, we have a Cloud Function where we have all the code developed in the Computer Vision project
+(we have put the code found in the Cloud Function in the `tractament_imatges.py` file so that it can
+visualize), so that all calculations are performed in the Cloud.
+To make the necessary calculations, two are needed
+images, made by the robot. That's why using the GC Cloud Storage API we used the Bucket to save to it
+the images that the Cloud Function then uses for calculations.
+
+### Application workflow.
+
+Next we will try to make a small tutorial or list of steps that define the workflow of the application:
+
+1. **Open the server**. First, you will have to confirm that the server is open by listening to both requests
+of the user as of the robot.<br/>
+
+2. **Open the application**. When the app opens, the screen may go black for 5 seconds. if that
+happens is because the first step `1.` was not performed correctly. In this case, a local execution will be performed
+in order to test the application, but it will not be possible to carry out checks beyond the `prints' that will be seen by
+terminal when performing the various actions.
+
+<img src="imgFaces/imgREADME/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
+<br/><br/>
+
+3. **Click the "Camera" button**. <br/> <img src="imgFaces/imgREADME/camera_button.png" alt="Camera"/>
+This button sends a request to the server to get the 3D point cloud of the patient's face. Then the
+server sends the clientRobot the command to take photos, which causes the robot to take two photos and save them to the
+Buket, then the Cloud Function takes these two images and starts all the calculations on the Vision part for
+Computer and returns the point cloud to the server and the server does it to the application.
+
+This loads the 3D points and displays something similar to this:
+<img src="imgFaces/imgREADME/camera_clicked.png" alt= "Camera clicked, 3d dotmap visualized" style="height:200px; width: auto; " />
+<br/><br/>
+
+4. **Draw a stroke**. Then, using the mouse, different paths can be drawn.
+<img src="imgFaces/imgREADME/drawing.png" alt= "App: Drawing example">      <img src="imgFaces/imgREADME/drawingDone.png" alt= "App: Drawing Done" style="height:202px;" > <br/><br/>
+5. **Remove the last stroke**. In case of a mistake, it is possible to delete the last stroke drawn using the "Delete last" button:
+<br/> <img src="imgFaces/imgREADME/eliminarUltim.png" alt= "Eliminar Ultim button"/>
+Below we will show several traces to see what happens when the button is clicked.
+<img src="imgFaces/imgREADME/multipleDrawingMistake.png" alt= "Multiple Drawing Mistake"/>      <img src="imgFaces/imgREADME/drawingEliminarUltim.png" alt= "Eliminar l'últim traç fet." style="height:113px;">
+As you can see in the previous images, the last stroke referring to the 'M' has been removed. Note that if the button is clicked again, the 'R' will be deleted, then the 'A' and so on.
+This button does not make any request to the server, because it is simply an extra functionality of the App itself.
+<br/><br/>
+6. **Submit**. Once you are sure that the last trace is correct and is the one we want the robot to perform,
+then you can click the "Send" button:
+<br/> <img src="imgFaces/imgREADME/enviar_button.png" alt= "Botó enviar">  <br/>
+Using this button, if from the previous image in which we removed the 'M' that looked bad, we re-draw an 'M' that seems correct and we want to send, when clicking the send button it would look like this:
+<br/><img src="imgFaces/imgREADME/drawingSent.png" alt= "Drawing when button send is clicked."/>
+<br/> In this case, the application tells us through the orange line, that that stroke has been sent. What the application does behind the scenes is:
+It processes the points, sends them to the server indicating the send instruction, the server receives the instruction and sends it to the clientRobot which finally sends it to the physical robot which is the one that will move to the points in order to replicate
+the tracing made from the application.
+<br/><br/>
+7. **Reset**. This functionality, like the Delete Last one, does not make any request to the Cloud, it is simply an extra functionality of the same application.
+In this case, it removes all traces from the screen, both sent and unsent. That is, it returns everything to the state of point `3.` in which only the 3D points of the Computer Vision part and the buttons are visible.
+Below we show how it works:
+<img src="imgFaces/imgREADME/preReset.png" alt= "Example Before clicking Reset button" style="height:100px;"/>      <img src="imgFaces/imgREADME/postReset.png" alt= "Example after clicking the reset button." style="height:100px;" >
+<br/><br/>
+8. **Image Buttons**. Finally, we have the image buttons, i.e. the buttons without text which are the 3 in the lower right corner.
+<br/><img src="imgFaces/imgREADME/imageButtons.png" alt= "Image buttons."/>
+<br/>
+
+<ul>
+ <li>First of all is the shutdown button, which sends an instruction to the server to shutdown, which also instructs the robot to shutdown, and both shut down. The application is also closed.</li> 
+ <li>The second and third work the same way. These are the header change buttons. These cause the robot to change its head to a marker and a scalpel, respectively.
+The application sends a head change instruction to the server, which receives it and sends it to the clientRobot, which finally sends it to the robot, which changes the head.
+</li></ul>
