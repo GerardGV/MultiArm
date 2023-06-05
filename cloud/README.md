@@ -21,7 +21,7 @@ robot. En comptes de permetre una connexió remota des d'una xarxa local, hem es
 de tal manera que es pugui controlar des de qualsevol part del món amb una connexió a Internet.
 
 A continuació es pot veure l'esquema d'aquesta arquitectura.
-
+<img src="imgFaces/imgREADME/sm_connection_architecture.png?raw=true" align="right"  alt="SM Connection Architecture"/>
 <img src="imgFaces/imgREADME/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
 
 Tal com es pot observar, podem trobar un usuari (User -> `clientUser.py`), el robot (`clientRobot.py`) i al centre de 
