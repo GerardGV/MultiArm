@@ -21,9 +21,9 @@ robot. En comptes de permetre una connexió remota des d'una xarxa local, hem es
 de tal manera que es pugui controlar des de qualsevol part del món amb una connexió a Internet.
 
 A continuació es pot veure l'esquema d'aquesta arquitectura.
-
-<img src="imgFaces/imgREADME/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
-
+<p align="center">
+<img src="imgFaces/imgREADME/sm_connection_architecture.png?raw=true" alt="SM Connection Architecture"/>
+</p>
 Tal com es pot observar, podem trobar un usuari (User -> `clientUser.py`), el robot (`clientRobot.py`) i al centre de 
 tot, el Cloud, en el nostre cas, **Google Cloud**.
 
@@ -108,9 +108,9 @@ robot. En lugar de permitir una conexión remota desde una red local, hemos estr
 de modo que se pueda controlar desde cualquier parte del mundo con una conexión a Internet.
 
 A continuación se puede ver el esquema de esa arquitectura.
-
+<p align="center">
 <img src="imgFaces/imgREADME/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
-
+</p>
 Tal como se puede observar, podemos encontrar un usuario (User -> `clientUser.py`), el robot (`clientRobot.py`) y en el centro de
 todo, el Cloud, en nuestro caso, **Google Cloud**.
 
@@ -198,9 +198,9 @@ robot Instead of allowing a remote connection from a local network, we structure
 so that it can be controlled from anywhere in the world with an Internet connection.
 
 Below you can see the outline of this architecture.
-
+<p align="center">
 <img src="imgFaces/imgREADME/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
-
+</p>
 As you can see, we can find a user (User -> `clientUser.py`), the robot (`clientRobot.py`) and in the center of
 everything, the Cloud, in our case, **Google Cloud**.
 
