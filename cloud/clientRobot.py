@@ -11,7 +11,7 @@ puerto = '/dev/ttyACM0'
 velocity = 9600
 
 PORT = 3400
-IP = '34.172.166.240'
+IP = '12.345.678.901' # Modificar la IP y poner la del Servidor
 
 def capture_image(file_name):
     with picamera.PiCamera() as camera:
