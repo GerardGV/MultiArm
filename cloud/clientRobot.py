@@ -117,12 +117,12 @@ def communicationRobot(socketUser):
                 credentials_file = "credentials.json"   # USAMOS LAS CREDENCIALES QUE TIENEN PERMISO
 
                 # PARÁMETROS PARA LA PRIMERA IMÁGEN
-                #file_path = "imgFaces/img08_V2_1_face_Pol_sense_sostre.jpeg"  # to test image from local, not raspberry
+                #file_path = "imgFaces/VC part/img08_V2_1_face_Pol_sense_sostre.jpeg"  # to test image from local, not raspberry
                 file_path = "image1.jpg"  # path to image1
                 destination_blob_name = "image1.jpeg"   # image name in bucket
 
                 # PARÁMETROS PARA LA SEGUNDA IMÁGEN
-                #file_path2 = "imgFaces/img08_V2_2_face_Pol_sense_sostre.jpeg"  # to test image from local, not raspberry
+                #file_path2 = "imgFaces/VC part/img08_V2_2_face_Pol_sense_sostre.jpeg"  # to test image from local, not raspberry
                 file_path2 = "image2.jpg" # path to image 2
                 destination_blob_name2 = "image2.jpeg"  # image name in bucket
 
