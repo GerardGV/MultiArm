@@ -159,8 +159,8 @@ Proyecto conjunto de las asignaturas de Robótica (RLP), Visión por Computadora
 ## Tabla de contenidos:
    * [¿Qué es este repositorio?](#qué-es-este-repositorio)
    * [Requisitos](#requisitos)
-     * [Hardware](#hardware)
-     * [Software](#software)
+     * <a href="hardware-es">Hardware</a>
+     * <a href="#software-es">Software</a>
    * [Documentación](#documentación)
    * [Guía de uso](#guía-de-uso)
    * [Esquema del Hardware](#esquema-del-hardware)
@@ -183,7 +183,7 @@ El código está organizado en 3 carpetas principales:
 
 Enumeraremos los requisitos necesarios para llevar a cabo nuestro proyecto, tanto el ensamblaje del robot (sin contar cables, tornillos, etc.) como la ejecución de nuestro Software con las dependencias o requerimientos que conlleve.
 
-## Hardware:
+<h2 name="hardware-es"> Hardware: </h2>
 - 3 x motor paso a paso (28BYJ-48)
 - 3 x Controladora de motores paso a paso (28BYJ-48) (Controladora ULN2003 con 7 pines IN y voltaje de 5-12V)
 - 1 x Micro Motor de Engranajes HP (micromotor de giro continuo)
@@ -194,7 +194,7 @@ Enumeraremos los requisitos necesarios para llevar a cabo nuestro proyecto, tant
 - 1 x Raspberry Pi Zero
 - 1 x Módulo de cámara Raspberry Pi Camera v2
 
-## Software:
+<h2 name="software-es"> Software: </h2>
 - [Python 3.10.x](https://www.python.org/)
   - [NumPy](https://numpy.org/)
   - [PyGame](https://www.pygame.org/news)
@@ -292,6 +292,154 @@ En esta imagen encontramos los diversos modelos 3D que forman nuestro robot. En 
 * Controlar la temperatura de los motores, mejorar la refrigeración o cambiar el material de construcción del robot, ya que después de muchas pruebas o ejecuciones prolongadas, los engranajes más pequeños que están en contacto directo con los motores se funden, perdiendo así el movimiento del robot.
 
 # Autores:
+* Pol Colomer Campoy (1605612) | PolKinsa
+* Gerard Josep Guarin Velez (1605947) | GerardGV
+* Jan Rubio Rico (1603753) | TheRospetit
+* Rubén Simó Marin (1569391)
+
+--- 
+---
+
+<h1 id="english">MultiArm</h1>
+Joint project of the Robotics (RLP), Computer Vision (VC), and Multimedia Systems (SM) subjects in which we have developed a robotic arm with computer vision to perform surgical operations remotely via the Internet.
+
+
+# Table of Contents:
+   * [What is this?](#what-is-this)
+   * [Requirements](#requirements)
+     * <a href="hardware-en">Hardware</a>
+     * <a href="#software-en">Software</a>
+   * [Documentation](#documentation)
+   * [How to use](#how-to-use)
+   * [Hardware Scheme](#hardware-scheme)
+   * [Software Architecture](#software-architecture)
+   * [3D Models](#3d-models)
+   * [Future Improvements](#future-improvements)
+   * [Authors](#authors)
+
+# What is this?
+
+This repository contains all the necessary code, robot models, and explanations to understand what we have done during the development process of this project, with the aim of being able to replicate and improve it in the future.
+
+### Code.
+The code is organized into 3 main folders:
+- **Kinematics:** This folder contains all the developed Arduino code.
+- **cloud:** It contains the code that needs to be executed to remotely control the robot. We have the server, the robot client, the user client, and the application.
+- **Computer Vision:** It includes the code implemented during the Computer Vision practice, during which we manually implemented the SIFT algorithm, the necessary process to perform an initial reconstruction given two images, and the comparison of various similar algorithms.
+
+# Requirements:
+
+We will list the necessary requirements to carry out our project, both the assembly of the robot (excluding cables, screws, etc.) and the execution of our software with the dependencies or requirements they entail.
+
+<h2 name="hardware-en" Hardware: </h2>
+- 3 x Stepper Motor (28BYJ-48)
+- 3 x Stepper Motor Controller (28BYJ-48) (ULN2003 7 IN pins controller and 5-12V)
+- 1 x Micro Metal Gearmotor HP (Continuous rotation micro motor)
+- 1 x Motor Controller (Gearmotor) DF-MD V1.3
+- 1 x Power Supply TACENS anima APII 500
+- 1 x Prototyping Board (Protoboard) 16.5x5.5cm
+- 1 x Arduino UNO Rev.3
+- 1 x Raspberry Pi Zero
+- 1 x Raspberry Pi Camera Module v2
+
+<h2 name="software-en" Software: </h2>
+- [Python 3.10.x](https://www.python.org/)
+  - [NumPy](https://numpy.org/)
+  - [PyGame](https://www.pygame.org/news)
+  - [cv2 (openCV)](https://pypi.org/project/opencv-python/)
+  - [time](https://docs.python.org/3/library/time.html)
+  - [sys](https://docs.python.org/3/library/sys.html)
+  - [socket](https://docs.python.org/3/library/socket.html)
+  - [picamera](https://picamera.readthedocs.io/en/latest/)
+  - [serial](https://pyserial.readthedocs.io/en/latest/)
+  - [google-cloud](https://googleapis.dev/python/google-api-core/latest/index.html)
+  - [google-cloud-storage](https://googleapis.dev/python/storage/latest/index.html)
+  - [google-auth](https://google-auth.readthedocs.io/en/latest/)
+  - [google-auth-oauthlib](https://google-auth-oauthlib.readthedocs.io/en/latest/)
+  - [google.oauth2](https://google-auth.readthedocs.io/en/latest/reference/google.oauth2.html)
+  - [json](https://docs.python.org/3/library/json.html)
+  - [Flask](https://flask.palletsprojects.com/en/2.3.x/)
+- [Arduino IDE](https://www.arduino.cc/en/software)
+  - [AccelStepper - Arduino Library](https://www.airspayce.com/mikem/arduino/AccelStepper/)
+- [Google Cloud Platform (GCP)](https://cloud.google.com/gcp/)
+
+
+# Documentation:
+This README contains information about our robot and provides a general context of the computer vision and Cloud parts developed in Multimedia Systems. If you're interested in learning more details about the respective projects, you can check:
+* [Computer Vision: Implementation of the SIFT algorithm and 3D modeling](https://github.com/GerardGV/MultiArm/tree/main/Computer%20Vision) where we delve deeper into the implemented algorithm for detecting characteristic points in two images and visualizing them in the application.
+* [Multimedia Systems: Cloud Project](https://github.com/GerardGV/MultiArm/tree/main/cloud) where we delve deeper into the communication architecture developed in the Cloud hosted on Google Cloud, the application, its functioning, and the requests made with the server.
+
+# How to use:
+1. Clone this repository.
+    ```terminal
+    git clone https://github.com/GerardGV/MultiArm.git
+    ```
+2. Install Python and the required libraries. 
+    ```terminal
+    pip install -r requirements.txt
+    ```
+3. Open the server (execute the cloud/server.py) file
+    ```terminal
+    python3 cloud/server.py
+    ```
+4. Open the App (execute the cloud/app.py)
+    ```terminal
+    python3 cloud/app.py
+    ```
+5. Open the clientRobot.py and turn on the Robot
+    ```terminal
+    python3 cloud/clientRobot.py
+    ```
+6. Enjoy!! 😄 TIP: You can check the Cloud folder README.md to understand the Workflow of our app. 
+
+# Hardware Scheme
+<p align="center">
+  <img src="imgREADMEs/imgREADME_RLP/hardware_scheme.jpg" alt= "Hardware Scheme" />
+</p>
+Note: The DC motor M1 is connected to a controller that is not shown in the Fritzing diagram. 
+Our hardware scheme is composed of the 3 stepper motors connected to their respective controllers and the corresponding pins on Arduino, and a DC motor connected to its controller and pins 12 and 13 of Arduino. All these motors are connected to a power supply.
+
+# Software Architecture
+<p align="center">
+  <img src="imgREADMEs/imgREADME_RLP/software_architecture.png" alt="Software Architecture" />
+</p>
+
+- User Communication Module: a function that receives the following parameters:
+  - Socket: socket connected to the server
+  - Instruction: functionality of the message
+  - Message: the information to be sent
+  - Returns 2D points if requested
+  - With these parameters, it calls the jsonSetUp module and formats a JSON to be sent through the socket.
+- Visualization Module: visualization of the scanned face in a 2D space, depending on the version of the application being used.
+- jsonSetUp Module: formats the instruction and message parameters to return a JSON.
+- Connections Module: receives an IP and port to establish a socket connection.
+- Instructions Module: user application menu to receive commands.
+- User Module: application composed of the visualization and instructions modules together with a connection module that allows communication via socket with the server.
+- Cloud Function: computer vision algorithm that returns the characteristic points of the two images sent by the robot to the Cloud Storage bucket.
+- Server Module: virtual machine that runs a Python script allowing socket connections with the User and the robot. It has firewall rules added in its Cloud network to enable connections.
+- Bucket Module, Cloud Storage: stores the images taken by the robotic arm.
+- Robot Module: Python script composed of a connection module that sends commands to Arduino to call the corresponding modules.
+- Camera Control Module: receives the instruction to capture biometric data.
+- Motors Control Module: receives movement commands for each motor.
+- Head Change Module: model that the robot calls when it wants to change the head. If it doesn't have any head, it will go and pick up the first head, the marker; if it has the marker, it will go and leave the second head.
+- Camera Control Module: module that returns images taken by the Raspberry camera.
+- Inverse Kinematics Module: Arduino module that receives instructions from the Raspberry and calls the motors control module according to the instruction.
+- Robot Communication Module: receives the socket connection and sends commands to the robot (Arduino), and returns information to the server, the images.
+
+# 3D Models
+<p align="center">
+  <img src="imgREADMEs/imgREADME_RLP/3d_models.jpeg" alt="3D Models" />
+</p>
+
+In this image, we can see the various 3D models that make up our robot. In our case, we have printed them using a 3D printer with PLA.
+
+# Future Improvements
+* Improve point visualization to achieve better 3D point visualization. Develop the necessary software for the entire application to work with this implemented visualization that allows camera rotation:
+![]()
+* Improve the robot's algorithm to better control depth and avoid cuts to the patient. However, to improve this, it is necessary to achieve meshing and texturing of the model in the Computer Vision part to accurately detect all points. This would enable better Surgeon-Robot interaction. This task is complex and requires a lot of time, but we believe it is an important bottleneck to overcome as the potential impact on the project is significant.
+* Control the temperature of the motors, improve cooling, or change the construction material of the robot. After several tests or long executions, the smaller gears that are in direct contact with the motors melt, resulting in loss of robot movement.
+
+# Authors
 * Pol Colomer Campoy (1605612) | PolKinsa
 * Gerard Josep Guarin Velez (1605947) | GerardGV
 * Jan Rubio Rico (1603753) | TheRospetit
