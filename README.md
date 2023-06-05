@@ -1,4 +1,4 @@
-<img src="?raw=true" align="right" width="300" alt="MultiArm Header Image"/>
+<img src="imgREADME_RLP/imgMultiArmHeader.jpeg?raw=true" align="right" width="300" alt="MultiArm Header Image"/>
 # MultiArm
 
 ## What is this?
