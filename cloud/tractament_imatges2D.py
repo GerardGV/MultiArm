@@ -122,13 +122,16 @@ def firstReconstruction(img1, pts1, pts2):
     fig.update_layout(autosize=False, width=900, height=900)
     fig.show()
     """
+
     return pts3d
 
 def img_to_3d_points():
-    img1 = cv2.imread('imgFaces/VC part/img08_V2_1_face_Pol_sense_sostre.jpeg')
-    img2 = cv2.imread('imgFaces/VC part/img08_V2_2_face_Pol_sense_sostre.jpeg')
+    img1 = cv2.imread('imgFaces/VC part/imgTest1.png')
+    img2 = cv2.imread('imgFaces/VC part/imgTest2.png')
 
     keypoints1, descriptors1, keypoints2, descriptors2 = sift(img1, img2)
     pts1, pts2 = matching(keypoints1, descriptors1, keypoints2, descriptors2)
-    pts3D = firstReconstruction(img1, pts1, pts2)
-    return pts3D
+    return pts1 + pts2
+    # To convert the points to 3d --> Uncomment the function below.
+    # pts3D = firstReconstruction(img1, pts1, pts2)
+

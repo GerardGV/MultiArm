@@ -3,7 +3,7 @@ import time
 import cv2
 import numpy as np
 import json
-# import plotly.graph_objects as go
+import plotly.graph_objects as go
 
 # ===========================================================
 #            FUNCIONS ÚTILS PER ELS MÒDULS PRINCIPALS
@@ -112,9 +112,9 @@ def firstReconstruction(img1, pts1, pts2):
     _, R, t, mask = cv2.recoverPose(E, pts1, pts2, K)
 
     pts3d = getTriangulatedPoints(pts1, pts2, K, R, t, cv2.triangulatePoints)
-    """
+
     # REMINDER: If you want to visualize the points, you must uncomment the third import (plotly.graph_objects as go)
-    Visualitzar els punts 3D
+    # Visualitzar els punts 3D
     fig = go.Figure(data=[go.Scatter3d(x=pts3d[:, 0], y=pts3d[:, 1], z=pts3d[:, 2], mode='markers', marker=dict(
         size=2,
         color='red',
@@ -122,12 +122,12 @@ def firstReconstruction(img1, pts1, pts2):
     ))])
     fig.update_layout(autosize=False, width=900, height=900)
     fig.show()
-    """
+
     return pts3d
 
 def img_to_3d_points():
-    img1 = cv2.imread('img/base/img08_V2_1_face_Pol_sense_sostre.jpeg')
-    img2 = cv2.imread('img/base/img08_V2_2_face_Pol_sense_sostre.jpeg')
+    img1 = cv2.imread('../cloud/imgFaces/VC Part/imgTest1.png')
+    img2 = cv2.imread('../cloud/imgFaces/VC Part/imgTest2.png')
 
     keypoints1, descriptors1, keypoints2, descriptors2 = sift(img1, img2)
     pts1, pts2 = matching(keypoints1, descriptors1, keypoints2, descriptors2)
@@ -135,7 +135,6 @@ def img_to_3d_points():
     return pts3D
 
 if __name__ == '__main__':
-    """"""
     for i in range(0,10):
         pts3D = img_to_3d_points()
         print("Len pts3D: ", len(pts3D))
