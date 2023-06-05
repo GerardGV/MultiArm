@@ -703,8 +703,8 @@ def showKeyPoints(img, keypoints, expfolder, im_name):
 
 if __name__ == '__main__':
     print('Starting...')
-    folder = 'imgFaces/base/'
-    expFolder = 'imgFaces/exports/'
+    folder = '../cloud/imgFaces/VC Part/'
+    #expFolder = 'imgFaces/exports/'
     method = "sift"
     image_names = load_images_from_folder(folder)
     print(image_names)
@@ -714,7 +714,7 @@ if __name__ == '__main__':
     print(image_names)
 
     # Use only the new images: -- Triar quines imatges voldrem fer servir en aquesta execució
-    image_names = image_names[16:18]
+    image_names = image_names[2:4]
     print("New images that will be used in this execution: ", image_names)
     # ================================
     #       LOAD AND SHOW IMAGES
