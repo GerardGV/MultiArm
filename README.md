@@ -9,19 +9,18 @@
 Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (VC) i Sistemes Multimèdia (SM) en el qual hem desenvolupat un braç robotic amb visió per computador per a realitzar operacions quirúrgiques remotament via Internet.
 
 
-
-# Table of Contents
-   * [What is this?](#what-is-this)
-   * [Requirements](#requirements)
+# Taula de continguts
+   * [Què és aquest repositori?](#què-és-aquest-repositori)
+   * [Requisits](#requisits)
      * [Hardware](#hardware)
      * [Software](#software)
-   * [Documentation](#documentation)
-   * [How to use](#how-to-use)
+   * [Documentació](#documentació)
+   * [Guia d'ús](#guia-dús)
    * [Esquema del Hardware](#esquema-del-hardware)
    * [Arquitectura del Software](#arquitectura-del-software)
-   * [Models 3D] (#models-3d)
+   * [Models 3D](#models-3d)
 
-# What is this?
+# Què és aquest repositori?
 
 En aquest repositori es troba tot el codi, models del robot explicació necessaris per tal d'entendre què hem fet durant el procés de desenvolupament d'aquest projecte amb l'objectiu de poder replicar-lo i millorar-lo en un futur.
 
@@ -31,9 +30,9 @@ Trobem el codi separat en 3 carpetes principals:
 - **cloud:** S'hi pot trobar el codi que s'ha d'executar per tal de controlar remotament el robot. Tenim el servidor, el client del robot, el client de l'usuari i l'aplicació.
 - **Computer Vision:** Conté el codi implementat durant la realització de la pràctica de Visió per Computador, durant la qual vam implementar l'algorisme SIFT manual, el procés necessari per realitzar una primera reconstrucció donades dues imatges i la comparació de diversos algorismes similars.
 
-# Requirements:
+# Requisits:
 
-Descriurem els requeriments necessaris per portar a terme el nostre projecte, tant el muntatge del robot (sense comptar cables, cargols, etc) com 
+Llistarem els requisits necessaris per portar a terme el nostre projecte, tant el muntatge del robot (sense comptar cables, cargols, etc) com 
 l'execució del nostre Software amb les dependències o requeriments que comportin.
 
 ## Hardware:
@@ -68,13 +67,13 @@ l'execució del nostre Software amb les dependències o requeriments que comport
   - [AccelStepper - Arduino Library](https://www.airspayce.com/mikem/arduino/AccelStepper/)
 - [Google Cloud Platform (GCP)](https://cloud.google.com/gcp/)
 
-# Documentation:
+# Documentació:
 Aquest README conté informació del nostre robot, i un context general de les parts de visió per computador i del Cloud, desenvolupat a Sistemes Multimèdia.
 Si estàs interessat en conèixer més detalls dels respectius projectes, pots mirar:
 * [Visió per Computador: Implementació de l'algorisme SIFT i modelat 3D](https://github.com/GerardGV/MultiArm/tree/main/Computer%20Vision) on aprofundim més sobre l'algorisme implementat per detectar punts característics de dues imatges i després visualitzar-los en l'aplicació.
 * [Sistemes Multimèdia: Projecte al Cloud](https://github.com/GerardGV/MultiArm/tree/main/cloud) on aprofundim més sobre l'arquitectura de comunicacions desenvolupada en el Cloud allotjat a Google Cloud, l'aplicació, el seu funcionament i peticions amb el servidor realitzades.
 
-# How to use:
+# Guia d'ús:
 1. Clone this repository.
     ```terminal
     git clone https://github.com/GerardGV/MultiArm.git
@@ -139,7 +138,7 @@ El nostre esquema de HW esta compost pels 3 motors steppers connectats cadascún
 En aquesta imatge trobem els diversos models 3D que formen el nostre robot. En el nostre cas, els hem imprès mitjançant una impresora 3D amb PLA.
 
 # Millores en un futur:
-* Millorar la visualització de punts per tal que es realitzi una visualització de punts 3D millor. Desenvolupar el software necessari per tal que tota l'aplicació funcioni amb aquesta visualització implementada: 
+* Millorar la visualització de punts per tal que es realitzi una visualització de punts 3D millor. Desenvolupar el software necessari per tal que tota l'aplicació funcioni amb aquesta visualització implementada que permeti rotar la càmera: 
 ![]()
 * Millorar l'algorísmica del robot per controlar millor la profunditat i evitar tallades al pacient, però per millorar això, és necessari que per la part de Visió per Computador s'aconsegueixi fer un meshing i texturització del model per tal de detectar correctament tots els punts amb precisió. D'aquesta manera hi hauria millor interacció Cirurgià - Robot. Aquesta feina és complicada i s'hi ha de dedicar molt de temps, però creiem que és un coll d'ampolla important a superar, doncs el canvi que es pot realitzar en el projecte és gran.
 * Controlar la temperatura dels motors, millorar la refrigeració o canviar el material de construcció del robot, ja que després de bastantes proves o d'execucions llargues, els engranatges més petits que es troben en contacte directe amb els motors es fonen, perdent així moviment del robot.
