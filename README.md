@@ -18,26 +18,43 @@ Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (
 
 # What is this?
 
+En aquest repositori es troba tot el codi, models del robot explicació necessaris per tal d'entendre què hem fet durant el procés de desenvolupament d'aquest projecte amb l'objectiu de poder replicar-lo i millorar-lo en un futur.
+
+### Codi.
+Trobem el codi separat en 3 carpetes principals:
+- **Kinematics:** En aquesta carpeta es troba tot el codi d'Arduino desenvolupat.
+- **cloud:** S'hi pot trobar el codi que s'ha d'executar per tal de controlar remotament el robot. Tenim el servidor, el client del robot, el client de l'usuari i l'aplicació.
+- **Computer Vision:** Conté el codi implementat durant la realització de la pràctica de Visió per Computador, durant la qual vam implementar l'algorisme SIFT manual, el procés necessari per realitzar una primera reconstrucció donades dues imatges i la comparació de diversos algorismes similars.
+
 # Requirements:
 
-## Hardware:
-- 3 motors pas a pas (28BYJ-48)
-- Arduino UNO Rev.3
-- Controladora de motors de pas a pas (28BYJ-48) (7 IN pins i de 5-12V)
-- Micro Metal Gearmotor HP (Gir Capçal)
-- Controladora de motor (micromotor de gir)
- -Fuente de alimentación TACENS anima APII 500
-- Placa de prototipo 16,5x5,5cm
-- Raspberry pi Zero
-- Mòdul de càmera Raspberry Pi Camera v2
+Descriurem els requeriments necessaris per portar a terme el nostre projecte, tant el muntatge del robot (sense comptar cables, cargols, etc) com 
+l'execució del nostre Software amb les dependències o requeriments que comportin.
 
+## Hardware:
+- 3 x motor pas a pas (28BYJ-48)
+- 3 x  Controladora de motors de pas a pas (28BYJ-48) (Controladora ULN2003 7 IN pins i de 5-12V)
+- 1 x Micro Metal Gearmotor HP (micromotor de gir Continu)
+- 1 x Controladora de motor (micromotor de gir) DF-MD V1.3
+- 1 x Fuente de alimentación TACENS anima APII 500
+- 1 x Placa de prototipo (Protoboard) 16,5x5,5cm
+- 1 x Arduino UNO Rev.3
+- 1 x Raspberry pi Zero
+- 1 x Mòdul de càmera Raspberry Pi Camera v2
 
 ## Software:
 - [Python 3.10.x](https://www.python.org/)
-- [NumPy](https://numpy.org/)
-- [PyGame](https://www.pygame.org/news)
-- [cv2 (openCV)](https://pypi.org/project/opencv-python/)
-
+  - [NumPy](https://numpy.org/)
+  - [PyGame](https://www.pygame.org/news)
+  - [cv2 (openCV)](https://pypi.org/project/opencv-python/)
+  - [google-cloud](https://cloud.google.com/python/docs/reference?hl=es-419)
+  - [google-auth]()
+- [Arduino IDE](https://www.arduino.cc/en/software)
+  - [AccelStepper - Arduino Library](https://www.airspayce.com/mikem/arduino/AccelStepper/)
+- [Google Cloud Platform (GCP)](https://cloud.google.com/gcp/)
+  - [google-cloud-storage]
+  - [functions-framework]
+  - [Flask]
 # Documentation:
 Aquest README conté informació del nostre robot, i un context general de les parts de visió per computador i del Cloud, desenvolupat a Sistemes Multimèdia.
 Si estàs interessat en conèixer més detalls dels respectius projectes, pots mirar:
@@ -66,6 +83,10 @@ Si estàs interessat en conèixer més detalls dels respectius projectes, pots m
     python3 cloud/clientRobot.py
     ```
 6. Enjoy!! 😄 TIP: You can check the Cloud folder README.md to understand the WorkFlow of our app. 
+
+# Esquema del Hardware
+
+
 
 # Authors:
 * Pol Colomer Campoy (1605612) | PolKinsa
