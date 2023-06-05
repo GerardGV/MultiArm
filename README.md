@@ -9,7 +9,7 @@
 Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (VC) i Sistemes Multimèdia (SM) en el qual hem desenvolupat un braç robotic amb visió per computador per a realitzar operacions quirúrgiques remotament via Internet.
 
 
-# Taula de continguts
+# Taula de continguts:
    * [Què és aquest repositori?](#què-és-aquest-repositori)
    * [Requisits](#requisits)
      * [Hardware](#hardware)
@@ -149,5 +149,149 @@ En aquesta imatge trobem els diversos models 3D que formen el nostre robot. En e
 * Gerard Josep Guarin Velez (1605947) | GerardGV
 * Jan Rubio Rico (1603753) | TheRospetit
 * Rubén Simó Marin (1569391)
+---
+---
 
+<h1 id= "castellano"> MultiArm </h1>
+Proyecto conjunto de las asignaturas de Robótica (RLP), Visión por Computadora (VC) y Sistemas Multimedia (SM) en el cual hemos desarrollado un brazo robótico con visión por computadora para realizar operaciones quirúrgicas de manera remota a través de Internet.
+
+## Tabla de contenidos:
+   * [¿Qué es este repositorio?](#qué-es-este-repositorio)
+   * [Requisitos](#requisitos)
+     * [Hardware](#hardware)
+     * [Software](#software)
+   * [Documentación](#documentación)
+   * [Guía de uso](#guía-de-uso)
+   * [Esquema del Hardware](#esquema-del-hardware)
+   * [Arquitectura del Software](#arquitectura-del-software)
+   * [Modelos 3D](#modelos-3d)
+   * [Autores](#autores)
+
+# ¿Qué es este repositorio?
+
+En este repositorio se encuentra todo el código, modelos del robot y explicaciones necesarias para entender lo que hemos hecho durante el proceso de desarrollo de este proyecto, con el objetivo de poder replicarlo y mejorarlo en el futuro.
+
+### Código.
+El código está organizado en 3 carpetas principales:
+- **Kinematics:** En esta carpeta se encuentra todo el código de Arduino desarrollado.
+- **cloud:** Aquí se puede encontrar el código que se debe ejecutar para controlar remotamente el robot. Tenemos el servidor, el cliente del robot, el cliente del usuario y la aplicación.
+- **Computer Vision:** Contiene el código implementado durante la realización de la práctica de Visión por Computadora, en la cual implementamos el algoritmo SIFT manual, el proceso necesario para realizar una reconstrucción inicial dadas dos imágenes y la comparación de varios algoritmos similares.
+
+# Requisitos:
+
+Enumeraremos los requisitos necesarios para llevar a cabo nuestro proyecto, tanto el ensamblaje del robot (sin contar cables, tornillos, etc.) como la ejecución de nuestro Software con las dependencias o requerimientos que conlleve.
+
+## Hardware:
+- 3 x motor paso a paso (28BYJ-48)
+- 3 x Controladora de motores paso a paso (28BYJ-48) (Controladora ULN2003 con 7 pines IN y voltaje de 5-12V)
+- 1 x Micro Motor de Engranajes HP (micromotor de giro continuo)
+- 1 x Controladora de motor (micromotor de giro) DF-MD V1.3
+- 1 x Fuente de alimentación TACENS anima APII 500
+- 1 x Placa de prototipo (Protoboard) 16,5x5,5cm
+- 1 x Arduino UNO Rev.3
+- 1 x Raspberry Pi Zero
+- 1 x Módulo de cámara Raspberry Pi Camera v2
+
+## Software:
+- [Python 3.10.x](https://www.python.org/)
+  - [NumPy](https://numpy.org/)
+  - [PyGame](https://www.pygame.org/news)
+  - [cv2 (openCV)](https://pypi.org/project/opencv-python/)
+  - [time](https://docs.python.org/3/library/time.html)
+  - [sys](https://docs.python.org/3/library/sys.html)
+  - [socket](https://docs.python.org/3/library/socket.html)
+  - [picamera](https://picamera.readthedocs.io/en/latest/)
+  - [serial](https://pyserial.readthedocs.io/en/latest/)
+  - [google-cloud](https://googleapis.dev/python/google-api-core/latest/index.html)
+  - [google-cloud-storage](https://googleapis.dev/python/storage/latest/index.html)
+  - [google-auth](https://google-auth.readthedocs.io/en/latest/)
+  - [google-auth-oauthlib](https://google-auth-oauthlib.readthedocs.io/en/latest/)
+  - [google.oauth2](https://google-auth.readthedocs.io/en/latest/reference/google.oauth2.html)
+  - [json](https://docs.python.org/3/library/json.html)
+  - [Flask](https://flask.palletsprojects.com/en/2.3.x/)
+- [Arduino IDE](https://www.arduino.cc/en/software)
+  - [AccelStepper - Arduino Library](https://www.airspayce.com/mikem/arduino/AccelStepper/)
+- [Google Cloud Platform (GCP)](https://cloud.google.com/gcp/)
+
+# Documentación:
+Este README contiene información de nuestro robot y un contexto general de las partes de visión por computadora y de Cloud desarrolladas en Sistemas Multimedia.
+Si estás interesado en conocer más detalles de los respectivos proyectos, puedes mirar:
+* [Visión por Computadora: Implementación del algoritmo SIFT y modelado 3D](https://github.com/GerardGV/MultiArm/tree/main/Computer%20Vision), donde profundizamos más sobre el algoritmo implementado para detectar puntos característicos en dos imágenes y luego visualizarlos en la aplicación.
+* [Sistemas Multimedia: Proyecto en el Cloud](https://github.com/GerardGV/MultiArm/tree/main/cloud), donde profundizamos más sobre la arquitectura de comunicaciones desarrollada en el Cloud alojado en Google Cloud, la aplicación, su funcionamiento y las solicitudes realizadas al servidor.
+
+# Guía de uso:
+1. Clona este repositorio.
+    ```terminal
+    git clone https://github.com/GerardGV/MultiArm.git
+    ```
+2. Instala Python y las bibliotecas requeridas. 
+    ```terminal
+    pip install -r requirements.txt
+    ```
+3. Abre el archivo server.py en la carpeta cloud y ejecútalo.
+    ```terminal
+    python3 cloud/server.py
+    ```
+4. Abre la aplicación (ejecuta el archivo app.py en la carpeta cloud).
+    ```terminal
+    python3 cloud/app.py
+    ```
+5. Abre el archivo clientRobot.py y enciende el robot.
+    ```terminal
+    python3 cloud/clientRobot.py
+    ```
+6. ¡Disfruta! 😄 CONSEJO: Puedes consultar el archivo README.md de la carpeta Cloud para comprender el flujo de trabajo de nuestra aplicación.
+
+# Esquema del Hardware
+<p align="center">
+  <img src="imgREADMEs/imgREADME_RLP/hardware_scheme.jpg" alt="Esquema del Hardware" />
+</p>
+Nota: El motor DC M1 está conectado a un controlador que el programa Fritzing no muestra en el esquema. 
+Nuestro esquema de HW está compuesto por los 3 motores paso a paso conectados cada uno a su controlador y a los pines correspondientes en Arduino, y un motor DC conectado a su controlador y a los pines 12 y 13 de Arduino. Todos estos motores están conectados a una fuente de alimentación.
+
+# Arquitectura del Software
+<p align="center">
+  <img src="imgREADMEs/imgREADME_RLP/software_architecture.png" alt="Arquitectura del Software" />
+</p>
+
+- Módulo comunicación User: función que recibe los siguientes parámetros:
+  - Socket: socket conectado al servidor.
+  - Instrucción: funcionalidad del mensaje.
+  - Mensaje: la información que se desea enviar.
+  - Retorna puntos 2D en caso de solicitarlo.
+  - Con estos parámetros, llamará al módulo jsonSetUp y formalizará un json para enviar a través del socket.
+- Módulo de Visualización: visualización del rostro escaneado en un espacio 2D, según la versión de la aplicación que se esté utilizando.
+- Módulo jsonSetUp: formaliza los parámetros de instrucción y mensaje para retornar un json.
+- Módulo de conexiones: recibe una dirección IP y un puerto para establecer una conexión socket.
+- Módulo de instrucciones: menú en la aplicación del usuario para recibir las órdenes.
+- Módulo User: aplicación formada por los módulos de visualización e instrucciones, junto con un módulo de conexión que permite la comunicación vía socket con el servidor.
+- Cloud function: algoritmo de visión por computadora que retorna los puntos característicos de las dos imágenes enviadas del robot al cloud storage bucket.
+- Módulo server: máquina virtual que ejecuta un script de Python que permite las conexiones vía socket con el User y el robot. Tiene reglas de firewall agregadas en su red del cloud para permitir las conexiones.
+- Módulo Bucket, cloud storage: almacena las imágenes tomadas por el brazo robótico.
+- Módulo Robot: script de Python compuesto por un módulo de conexión que envía las órdenes al Arduino para que llame a los módulos correspondientes.
+- Módulo control Cámara: recibe la instrucción de capturar los datos biométricos.
+- Módulo Control de Motores: recibe las órdenes de movimiento para cada motor.
+- Módulo cambio de cabezal: modelo al que llama el robot cuando quiere cambiar de cabezal. Si no tiene ningún cabezal, irá y tomará el primero, el rotulador; si tiene el rotulador, irá a dejar el segundo cabezal.
+- Módulo control cámara: módulo que devuelve imágenes tomadas por la cámara de la Raspberry.
+- Módulo inverse_kinematics: módulo del Arduino que recibe las instrucciones de la Raspberry y llama a control de motores según la instrucción.
+- Módulo comunicación Robot: recibe la conexión socket y envía las órdenes al robot (Arduino) y retorna información al servidor, como las imágenes.
+
+# Modelos 3D:
+<p align="center">
+  <img src="imgREADMEs/imgREADME_RLP/3d_models.jpeg" alt="Modelos 3D" />
+</p>
+
+En esta imagen encontramos los diversos modelos 3D que forman nuestro robot. En nuestro caso, los hemos impreso mediante una impresora 3D con PLA.
+
+# Mejoras en un futuro:
+* Mejorar la visualización de puntos para que se realice una visualización de puntos 3D mejorada. Desarrollar el software necesario para que toda la aplicación funcione con esta visualización implementada que permita rotar la cámara:
+![]()
+* Mejorar la algorítmica del robot para controlar mejor la profundidad y evitar cortes en el paciente. Sin embargo, para mejorar esto, es necesario lograr un meshing y texturización del modelo en la parte de Visión por Computadora para detectar correctamente todos los puntos con precisión. De esta manera, habría una mejor interacción Cirujano-Robot. Este trabajo es complicado y requiere mucho tiempo, pero creemos que es un desafío importante a superar, ya que el cambio que se puede lograr en el proyecto es significativo.
+* Controlar la temperatura de los motores, mejorar la refrigeración o cambiar el material de construcción del robot, ya que después de muchas pruebas o ejecuciones prolongadas, los engranajes más pequeños que están en contacto directo con los motores se funden, perdiendo así el movimiento del robot.
+
+# Autores:
+* Pol Colomer Campoy (1605612) | PolKinsa
+* Gerard Josep Guarin Velez (1605947) | GerardGV
+* Jan Rubio Rico (1603753) | TheRospetit
+* Rubén Simó Marin (1569391)
 
