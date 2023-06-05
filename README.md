@@ -1,5 +1,5 @@
-<img src="imgREADME_RLP/imgMultiArmHeader.jpeg?raw=true" align="right" width="300" alt="MultiArm Header Image"/>
-# MultiArm
+<img src="imgREADMEs/imgREADME_RLP/imgMultiArmHeader.jpeg?raw=true" align="right" width="300" alt="MultiArm Header Image"/>  
+<h1> MultiArm </h1>
 
 ## What is this?
 
