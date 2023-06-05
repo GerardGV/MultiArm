@@ -15,6 +15,8 @@ Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (
      * [Software](#software)
    * [Documentation](#documentation)
    * [How to use](#how-to-use)
+   * [Esquema del Hardware](#esquema-del-hardware)
+   * [Arquitectura del Software](#arquitectura-del-software)
 
 # What is this?
 
@@ -47,8 +49,17 @@ l'execució del nostre Software amb les dependències o requeriments que comport
   - [NumPy](https://numpy.org/)
   - [PyGame](https://www.pygame.org/news)
   - [cv2 (openCV)](https://pypi.org/project/opencv-python/)
-  - [google-cloud](https://cloud.google.com/python/docs/reference?hl=es-419)
-  - [google-auth]()
+  - [time](https://docs.python.org/3/library/time.html)
+  - [sys](https://docs.python.org/3/library/sys.html)
+  - [socket](https://docs.python.org/3/library/socket.html)
+  - [picamera](https://picamera.readthedocs.io/en/latest/)
+  - [serial](https://pyserial.readthedocs.io/en/latest/)
+  - [google-cloud](https://googleapis.dev/python/google-api-core/latest/index.html)
+  - [google-cloud-storage](https://googleapis.dev/python/storage/latest/index.html)
+  - [google-auth](https://google-auth.readthedocs.io/en/latest/)
+  - [google-auth-oauthlib](https://google-auth-oauthlib.readthedocs.io/en/latest/)
+  - [google.oauth2](https://google-auth.readthedocs.io/en/latest/reference/google.oauth2.html)
+  - [json](https://docs.python.org/3/library/json.html)
 - [Arduino IDE](https://www.arduino.cc/en/software)
   - [AccelStepper - Arduino Library](https://www.airspayce.com/mikem/arduino/AccelStepper/)
 - [Google Cloud Platform (GCP)](https://cloud.google.com/gcp/)
@@ -85,9 +96,16 @@ Si estàs interessat en conèixer més detalls dels respectius projectes, pots m
 6. Enjoy!! 😄 TIP: You can check the Cloud folder README.md to understand the WorkFlow of our app. 
 
 # Esquema del Hardware
+<p align="center">
+  <img src="imgREADMEs/imgREADME_RLP/hardware_scheme.jpg" alt= "Hardware Scheme" />
+</p>
 
-
-
+# Arquitectura del Software
+<p align="center">
+  <img src="imgREADMEs/imgREADME_RLP/software_architecture.png" alt= "Software Architecture" />
+</p>
+                                                                                           
+                                                                               
 # Authors:
 * Pol Colomer Campoy (1605612) | PolKinsa
 * Gerard Josep Guarin Velez (1605947) | GerardGV
