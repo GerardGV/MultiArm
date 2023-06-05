@@ -106,6 +106,57 @@ void calculate(int x, int y, int z)
   delay(1000);
 }
 
+void fotos(){
+  digitalWrite(IN13, LOW);
+  digitalWrite(IN14, LOW);
+
+  //subir
+  int p = 300;
+  for (int j = 0; j < p; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN9, paso[i][0]);
+      digitalWrite(IN10, paso[i][1]);
+      digitalWrite(IN11, paso[i][2]);
+      digitalWrite(IN12, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000);
+
+  //base izquierda
+  int p2 = 100;
+  for (int j = 0; j < p2; j++)
+  {
+    for (int i = 3; i >= 0; i--)
+    {
+      digitalWrite(IN1, paso2[i][0]);
+      digitalWrite(IN2, paso2[i][1]);
+      digitalWrite(IN3, paso2[i][2]);
+      digitalWrite(IN4, paso2[i][3]);
+      delay(10);
+    }
+  }
+  delay(3000);
+
+  //base derecha
+  int p3 = 150;
+  for (int j = 0; j < p3; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN1, paso2[i][0]);
+      digitalWrite(IN2, paso2[i][1]);
+      digitalWrite(IN3, paso2[i][2]);
+      digitalWrite(IN4, paso2[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000);
+}
+
+
 void cabezal()
 { 
 
@@ -183,44 +234,6 @@ void cabezal()
   }
   delay(4000); // Espera 1 segundo antes de reiniciar el movimiento
 
-  //bajar
-  int pasos6 = 50; // Cantidad de pasos a mover
-
-  for (int j = 0; j < pasos6; j++)
-  {
-    for (int i = 3; i >= 0; i--)
-    {
-      digitalWrite(IN9, paso2[i][0]);
-      digitalWrite(IN10, paso2[i][1]);
-      digitalWrite(IN11, paso2[i][2]);
-      digitalWrite(IN12, paso2[i][3]);
-      delay(10);
-    }
-  }
-  delay(1000);
-
-  //dejar cabezal
-  digitalWrite(IN13, HIGH);
-  digitalWrite(IN14, HIGH);
-  delay(2000);
-  digitalWrite(IN13, LOW);
-  digitalWrite(IN14, LOW);
-
-  int pasos8 = 60; // Cantidad de pasos a mover
-
-  for (int j = 0; j < pasos8; j++)
-  {
-    for (int i = 0; i < 4; i++)
-    {
-      digitalWrite(IN9, paso[i][0]);
-      digitalWrite(IN10, paso[i][1]);
-      digitalWrite(IN11, paso[i][2]);
-      digitalWrite(IN12, paso[i][3]);
-      delay(10);
-    }
-  }
-  delay(4000);
-
   exit(0);
 }
 
@@ -287,6 +300,9 @@ void loop() {
   else{
     if(message_raspberry == "TOOLCHG"){
       cabezal();
+    }
+    else if(message_raspberry == "PHOTO"){
+      fotos();
     }
     else if(message_raspberry == "TURN_OFF"){
       exit(0);
