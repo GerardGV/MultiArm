@@ -2,6 +2,9 @@
 * <a href="#catala">Català</a>
 * <a href="#castellano">Castellano</a>
 * <a href="#english">English</a>
+
+[![Our Youtube Video](https://github.com/GerardGV/MultiArm/blob/main/imgREADMEs/imgREADME_RLP/youtube_img.png)](https://www.youtube.com/watch?v=n3rDo8sf0jU&ab_channel=JanRubio "MultiArm")
+
 ---
 
 <img src="imgREADMEs/imgREADME_RLP/imgMultiArmHeader.jpeg?raw=true" align="right" width="300" alt="MultiArm Header Image"/>  
