@@ -57,6 +57,51 @@ void loop()
   digitalWrite(IN13, LOW);
   digitalWrite(IN14, LOW);
 
+  int p = 100;
+
+  for (int j = 0; j < p; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN9, paso2[i][0]);
+      digitalWrite(IN10, paso2[i][1]);
+      digitalWrite(IN11, paso2[i][2]);
+      digitalWrite(IN12, paso2[i][3]);
+      delay(10);
+    }
+  }
+  delay(10000);
+
+  int p3 = 70;
+
+  for (int j = 0; j < p3; j++)
+  {
+    for (int i = 3; i >= 0; i--)
+    {
+      digitalWrite(IN1, paso2[i][0]); 
+      digitalWrite(IN2, paso2[i][1]);
+      digitalWrite(IN3, paso2[i][2]);
+      digitalWrite(IN4, paso2[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000);
+
+  int p2 = 100;
+
+  for (int j = 0; j < p2; j++)
+  {
+    for (int i = 3; i >= 0; i--)
+    {
+      digitalWrite(IN9, paso2[i][0]);
+      digitalWrite(IN10, paso2[i][1]);
+      digitalWrite(IN11, paso2[i][2]);
+      digitalWrite(IN12, paso2[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000);
+
   int pasos2 = 50; 
   int pasos3 = 50; 
   int pasosp = 50;
@@ -152,6 +197,17 @@ void loop()
       }
     }
 
+    if (j < pasosp2)
+      {
+        for (int i = 3; i >= 0; i--)
+        {
+          digitalWrite(IN9, paso[i][0]);
+          digitalWrite(IN10, paso[i][1]);
+          digitalWrite(IN11, paso[i][2]);
+          digitalWrite(IN12, paso[i][3]);
+          delay(10);
+        }
+        }
   }
 
   delay(1000);
