@@ -63,12 +63,11 @@ l'execució del nostre Software amb les dependències o requeriments que comport
   - [google-auth-oauthlib](https://google-auth-oauthlib.readthedocs.io/en/latest/)
   - [google.oauth2](https://google-auth.readthedocs.io/en/latest/reference/google.oauth2.html)
   - [json](https://docs.python.org/3/library/json.html)
+  - [Flask](https://flask.palletsprojects.com/en/2.3.x/)
 - [Arduino IDE](https://www.arduino.cc/en/software)
   - [AccelStepper - Arduino Library](https://www.airspayce.com/mikem/arduino/AccelStepper/)
 - [Google Cloud Platform (GCP)](https://cloud.google.com/gcp/)
-  - [google-cloud-storage]
-  - [functions-framework]
-  - [Flask]
+
 # Documentation:
 Aquest README conté informació del nostre robot, i un context general de les parts de visió per computador i del Cloud, desenvolupat a Sistemes Multimèdia.
 Si estàs interessat en conèixer més detalls dels respectius projectes, pots mirar:
