@@ -8,6 +8,8 @@
 <h1 id="catala"> MultiArm </h1>
 Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (VC) i Sistemes Multimèdia (SM) en el qual hem desenvolupat un braç robotic amb visió per computador per a realitzar operacions quirúrgiques remotament via Internet.
 
+
+
 # Table of Contents
    * [What is this?](#what-is-this)
    * [Requirements](#requirements)
@@ -99,13 +101,40 @@ Si estàs interessat en conèixer més detalls dels respectius projectes, pots m
 <p align="center">
   <img src="imgREADMEs/imgREADME_RLP/hardware_scheme.jpg" alt= "Hardware Scheme" />
 </p>
+Nota: El motor DC M1 está connectat a una controladora que el programa Fritzing no mostra a l'esquema. 
+El nostre esquema de HW esta compost pels 3 motors steppers connectats cadascún a la seva controladora i als pins correspondents a la Arduino i un motor DC connectat a la seva controladora i als pins 12 i 13 d’Arduino. Tots aquests motors estan connectats a una font d’alimentació.
 
 # Arquitectura del Software
 <p align="center">
   <img src="imgREADMEs/imgREADME_RLP/software_architecture.png" alt= "Software Architecture" />
 </p>
-                                                                                           
-                                                                               
+- Mòdul comunicació User: funció que rep els següents paràmetres:
+  - Socket: socket conectat al servidor
+  - Instrucció: funcionalitat del missatge
+  - Missatge: la informació que es desitja enviar.
+  - Retorna punts 2D en cas de demanar que el 
+  - Amb aquests paràmetres cridarà al mòdul de jsonSetUp i formalizará un json per enviar a través del socket.
+- Mòdul de Visualització : visualització del rostre escanejat en un espai 2D, segons la versió de l'aplicació que s’utilitzi..
+- Mòdul jsonSetUp: formalitza els parametres instruction i message per retornar un json.
+- Mòdul de connexions: rep un IP i el port per retornar una connexió socket.
+- Mòdul de instruccions: menú a l’aplicaió de l’usuari per rebre les ordres.
+- Mòdul User: aplicació formada per els mòduls de visualització i d’instruccions en conjunt amb un mòdul de connexió que permet comunicar-se via socket amb el servidor.
+- Cloud function: algorisme de visió per computador que retorna els punts característics de les dues imatges enviades del robot al cloud storage bucket.
+- Mòdul server: máquina virtual que executa un python script que permet les connexions via socket amb el User i el robot. Té regles firewall afegides en la seva red del cloud per permetre les connexions.
+- Mòdul Bucket, cloud storage: emmagatzema les imatges fetes pero el braç robótic.
+- Mòdul Robot: python script format per un mòdul de connexió y que envia les ordres al arduino per a que cridi als mòduls corresponents.
+- Mòdul control Camara: rep la instrucció de captar les dades biomètriques.
+- Mòdul Control de Motors: rep les ordres de moviment per a cada motor.
+- Mòdul canvi de capçal: model al qual crida el robot quan vol cambiar de capçal. Si no te cap capçal, anira i agafara l’1, el rotulador, si té el retolador, anirà a deixar el segon capçal.
+- Mòdul control camera: modul que retorna imatges fetes per la camera de la raspberry
+- Mòdul inverse_kinematics:modul de l’arduino que rep les instruccions de la raspberry y crida a control de motors segons l’instrucció.
+- Mòdul comunicació Robot:  rep la connexió socket i envia les ordres al robot, arduino, i retorna informació al servidor, les imatges.
+                                                                                  
+# Models 3D: 
+<p align="center">
+  <img src="imgREADMEs/imgREADME_RLP/3d_models.jpg" alt= "3D models" />
+</p>
+En aquesta imatge trobem els diversos models 3D que formen el nostre robot.
 # Authors:
 * Pol Colomer Campoy (1605612) | PolKinsa
 * Gerard Josep Guarin Velez (1605947) | GerardGV
