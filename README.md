@@ -193,8 +193,9 @@ Enumeraremos los requisitos necesarios para llevar a cabo nuestro proyecto, tant
 - 1 x Arduino UNO Rev.3
 - 1 x Raspberry Pi Zero
 - 1 x Módulo de cámara Raspberry Pi Camera v2
-
+- 
 <h2 name="software-es"> Software: </h2>
+
 - [Python 3.10.x](https://www.python.org/)
   - [NumPy](https://numpy.org/)
   - [PyGame](https://www.pygame.org/news)
@@ -331,7 +332,8 @@ The code is organized into 3 main folders:
 
 We will list the necessary requirements to carry out our project, both the assembly of the robot (excluding cables, screws, etc.) and the execution of our software with the dependencies or requirements they entail.
 
-<h2 name="hardware-en" Hardware: </h2>
+<h2 name="hardware-en"> Hardware: </h2>
+
 - 3 x Stepper Motor (28BYJ-48)
 - 3 x Stepper Motor Controller (28BYJ-48) (ULN2003 7 IN pins controller and 5-12V)
 - 1 x Micro Metal Gearmotor HP (Continuous rotation micro motor)
@@ -342,7 +344,8 @@ We will list the necessary requirements to carry out our project, both the assem
 - 1 x Raspberry Pi Zero
 - 1 x Raspberry Pi Camera Module v2
 
-<h2 name="software-en" Software: </h2>
+<h2 name="software-en" >Software: </h2>  
+
 - [Python 3.10.x](https://www.python.org/)
   - [NumPy](https://numpy.org/)
   - [PyGame](https://www.pygame.org/news)
