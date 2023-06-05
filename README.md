@@ -108,6 +108,7 @@ El nostre esquema de HW esta compost pels 3 motors steppers connectats cadascún
 <p align="center">
   <img src="imgREADMEs/imgREADME_RLP/software_architecture.png" alt= "Software Architecture" />
 </p>
+
 - Mòdul comunicació User: funció que rep els següents paràmetres:
   - Socket: socket conectat al servidor
   - Instrucció: funcionalitat del missatge
@@ -132,9 +133,11 @@ El nostre esquema de HW esta compost pels 3 motors steppers connectats cadascún
                                                                                   
 # Models 3D: 
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/3d_models.jpg" alt= "3D models" />
+  <img src="imgREADMEs/imgREADME_RLP/3d_models.jpeg" alt= "3D models" />
 </p>
+
 En aquesta imatge trobem els diversos models 3D que formen el nostre robot.
+
 # Authors:
 * Pol Colomer Campoy (1605612) | PolKinsa
 * Gerard Josep Guarin Velez (1605947) | GerardGV
