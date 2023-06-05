@@ -19,6 +19,8 @@
 #define IN13 0
 #define IN14 1
 
+int current_tool = 0
+
 int paso[4][4] =
 {
   {1, 1, 0, 0},
@@ -157,7 +159,7 @@ void fotos(){
 }
 
 
-void cabezal()
+void cabezal1()
 { 
 
   digitalWrite(IN13, LOW);
@@ -217,6 +219,246 @@ void cabezal()
   delay(2000);
   digitalWrite(IN13, LOW);
   digitalWrite(IN14, LOW);
+
+  //subir
+  int pasos5 = 60; // Cantidad de pasos a mover
+
+  for (int j = 0; j < pasos5; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN9, paso[i][0]);
+      digitalWrite(IN10, paso[i][1]);
+      digitalWrite(IN11, paso[i][2]);
+      digitalWrite(IN12, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(4000); // Espera 1 segundo antes de reiniciar el movimiento
+
+  exit(0);
+}
+
+void quitar_1()
+{ 
+
+  digitalWrite(IN13, LOW);
+  digitalWrite(IN14, LOW);
+  //subir
+  int pasos1 = 50; // Cantidad de pasos a mover
+
+  for (int j = 0; j < pasos1; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN9, paso[i][0]);
+      digitalWrite(IN10, paso[i][1]);
+      digitalWrite(IN11, paso[i][2]);
+      digitalWrite(IN12, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000); // Espera 1 segundo antes de reiniciar el movimiento
+
+  //deracha
+  int pasos2 = 280; // Cantidad de pasos a mover
+  
+  for (int j = 0; j < pasos2; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN1, paso[i][0]);
+      digitalWrite(IN2, paso[i][1]);
+      digitalWrite(IN3, paso[i][2]);
+      digitalWrite(IN4, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000); // Espera 1 segundo antes de reiniciar el movimiento
+
+  //bajar
+  int pasos4 = 60; // Cantidad de pasos a mover
+
+  for (int j = 0; j < pasos4; j++)
+  {
+    for (int i = 3; i >= 0; i--)
+    {
+      digitalWrite(IN9, paso2[i][0]);
+      digitalWrite(IN10, paso2[i][1]);
+      digitalWrite(IN11, paso2[i][2]);
+      digitalWrite(IN12, paso2[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000);
+
+
+  //dejar cabezal
+  digitalWrite(IN13, HIGH);
+  digitalWrite(IN14, LOW);
+  delay(2000);
+  digitalWrite(IN13, HIGH);
+  digitalWrite(IN14, HIGH);
+
+  //subir
+  int pasos5 = 60; // Cantidad de pasos a mover
+
+  for (int j = 0; j < pasos5; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN9, paso[i][0]);
+      digitalWrite(IN10, paso[i][1]);
+      digitalWrite(IN11, paso[i][2]);
+      digitalWrite(IN12, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(4000); // Espera 1 segundo antes de reiniciar el movimiento
+
+  exit(0);
+}
+
+void cabezal2()
+{ 
+
+  digitalWrite(IN13, LOW);
+  digitalWrite(IN14, LOW);
+  //subir
+  int pasos1 = 50; // Cantidad de pasos a mover
+
+  for (int j = 0; j < pasos1; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN9, paso[i][0]);
+      digitalWrite(IN10, paso[i][1]);
+      digitalWrite(IN11, paso[i][2]);
+      digitalWrite(IN12, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000); // Espera 1 segundo antes de reiniciar el movimiento
+
+  //izquierda
+  int pasos2 = 240; // Cantidad de pasos a mover
+  
+  for (int j = 0; j < pasos2; j++)
+  {
+    for (int i = 3; i >= 0; i--)
+    {
+      digitalWrite(IN1, paso[i][0]);
+      digitalWrite(IN2, paso[i][1]);
+      digitalWrite(IN3, paso[i][2]);
+      digitalWrite(IN4, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000); // Espera 1 segundo antes de reiniciar el movimiento
+
+  //bajar
+  int pasos4 = 60; // Cantidad de pasos a mover
+
+  for (int j = 0; j < pasos4; j++)
+  {
+    for (int i = 3; i >= 0; i--)
+    {
+      digitalWrite(IN9, paso2[i][0]);
+      digitalWrite(IN10, paso2[i][1]);
+      digitalWrite(IN11, paso2[i][2]);
+      digitalWrite(IN12, paso2[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000);
+
+
+  //coger cabezal
+  digitalWrite(IN13, HIGH);
+  digitalWrite(IN14, LOW);
+  delay(2000);
+  digitalWrite(IN13, LOW);
+  digitalWrite(IN14, LOW);
+
+  //subir
+  int pasos5 = 60; // Cantidad de pasos a mover
+
+  for (int j = 0; j < pasos5; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN9, paso[i][0]);
+      digitalWrite(IN10, paso[i][1]);
+      digitalWrite(IN11, paso[i][2]);
+      digitalWrite(IN12, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(4000); // Espera 1 segundo antes de reiniciar el movimiento
+
+  exit(0);
+}
+
+void quitar_1()
+{ 
+
+  digitalWrite(IN13, LOW);
+  digitalWrite(IN14, LOW);
+  //subir
+  int pasos1 = 50; // Cantidad de pasos a mover
+
+  for (int j = 0; j < pasos1; j++)
+  {
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(IN9, paso[i][0]);
+      digitalWrite(IN10, paso[i][1]);
+      digitalWrite(IN11, paso[i][2]);
+      digitalWrite(IN12, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000); // Espera 1 segundo antes de reiniciar el movimiento
+
+  //izquierda
+  int pasos2 = 240; // Cantidad de pasos a mover
+  
+  for (int j = 0; j < pasos2; j++)
+  {
+    for (int i = 3; i >= 0; i--)
+    {
+      digitalWrite(IN1, paso[i][0]);
+      digitalWrite(IN2, paso[i][1]);
+      digitalWrite(IN3, paso[i][2]);
+      digitalWrite(IN4, paso[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000); // Espera 1 segundo antes de reiniciar el movimiento
+
+  //bajar
+  int pasos4 = 60; // Cantidad de pasos a mover
+
+  for (int j = 0; j < pasos4; j++)
+  {
+    for (int i = 3; i >= 0; i--)
+    {
+      digitalWrite(IN9, paso2[i][0]);
+      digitalWrite(IN10, paso2[i][1]);
+      digitalWrite(IN11, paso2[i][2]);
+      digitalWrite(IN12, paso2[i][3]);
+      delay(10);
+    }
+  }
+  delay(1000);
+
+
+  //dejar cabezal
+  digitalWrite(IN13, HIGH);
+  digitalWrite(IN14, LOW);
+  delay(2000);
+  digitalWrite(IN13, HIGH);
+  digitalWrite(IN14, HIGH);
 
   //subir
   int pasos5 = 60; // Cantidad de pasos a mover
@@ -299,7 +541,18 @@ void loop() {
   }
   else{
     if(message_raspberry == "TOOLCHG"){
-      cabezal();
+      if(current_tool == 0){ //coger 1 eina
+        cabezal1();
+        current_tool = 1;
+      }else if(current_tool == 1){ //dejar 1 eina y coger 2 eina
+        quitar_1();
+        cabezal2();
+        current_tool = 2;
+      }else if(current_tool = 2){ //dejar 2 eina
+        quitar2();
+        current_tool = 0;
+      }
+      
     }
     else if(message_raspberry == "PHOTO"){
       fotos();
