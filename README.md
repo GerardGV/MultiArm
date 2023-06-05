@@ -19,6 +19,7 @@ Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (
    * [Esquema del Hardware](#esquema-del-hardware)
    * [Arquitectura del Software](#arquitectura-del-software)
    * [Models 3D](#models-3d)
+   * [Autors](#autors)
 
 # Què és aquest repositori?
 
@@ -143,8 +144,10 @@ En aquesta imatge trobem els diversos models 3D que formen el nostre robot. En e
 * Millorar l'algorísmica del robot per controlar millor la profunditat i evitar tallades al pacient, però per millorar això, és necessari que per la part de Visió per Computador s'aconsegueixi fer un meshing i texturització del model per tal de detectar correctament tots els punts amb precisió. D'aquesta manera hi hauria millor interacció Cirurgià - Robot. Aquesta feina és complicada i s'hi ha de dedicar molt de temps, però creiem que és un coll d'ampolla important a superar, doncs el canvi que es pot realitzar en el projecte és gran.
 * Controlar la temperatura dels motors, millorar la refrigeració o canviar el material de construcció del robot, ja que després de bastantes proves o d'execucions llargues, els engranatges més petits que es troben en contacte directe amb els motors es fonen, perdent així moviment del robot.
 
-# Authors:
+# Autors:
 * Pol Colomer Campoy (1605612) | PolKinsa
 * Gerard Josep Guarin Velez (1605947) | GerardGV
 * Jan Rubio Rico (1603753) | TheRospetit
 * Rubén Simó Marin (1569391)
+
+
