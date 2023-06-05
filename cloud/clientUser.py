@@ -3,7 +3,7 @@ import json
 import sys
 
 PORT=3389
-IP= '123.456.789.012' # Modificar con la IP del servidor
+IP= '123.456.789.012' # Here put your IP server
 
 def jsonSetUp(instruction:str, message):
     """
@@ -48,8 +48,8 @@ def communicationClient(socketUser, instructions="NAN", message="NAN"):
         socketUser.send(json_data.encode())  # Codificar para convertir los datos a binario
 
     elif instructions == "PHOTO":
-        # Enviar datos a través de la conexión TCP del socket
-        socketUser.send(json_data.encode())  # Codificar para convertir los datos a binario
+        
+        socketUser.send(json_data.encode())  # sending data to server
 
         # How much data it gets from the socket
         buffer_size = 1024
