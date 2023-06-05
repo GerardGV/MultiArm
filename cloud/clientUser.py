@@ -3,7 +3,7 @@ import json
 import sys
 
 PORT=3389
-IP='34.172.166.240'
+IP= '123.456.789.012' # Modificar con la IP del servidor
 
 def jsonSetUp(instruction:str, message):
     """
