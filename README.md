@@ -19,6 +19,7 @@ Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (
    * [Esquema del Hardware](#esquema-del-hardware)
    * [Arquitectura del Software](#arquitectura-del-software)
    * [Models 3D](#models-3d)
+   * [Millores en un futur](#millores-en-un-futur)
    * [Autors](#autors)
 
 # Què és aquest repositori?
@@ -165,6 +166,7 @@ Proyecto conjunto de las asignaturas de Robótica (RLP), Visión por Computadora
    * [Esquema del Hardware](#esquema-del-hardware)
    * [Arquitectura del Software](#arquitectura-del-software)
    * [Modelos 3D](#modelos-3d)
+   * [Mejoras en un futuro](#mejoras-en-un-futuro)
    * [Autores](#autores)
 
 # ¿Qué es este repositorio?
