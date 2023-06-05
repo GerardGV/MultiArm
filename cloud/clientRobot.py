@@ -11,7 +11,7 @@ puerto = '/dev/ttyACM0'
 velocity = 9600
 
 PORT = 3400
-IP = '12.345.678.901' # Modificar la IP y poner la del Servidor
+IP = '12.345.678.901' # Here your IP server
 
 def capture_image(file_name):
     with picamera.PiCamera() as camera:
@@ -25,17 +25,17 @@ def capture_image(file_name):
         capture_image('image2.jpg')
 
 def upload_image(bucket_name, file_path, destination_blob_name, credentials_file):
-    # Crea una instancia del cliente de Google Cloud Storage con las credenciales de la identidad de servicio
+    # instance of google cloud client with token access
     credentials = service_account.Credentials.from_service_account_file(credentials_file)
     client = storage.Client(credentials=credentials)
 
-    # Obtiene el bucket
+    # Bucket get
     bucket = client.bucket(bucket_name)
 
-    # Crea un nuevo blob (archivo) en el bucket
+    # Blob file creacion in bucket
     blob = bucket.blob(destination_blob_name)
 
-    # Carga el archivo en el blob
+    #upload blob file
     blob.upload_from_filename(file_path)
 
     print('Imagen cargada exitosamente en el bucket.')
