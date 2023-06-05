@@ -18,7 +18,11 @@
 
 
 ### Software:
-- Python 3.10.X (https://www.python.org/downloads/)
+- [Python 3.10.x](https://www.python.org/)
+- [NumPy](https://numpy.org/)
+- [PyGame](https://www.pygame.org/news)
+- [cv2 (openCV)](https://pypi.org/project/opencv-python/)
+
 
 # How to use:
 1. Clone this repository.
