@@ -100,7 +100,7 @@ from tractament_imatges import img_to_3d_points
 def draw_points(points):
     glBegin(GL_POINTS)
     for i, point in enumerate(points):
-        glColor3f(0.0, 0.0, 0.0)  # Color de visualización de los puntos
+        glColor3f(1.0, 0.0, 0.0)  # Color de visualización de los puntos
         glVertex3fv(point)
     glEnd()
 

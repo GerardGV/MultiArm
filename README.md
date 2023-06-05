@@ -1,3 +1,4 @@
+<img src="?raw=true" align="right" width="300" alt="MultiArm Header Image"/>
 # MultiArm
 
 ## What is this?
