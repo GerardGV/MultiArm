@@ -72,4 +72,21 @@ li resta l'orientació dominant del píxel del pas **3.** perquè siguin relativ
 histogrames de cada descriptor `4x4` es concatenen els `bins` donant com a resultat el descriptor del key point el qual 
 s’utilitza quan es vol fer match amb key points d’una altra imatge.
 
+## Procés de reconstrucció - Modelatge 3D a partir de dues imatges utilitzant SIFT.
 
+Tal i com s'explica al títol, en aquest apartat explicarem quin procés hem realitzat per tal d'acomplir el repte proposat de generar un mapa de punts 3D donades dues imatges.
+
+### Passos per a la reconstrucció:
+
+1. **Dades proporcionades:** Primerament, rebrem dues imatges, en el nostre projecte del robot, les imatges proporcionades seràn les dues que realitza la càmera de la Raspberry Pi.
+Posarem dues imatges de prova d'un dels membres del grup (Pol Colomer Campoy) per tal de fer l'explicació de manera més visual:
+<p align="center">
+  <img src="img/base/img08_V2_1_face_Pol_sense_sostre.jpeg" alt = "Imatge 1 base (input) d'en Pol Colomer" height="300px" /> <img src="img/base/img08_V2_2_face_Pol_sense_sostre.jpeg" alt = "Imatge 2 base (input) d'en Pol Colomer" height="300px" />
+</p>  
+
+A partir d'ara: `Imatge 1 o input 1` A partir d'ara: `Imatge 2 o input 2`  
+
+2. **Calcular SIFT:** A continuació es realitza l'algorisme SIFT, el qual ja sabem com funciona degut a l'explicació anterior. Aplicarem l'algorisme SIFT per a cada imatge per tal d'obtenir els `keypoints` i `descriptors` de cada una.
+3. **Matching:** Una vegada hem obtingut els descriptors de cada imatge, realitzarem el matching dels punts que es troben en les dues imatges alhora, nosaltres hem utilitzat FLANN per fer cerques ràpides entre veïns propers (coincidències de descriptors == Match)
+4. **Good Matches:** Del pas anterior, hem trobat molts matches, és a dir, molts punts característics que es trobaven alhora en les dues imatges, però el més segur és que molts d'aquests siguin càlculs erronis degut a la similaritud de diversos sectors de la imatge. És per això per el que realtizarem un filtratge dels matches per tal de quedar-nos amb els "Good Matches" o matches confiables. Per calcular-los, apliquem el test de Lowe's (Lowe's Ratio Test) o "prova de ràtio de pendent". 
+5. 
