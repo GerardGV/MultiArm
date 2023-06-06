@@ -113,26 +113,27 @@ El nostre esquema de HW esta compost pels 3 motors steppers connectats cadascún
 <p align="center">
   <img src="imgREADMEs/imgREADME_RLP/software_architecture.png" alt= "Software Architecture" />
 </p>
-- Mòdul comunicació User: funció que rep els següents paràmetres:
-  - Socket: socket connectat al servidor.
+
+- Mòdul comunicació User: funció que rep els següents paràmetres:  
+  - Socket: socket connectat al servidor.  
   - Instrucció: funcionalitat del missatge.  
-  - Missatge: la informació que es desitja enviar.
-  - Amb aquests paràmetres cridarà al mòdul de jsonSetUp i formalitzarà un json per enviar a través del socket.
-- Mòdul de Visualització: visualització del rostre escanejat en un espai 2D, segons la versió de l'aplicació que s'utilitzi.
-- Mòdul jsonSetUp: formalitza els paràmetres instruction i message per retornar un json.
-- Mòdul de connexions: rep una IP i el port per retornar una connexió socket.
-- Mòdul d'instruccions: menú a l'aplicació de l'usuari per rebre les ordres.
-- Mòdul User: aplicació formada pels mòduls de visualització i d'instruccions en conjunt amb un mòdul de connexió que permet comunicar-se via socket amb el servidor.
-- Cloud function: algorisme de visió per computador que retorna els punts característics de les dues imatges enviades del robot al cloud storage bucket.
-- Mòdul server: màquina virtual que executa un Python script que permet les connexions via socket amb l'User i el robot. Té regles firewall afegides en la seva xarxa del cloud per permetre les connexions.
-- Mòdul Bucket, cloud storage: emmagatzema les imatges fetes però el braç robòtic.
-- Mòdul Robot: Python script format per un mòdul de connexió i que envia les ordres a l'arduino perquè cridi als mòduls corresponents.
-- Mòdul control Càmera: rep la instrucció de captar les dades biomètriques.
-- Mòdul Control de Motors: rep les ordres de moviment per a cada motor.
-- Mòdul canvi de capçal: mòdul al qual crida el robot quan vol canviar de capçal. Si no té cap capçal, anirà i agafarà l'1, el retolador, si té el retolador, anirà a deixar el segon capçal.
-- Mòdul control càmera: mòdul que retorna imatges fetes per la càmera de la raspberry.
-- Mòdul inverse_kinematics: mòdul de l'arduino que rep les instruccions de la raspberry i crida a control de motors segons la instrucció.
-- Mòdul comunicació Robot: rep la connexió socket i envia les ordres al robot, arduino, i retorna informació al servidor, les imatges.
+  - Missatge: la informació que es desitja enviar.  
+  - Amb aquests paràmetres cridarà al mòdul de jsonSetUp i formalitzarà un json per enviar a través del socket.  
+- Mòdul de Visualització: visualització del rostre escanejat en un espai 2D, segons la versió de l'aplicació que s'utilitzi.  
+- Mòdul jsonSetUp: formalitza els paràmetres instruction i message per retornar un json.  
+- Mòdul de connexions: rep una IP i el port per retornar una connexió socket.  
+- Mòdul d'instruccions: menú a l'aplicació de l'usuari per rebre les ordres.  
+- Mòdul User: aplicació formada pels mòduls de visualització i d'instruccions en conjunt amb un mòdul de connexió que permet comunicar-se via socket amb el servidor.  
+- Cloud function: algorisme de visió per computador que retorna els punts característics de les dues imatges enviades del robot al cloud storage bucket.  
+- Mòdul server: màquina virtual que executa un Python script que permet les connexions via socket amb l'User i el robot. Té regles firewall afegides en la seva xarxa del cloud per permetre les connexions.  
+- Mòdul Bucket, cloud storage: emmagatzema les imatges fetes però el braç robòtic.  
+- Mòdul Robot: Python script format per un mòdul de connexió i que envia les ordres a l'arduino perquè cridi als mòduls corresponents.  
+- Mòdul control Càmera: rep la instrucció de captar les dades biomètriques.  
+- Mòdul Control de Motors: rep les ordres de moviment per a cada motor.  
+- Mòdul canvi de capçal: mòdul al qual crida el robot quan vol canviar de capçal. Si no té cap capçal, anirà i agafarà l'1, el retolador, si té el retolador, anirà a deixar el segon capçal.  
+- Mòdul control càmera: mòdul que retorna imatges fetes per la càmera de la raspberry.  
+- Mòdul inverse_kinematics: mòdul de l'arduino que rep les instruccions de la raspberry i crida a control de motors segons la instrucció.  
+- Mòdul comunicació Robot: rep la connexió socket i envia les ordres al robot, arduino, i retorna informació al servidor, les imatges.  
                                                                                   
 # Models 3D: 
 <p align="center">
