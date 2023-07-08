@@ -25,7 +25,7 @@ def capture_image(file_name):
         capture_image('image2.jpg')
 
 def upload_image(bucket_name, file_path, destination_blob_name, credentials_file):
-    # instance of google cloud client with token access
+    # instance of google cloudServer client with token access
     credentials = service_account.Credentials.from_service_account_file(credentials_file)
     client = storage.Client(credentials=credentials)
 

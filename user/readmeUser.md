@@ -22,7 +22,7 @@ de tal manera que es pugui controlar des de qualsevol part del món amb una conn
 
 A continuació es pot veure l'esquema d'aquesta arquitectura.
 <p align="center">
-<img src="../imgREADMEs/imgREADME_SM/sm_connection_architecture.png?raw=true" alt="SM Connection Architecture"/>
+<img src="../imgReadMe/imgREADME_SM/sm_connection_architecture.png?raw=true" alt="SM Connection Architecture"/>
 </p>
 Tal com es pot observar, podem trobar un usuari (User -> `clientUser.py`), el robot (`clientRobot.py`) i al centre de 
 tot, el Cloud, en el nostre cas, **Google Cloud**.
@@ -52,7 +52,7 @@ succeeix és perquè el primer pas `1.` no s'ha realitzat correctament. En aques
 per tal de provar l'aplicació, però no es podràn realitzar verificacions més enllà dels `prints` que es veuran pel 
 terminal en realitzar les diverses accions. 
 
-    <img src="../imgREADMEs/imgREADME_SM/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
+    <img src="../imgReadMe/imgREADME_SM/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
 <br/><br/>
 3. **Clicar el botó "Càmera"**.  <br/> <img src="../imgREADMEs/imgREADME_SM/camera_button.png" alt= "Camera button"  />  
 Aquest botó envia una petició al servidor per a obtenir el núvol de punts 3D de la cara del pacient. Aleshores el 
@@ -109,7 +109,7 @@ de modo que se pueda controlar desde cualquier parte del mundo con una conexión
 
 A continuación se puede ver el esquema de esa arquitectura.
 <p align="center">
-<img src="../imgREADMEs/imgREADME_SM/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
+<img src="../imgReadMe/imgREADME_SM/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
 </p>
 Tal como se puede observar, podemos encontrar un usuario (User -> `clientUser.py`), el robot (`clientRobot.py`) y en el centro de
 todo, el Cloud, en nuestro caso, **Google Cloud**.
@@ -140,7 +140,7 @@ sucede es porque el primer paso `1.` no se ha realizado correctamente. En este c
 para probar la aplicación, pero no se podrán realizar verificaciones más allá de los `prints` que se verán por el
 terminal al realizar las diversas acciones.
 
-<img src="../imgREADMEs/imgREADME_SM/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
+<img src="../imgReadMe/imgREADME_SM/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
 <br/><br/>
 
 3. **Clicar el botón "Cámara"**. <br/> <img src="../imgREADMEs/imgREADME_SM/camera_button.png" alt="Cámara"/> <br/>
@@ -199,7 +199,7 @@ so that it can be controlled from anywhere in the world with an Internet connect
 
 Below you can see the outline of this architecture.
 <p align="center">
-<img src="../imgREADMEs/imgREADME_SM/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
+<img src="../imgReadMe/imgREADME_SM/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
 </p>
 As you can see, we can find a user (User -> `clientUser.py`), the robot (`clientRobot.py`) and in the center of
 everything, the Cloud, in our case, **Google Cloud**.
@@ -230,7 +230,7 @@ happens is because the first step `1.` was not performed correctly. In this case
 in order to test the application, but it will not be possible to carry out checks beyond the `prints' that will be seen by
 terminal when performing the various actions.
 
-<img src="../imgREADMEs/imgREADME_SM/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
+<img src="../imgReadMe/imgREADME_SM/open_app.png" alt= "App on Open" style="height:200px; width: auto; " />
 <br/><br/>
 
 3. **Click the "Camera" button**. <br/> <img src="../imgREADMEs/imgREADME_SM/camera_button.png" alt="Camera"/><br/>

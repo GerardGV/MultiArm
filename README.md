@@ -8,7 +8,7 @@
 
 ---
 
-<img src="imgREADMEs/imgREADME_RLP/imgMultiArmHeader.jpeg?raw=true" align="right" width="300" alt="MultiArm Header Image"/>  
+<img src="imgReadMe/imgREADME_RLP/imgMultiArmHeader.jpeg?raw=true" align="right" width="300" alt="MultiArm Header Image"/>  
 <h1 id="catala"> MultiArm </h1>
 Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (VC) i Sistemes Multimèdia (SM) en el qual hem desenvolupat un braç robotic amb visió per computador per a realitzar operacions quirúrgiques remotament via Internet.
 
@@ -32,7 +32,7 @@ En aquest repositori es troba tot el codi, models del robot explicació necessar
 
 ### Codi.
 Trobem el codi separat en 3 carpetes principals:
-- **Kinematics:** En aquesta carpeta es troba tot el codi d'Arduino desenvolupat.
+- **robot:** En aquesta carpeta es troba tot el codi d'Arduino desenvolupat i els models 3D del robot.
 - **cloud:** S'hi pot trobar el codi que s'ha d'executar per tal de controlar remotament el robot. Tenim el servidor, el client del robot, el client de l'usuari i l'aplicació.
 - **Computer Vision:** Conté el codi implementat durant la realització de la pràctica de Visió per Computador, durant la qual vam implementar l'algorisme SIFT manual, el procés necessari per realitzar una primera reconstrucció donades dues imatges i la comparació de diversos algorismes similars.
 
@@ -104,14 +104,14 @@ Si estàs interessat en conèixer més detalls dels respectius projectes, pots m
 
 # Esquema del Hardware
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/hardware_scheme.jpg" alt= "Hardware Scheme" />
+  <img src="imgReadMe/imgREADME_RLP/hardware_scheme.jpg" alt= "Hardware Scheme" />
 </p>
 Nota: El motor DC M1 está connectat a una controladora que el programa Fritzing no mostra a l'esquema. 
 El nostre esquema de HW esta compost pels 3 motors steppers connectats cadascún a la seva controladora i als pins correspondents a la Arduino i un motor DC connectat a la seva controladora i als pins 12 i 13 d’Arduino. Tots aquests motors estan connectats a una font d’alimentació.
 
 # Arquitectura del Software
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/software_architecture.png" alt= "Software Architecture" />
+  <img src="imgReadMe/imgREADME_RLP/software_architecture.png" alt= "Software Architecture" />
 </p>
 
 - Mòdul comunicació User: funció que rep els següents paràmetres:  
@@ -137,7 +137,7 @@ El nostre esquema de HW esta compost pels 3 motors steppers connectats cadascún
                                                                                   
 # Models 3D: 
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/3d_models.jpeg" alt= "3D models" />
+  <img src="imgReadMe/imgREADME_RLP/3d_models.jpeg" alt= "3D models" />
 </p>
 
 En aquesta imatge trobem els diversos models 3D que formen el nostre robot. En el nostre cas, els hem imprès mitjançant una impresora 3D amb PLA.
@@ -178,7 +178,7 @@ En este repositorio se encuentra todo el código, modelos del robot y explicacio
 
 ### Código.
 El código está organizado en 3 carpetas principales:
-- **Kinematics:** En esta carpeta se encuentra todo el código de Arduino desarrollado.
+- **robot:** En esta carpeta se encuentra todo el código de Arduino desarrollado y los modelos 3D del robot.
 - **cloud:** Aquí se puede encontrar el código que se debe ejecutar para controlar remotamente el robot. Tenemos el servidor, el cliente del robot, el cliente del usuario y la aplicación.
 - **Computer Vision:** Contiene el código implementado durante la realización de la práctica de Visión por Computadora, en la cual implementamos el algoritmo SIFT manual, el proceso necesario para realizar una reconstrucción inicial dadas dos imágenes y la comparación de varios algoritmos similares.
 
@@ -250,14 +250,14 @@ Si estás interesado en conocer más detalles de los respectivos proyectos, pued
 
 # Esquema del Hardware
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/hardware_scheme.jpg" alt="Esquema del Hardware" />
+  <img src="imgReadMe/imgREADME_RLP/hardware_scheme.jpg" alt="Esquema del Hardware" />
 </p>
 Nota: El motor DC M1 está conectado a un controlador que el programa Fritzing no muestra en el esquema. 
 Nuestro esquema de HW está compuesto por los 3 motores paso a paso conectados cada uno a su controlador y a los pines correspondientes en Arduino, y un motor DC conectado a su controlador y a los pines 12 y 13 de Arduino. Todos estos motores están conectados a una fuente de alimentación.
 
 # Arquitectura del Software
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/software_architecture.png" alt="Arquitectura del Software" />
+  <img src="imgReadMe/imgREADME_RLP/software_architecture.png" alt="Arquitectura del Software" />
 </p>
 
 - Módulo comunicación User: función que recibe los siguientes parámetros:
@@ -284,7 +284,7 @@ Nuestro esquema de HW está compuesto por los 3 motores paso a paso conectados c
 
 # Modelos 3D:
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/3d_models.jpeg" alt="Modelos 3D" />
+  <img src="imgReadMe/imgREADME_RLP/3d_models.jpeg" alt="Modelos 3D" />
 </p>
 
 En esta imagen encontramos los diversos modelos 3D que forman nuestro robot. En nuestro caso, los hemos impreso mediante una impresora 3D con PLA.
@@ -327,7 +327,7 @@ This repository contains all the necessary code, robot models, and explanations 
 
 ### Code.
 The code is organized into 3 main folders:
-- **Kinematics:** This folder contains all the developed Arduino code.
+- **robot:** This folder contains all the developed Arduino code and 3D models of the robot.
 - **cloud:** It contains the code that needs to be executed to remotely control the robot. We have the server, the robot client, the user client, and the application.
 - **Computer Vision:** It includes the code implemented during the Computer Vision practice, during which we manually implemented the SIFT algorithm, the necessary process to perform an initial reconstruction given two images, and the comparison of various similar algorithms.
 
@@ -400,14 +400,14 @@ This README contains information about our robot and provides a general context 
 
 # Hardware Scheme
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/hardware_scheme.jpg" alt= "Hardware Scheme" />
+  <img src="imgReadMe/imgREADME_RLP/hardware_scheme.jpg" alt= "Hardware Scheme" />
 </p>
 Note: The DC motor M1 is connected to a controller that is not shown in the Fritzing diagram. 
 Our hardware scheme is composed of the 3 stepper motors connected to their respective controllers and the corresponding pins on Arduino, and a DC motor connected to its controller and pins 12 and 13 of Arduino. All these motors are connected to a power supply.
 
 # Software Architecture
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/software_architecture.png" alt="Software Architecture" />
+  <img src="imgReadMe/imgREADME_RLP/software_architecture.png" alt="Software Architecture" />
 </p>
 
 - User Communication Module: a function that receives the following parameters:
@@ -434,7 +434,7 @@ Our hardware scheme is composed of the 3 stepper motors connected to their respe
 
 # 3D Models
 <p align="center">
-  <img src="imgREADMEs/imgREADME_RLP/3d_models.jpeg" alt="3D Models" />
+  <img src="imgReadMe/imgREADME_RLP/3d_models.jpeg" alt="3D Models" />
 </p>
 
 In this image, we can see the various 3D models that make up our robot. In our case, we have printed them using a 3D printer with PLA.

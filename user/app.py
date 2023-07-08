@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 from tractament_imatges import img_to_3d_points
-from clientUser import *
+from user.clientUser import *
 
 # Port i ip externa de la màquina virtual (que executa el servidor)
 PORT = 3389
@@ -57,7 +57,7 @@ def convert_to_2d(point=[0, 0, 0]):
     return [point[0] * (point[2] * .3), point[1] * (point[2] * .3)]
 
 # Demana al servidor (que demana al robot) el càlcul, mitjançant Visió per Computador, dels punts 3D. En el cas de
-# que el servidor es trobi inoperatiu, s'utilitzarà el codi implementat en local (equivalent al que tenim al cloud)
+# que el servidor es trobi inoperatiu, s'utilitzarà el codi implementat en local (equivalent al que tenim al cloudServer)
 # per tal de poder realitzar proves i un test genèric de l'aplicació.
 def realitzar_fotos(map3dDots, map3dDotsList, conn=False):
     if not conn:

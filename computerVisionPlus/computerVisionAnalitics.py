@@ -703,7 +703,7 @@ def showKeyPoints(img, keypoints, expfolder, im_name):
 
 if __name__ == '__main__':
     print('Starting...')
-    folder = '../cloud/imgFaces/VC Part/'
+    folder = '../cloudServer/imgFaces/VC Part/'
     #expFolder = 'imgFaces/exports/'
     method = "sift"
     image_names = load_images_from_folder(folder)

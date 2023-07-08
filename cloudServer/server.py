@@ -65,12 +65,12 @@ while True:
                     'filename2': "image2.jpeg"
                 }
 
-                #credentials to call the cloud function
+                #credentials to call the cloudServer function
                 credentials = service_account.IDTokenCredentials.from_service_account_file('credentials.json',
                                                                                            target_audience=URL)
                 authed_session = AuthorizedSession(credentials)
 
-                #result of the cloud function
+                #result of the cloudServer function
                 resp = authed_session.post(URL, params=params)
                 print(resp.status_code)
 

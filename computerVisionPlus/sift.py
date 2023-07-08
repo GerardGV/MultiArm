@@ -517,7 +517,7 @@ def sift(img: np.array, k=1.6, mode='same', max_scale=3, num_ocatavas=4, kernelS
 
 if __name__ == '__main__':
 
-    folder = 'Computer Vision/imgFaces/base/'
+    folder = 'user/imgFaces/base/'
 
     # cargamos los nombres de las imagenes
     image_names = load_images_from_folder(folder)
