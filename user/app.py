@@ -1,6 +1,7 @@
 import numpy as np
 import pygame
-from tractament_imatges import img_to_3d_points
+
+#from localCloudFunctionComputerVision import img_to_3d_points # TO LOCAL TEST
 from user.clientUser import *
 
 # Port i ip externa de la màquina virtual (que executa el servidor)
@@ -60,10 +61,12 @@ def convert_to_2d(point=[0, 0, 0]):
 # que el servidor es trobi inoperatiu, s'utilitzarà el codi implementat en local (equivalent al que tenim al cloudServer)
 # per tal de poder realitzar proves i un test genèric de l'aplicació.
 def realitzar_fotos(map3dDots, map3dDotsList, conn=False):
-    if not conn:
-        pts3d = img_to_3d_points()
-    else:
-        pts3d = np.array(map3dDotsList)
+    # TO LOCAL TEST
+    #if not conn:
+        #pts3d = img_to_3d_points()
+    #else:
+        #pts3d = np.array(map3dDotsList)
+    pts3d = np.array(map3dDotsList)
     pts3d += 2
     pts3d *= 10
     for pt in pts3d:
@@ -114,9 +117,9 @@ timerDown = 0
 cameraUsed = False
 
 # Carregar imatges dels botons.
-image1 = pygame.image.load("imgFaces/app/bisturi.png")
-image2 = pygame.image.load("imgFaces/app/retolador.png")
-image3 = pygame.image.load("imgFaces/app/apagar.png")
+image1 = pygame.image.load("img/app/bisturi.png")
+image2 = pygame.image.load("img/app/retolador.png")
+image3 = pygame.image.load("img/app/apagar.png")
 
 # Realitzar connexió amb el servidor
 connected = False

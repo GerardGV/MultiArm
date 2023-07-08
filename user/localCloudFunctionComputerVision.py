@@ -126,8 +126,8 @@ def firstReconstruction(img1, pts1, pts2):
     return pts3d
 
 def img_to_3d_points():
-    img1 = cv2.imread('imgFaces/VC part/imgTest1.png')
-    img2 = cv2.imread('imgFaces/VC part/imgTest2.png')
+    img1 = cv2.imread('img/testImages/img08_1_face_Pol.jpeg')#HERE YOU CAN test with any image from img/testImages
+    img2 = cv2.imread('img/testImages/img08_2_face_Pol.jpeg')#HERE YOU CAN test with any image from img/testImages
 
     keypoints1, descriptors1, keypoints2, descriptors2 = sift(img1, img2)
     pts1, pts2 = matching(keypoints1, descriptors1, keypoints2, descriptors2)

@@ -57,26 +57,26 @@ Desprès de decidir que ens agradaria utilitzar l'algorisme SIFT vam decidir imp
 L'implementació consta de 4 passos:
 
 1. **Obtenció de key points:** Per l'obtenció de key points, o punts característics, s'ha de convolucionar la imatge amb
-  una màscara Gaussiana, donant com a resultat una imatge suavitzada o `escala`. Hem de generar `n` escales per després aconseguir un espai de diferències Gaussianes. Cada imatge suavitzada nova es genera amb una màscara amb la qual té la `sigma` utilitzada en la creació de la imatge suavitzada anterior per un hiperparàmetre `k^n`. Les imatges suavitzades estan agrupades en `octaves`. Les `octaves` es diferencien en el fet que es redueix la resolució. En cada octava els pixeles tenen una resolució de `2^n de l'Octava`. Quan obtenim els espais de Diferències de Gaussianes, restem a cada imatge suavitzada nova a l'anterior, iterem per cada píxel de la imatge resultant i si el píxel és un màxim o un mínim en l'espai `3x3x3` al seu voltant, es considera un keypoint.
+    una màscara Gaussiana, donant com a resultat una imatge suavitzada o `escala`. Hem de generar `n` escales per després aconseguir un espai de diferències Gaussianes. Cada imatge suavitzada nova es genera amb una màscara amb la qual té la `sigma` utilitzada en la creació de la imatge suavitzada anterior per un hiperparàmetre `k^n`. Les imatges suavitzades estan agrupades en `octaves`. Les `octaves` es diferencien en el fet que es redueix la resolució. En cada octava els pixeles tenen una resolució de `2^n de l'Octava`. Quan obtenim els espais de Diferències de Gaussianes, restem a cada imatge suavitzada nova a l'anterior, iterem per cada píxel de la imatge resultant i si el píxel és un màxim o un mínim en l'espai `3x3x3` al seu voltant, es considera un keypoint.
 
 2. **Refining keypoint location:** En aquest apartat es refinen breument les posicions dels keypoints, perquè s'obté la 
-  posició 'exacta', afegint més desimals a les coordenades del punts característics.
-  Per a aconseguir aquesta aproximació, s'han d'implementar la funció de segon ordre de Taylor i la matriu Hessiana. A causa de la poca diferència dels resultats aplicant aquest pas o no aplicant-lo i al temps que implicaria implementar 
-  aquest apartat, no s’ha implementat.
+    posició 'exacta', afegint més desimals a les coordenades del punts característics.
+    Per a aconseguir aquesta aproximació, s'han d'implementar la funció de segon ordre de Taylor i la matriu Hessiana. A causa de la poca diferència dels resultats aplicant aquest pas o no aplicant-lo i al temps que implicaria implementar 
+    aquest apartat, no s’ha implementat.
 
 3. **Orientació dels keypoints:** Una vegada tenim els key points, calculem quina orientació tenen. Per això, hem de fer
-  una finestra al voltant del keypoint de mida `3*1.5*escala on es troba el píxel`. En aquesta finestra calculem els gradients de cada píxel per a continuació aconseguir les seves magnituds i orientacions. En un histograma de 36 `bins`, 1 per cada 10 
-  graus, anem afegint el valor dels pesos de cada píxel. Per assignar els pesos, hem calculat la mitja entre `1.5*escala` 
-  i la magnitud del píxel. Una vegada iterat tots els píxels de la finestra al voltant del keypoint, es tria l'angle del 
-  `bin` amb valor màxim com l’orientació del key point. Per cadascun dels `bins` que tingui un valor igual o major al 
-  `0.8 del bin màxim`, es creen nous key points a la mateixa posició però amb l’orientació diferent.
+    una finestra al voltant del keypoint de mida `3*1.5*escala on es troba el píxel`. En aquesta finestra calculem els gradients de cada píxel per a continuació aconseguir les seves magnituds i orientacions. En un histograma de 36 `bins`, 1 per cada 10 
+    graus, anem afegint el valor dels pesos de cada píxel. Per assignar els pesos, hem calculat la mitja entre `1.5*escala` 
+    i la magnitud del píxel. Una vegada iterat tots els píxels de la finestra al voltant del keypoint, es tria l'angle del 
+    `bin` amb valor màxim com l’orientació del key point. Per cadascun dels `bins` que tingui un valor igual o major al 
+    `0.8 del bin màxim`, es creen nous key points a la mateixa posició però amb l’orientació diferent.
 
 4. **Construcció dels descriptors:** Per la construcció dels descriptors s’ha d'observar una àrea de `16x16 píxels` al 
-  voltant del key point. En aquesta àrea es creen `descriptors de 4x4`. Dins de cada descriptor es calcula un histograma
-  d'orientacions de `8 bins`. Per tal d’omplir l’histograma es fa el mateix que al pas anterior, es calcula els gradients
-  per després calcular les orientacions i magnituds de cada píxel. A cada orientació del nou histograma d'orientacions es resta l'orientació dominant del píxel del pas **3.** perquè siguin relatives a aquesta orientació dominant. Una vegada calculats tots els 
-  histogrames de cada descriptor `4x4` es concatenen els `bins` donant com a resultat el descriptor del key point el qual 
-  s’utilitza quan es vol fer match amb key points d’una altra imatge.
+    voltant del key point. En aquesta àrea es creen `descriptors de 4x4`. Dins de cada descriptor es calcula un histograma
+    d'orientacions de `8 bins`. Per tal d’omplir l’histograma es fa el mateix que al pas anterior, es calcula els gradients
+    per després calcular les orientacions i magnituds de cada píxel. A cada orientació del nou histograma d'orientacions es resta l'orientació dominant del píxel del pas **3.** perquè siguin relatives a aquesta orientació dominant. Una vegada calculats tots els 
+    histogrames de cada descriptor `4x4` es concatenen els `bins` donant com a resultat el descriptor del key point el qual 
+    s’utilitza quan es vol fer match amb key points d’una altra imatge.
 
   Punts característics del nostre SIFT:
 
@@ -89,12 +89,14 @@ Tal i com s'explica al títol, en aquest apartat explicarem quin procés hem rea
 ### Passos per a la reconstrucció:
 
 1. **Dades proporcionades:** Primerament, rebrem dues imatges, en el nostre projecte del robot, les imatges proporcionades seràn les dues que realitza la càmera de la Raspberry Pi.
-  El robot prendra les imatges del següent rostre com es veu en el video:
+    El robot prendra les imatges del següent rostre com es veu en el video:
 
-  ![rostro-humano-atado-con-alambre-ROTADO](/Users/gerard/Desktop/rostro-humano-atado-con-alambre-ROTADO.jpg)
+  
 2. **Calcular SIFT:** A continuació es realitza l'algorisme SIFT, el qual ja sabem com funciona degut a l'explicació anterior. Aplicarem l'algorisme SIFT per a cada imatge per tal d'obtenir els `keypoints` i `descriptors` de cada una.
 3. **Matching:** Una vegada amb els `keypoints` i `descriptors` de cada imatge, realitzarem el matching, on busquem identificar ` keypoints` que apareguin en les dues imatges. Per fer aixó, nosaltres hem utilitzat `knnMatch`from `FlannBasedMatcher` de OpenCV per comparar els `descriptors ` del keypoints d'una imatge amb els de l'altre imatge. Si els `descriptors `de 2 `keypoints` fan match signfica que són el mateix.
 4. **Good Matches:** Del pas anterior, hem trobat molts matches, és a dir, molts punts característics que es trobaven alhora en les dues imatges, però el més segur és que molts d'aquests siguin càlculs erronis degut a la similaritud de diversos sectors de la imatge. És per això per el que realtizarem un filtratge dels matches per tal de quedar-nos amb els "Good Matches" o matches confiables. Per calcular-los, apliquem el test de Lowe's (Lowe's Ratio Test) o "prova de ràtio de pendent". 
 5. **First Reconstruction**: NO ES NECESSARI per la version actual 2D. Aquesta funcio es de cara a l'ampliació on volem veure en 3D el rostre i interactuar amb ell. De cara al futur el que fa una triangulació amb dades de la camara que treu de l'imatge per pasar els punts de 2D a 3D. 
 
-Es visualitza el resultat:![WhatsApp Image 2023-06-05 at 15.31.14](/Users/gerard/Downloads/WhatsApp Image 2023-06-05 at 15.31.14.jpeg)
+Es visualitza el resultat:
+
+<img src="imgReadMe/imgREADME_VC/manualSIFTResults.png?raw=true"> 
