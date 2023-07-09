@@ -1,4 +1,4 @@
-### Autors | Autores | Authors:
+#### Autors | Autores | Authors:
 * Pol Colomer Campoy (1605612)
 * Gerard Josep Guarin Velez (1605947)
 * Jan Rubio Rico (1603753)
@@ -24,17 +24,87 @@ To choose the caracteristic points or `keypoints` we considered 3 algorithms: Ha
 
 - Harris:
 
-  ![img](https://lh3.googleusercontent.com/ravi3roIZ7aLTwf3P2vsZva8BeNnI1RHElBRdgIHtZQRBznhGILvu8mHO_F0fXsC2d3BNNnJ_97WXdd18aSAGbcin-oYyGuHdPIO19dfhhzDpRhoCZ3nzmeLhvIf1KZQeIVPHTJIAt0aRqSidugUw1AP1w=nw)
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/resultHarris.jpg?raw=true">  
 
 - ORB:
 
-  ![img](https://lh6.googleusercontent.com/6KdwpTvLMS6RkGyFPHIWYtyzdstVRQn1GmTqOavmmZAcMon-nvrZQQTGCanBO38auYhabZPmAZjfcQXCw9rwi6G4AbPo_5K2cCdHTG0M4-GzzuxuAaL3zaDZPDIfEpJJ2FkIcWIUL47h_iPeVcT5bQyCAw=nw)
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/resultORB.jpg?raw=true">  
 
 - SIFT:
 
-![img](https://lh5.googleusercontent.com/xF2jlF30FSXITav2iSe8U7JzsVzF2BtWVT9t5eWqaGbFaCWCUNlGOFFqDbPKd-LJ_8DyPN-J0Cwkjfrz4-iVexKQSZjo30jeynIQbl3KvdC7aaSjZRceMSG5X9sGYh4GEFJSFcjpG0d35Dg9pxVEba1d4w=nw)
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/resultSIFT.jpg?raw=true">
 
- 
+## SIFT (Scale Invariant Feature Transform)
+
+The SIFT algorithm is particularly useful for detecting feature points invariant to changes in scale, rotation, and illumination in an image. The detection process is carried out through several stages. First, one is applied
+scale pyramid to identify potential points at different levels of resolution.
+A keypoint detection algorithm is then used to identify regions with distinctive features,
+such as corners and regions with sudden intensity changes.
+Once the key points are detected, the SIFT algorithm calculates a descriptor for each point. These descriptors are
+numerical vectors that capture the local features of the region around each keypoint, such as the direction of the
+gradient and magnitude. This makes it possible to compare and match characteristic points between different images, since the
+descriptors are robust to geometric and photometric changes.
+
+The SIFT algorithm has been widely used in various computer vision applications, such as the
+image matching, object recognition and three-dimensional reconstruction. Its robustness and
+invariance to different transformations have contributed to its popularity and its applicability in different areas.
+
+### SIFT Manual Implementation:
+After deciding that we would like to use the SIFT algorithm we decided to implement it as a challenge since we consider that in this way we would learn and understand it more even though in the project we use OpenCV's SIFT for optimization and time issues.
+
+The implementation consists of 4 steps:
+
+1. **Obtaining key points:** To obtain key points, or characteristic points, the image must be convoluted with
+     a Gaussian mask, resulting in a smoothed or `scaled' image. We have to generate `n` scales to then obtain a space of Gaussian differences. Each new smoothed image is generated with a mask with the `sigma' used in the creation of the previous smoothed image by a `k^n` hyperparameter. Smoothed images are grouped into `octaves'. The 'octaves' differ in that the resolution is reduced. In each octave the pixels have a resolution of `2^n of the Octave'. When we obtain the Differences of Gaussian spaces, we subtract each new smoothed image from the previous one, iterate through each pixel of the resulting image and if the pixel is a maximum or a minimum in the `3x3x3` space around it, it consider a keypoint.
+
+2. **Refining keypoint location:** In this section the positions of the keypoints are briefly refined, because the
+     'exact' position, adding more decimals to the feature point coordinates.
+     To achieve this approximation, Taylor's second-order function and the Hessian matrix must be implemented. Because of the small difference in results applying this step or not applying it and the time it would involve to implement
+     this section has not been implemented.
+
+3. **Orientation of the keypoints:** Once we have the keypoints, we calculate their orientation. That's why we have to
+     a window around the keypoint of size `3*1.5*scale where the pixel is located'. In this window we calculate the gradients of each pixel to then obtain their magnitudes and orientations. In a histogram of 36 `bins', 1 for every 10
+     degrees, we are adding the value of the weights of each pixel. To assign the weights, we calculated the average between `1.5*scale`
+     and pixel magnitude. Once all the pixels of the window have been iterated around the keypoint, the angle of the is chosen
+     `bin` with maximum value as the orientation of the key point. For each of the `bins' that has a value equal to or greater than
+     `0.8 of the maximum bin', new key points are created at the same position but with a different orientation.
+
+4. **Construction of the descriptors:** For the construction of the descriptors, an area of `16x16 pixels' must be observed in the
+     around the key point. In this area `4x4 descriptors' are created. Within each descriptor a histogram is calculated
+     of orientations of `8 bins`. In order to fill the histogram, do the same as in the previous step, the gradients are calculated
+     to then calculate the orientations and magnitudes of each pixel. From each orientation of the new histogram of orientations the dominant orientation of the pixel in step **3.** is subtracted so that they are relative to this dominant orientation. Once all the
+     histograms of each `4x4` descriptor the `bins` are concatenated resulting in the key point descriptor which
+     it is used when you want to match key points from another image.
+
+   Characteristic points of our SIFT:
+
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/manualSIFTResults.png?raw=true"> 
+
+<h1 id="catala"> COMPUTER VISION</h1>
+
+La Visió per Computador es fa servir en aquest projecte per obtenir característiques de les imatges de robot. Aquests punts de caràcter són visualitzats en l'aplicació d'usuari. Aquests going to be used to a multiview estèreo proces in future versions.
+
+En aquest directori de visió per computador trobaras
+
+<ol>
+<li>computerVisionAnalitics.py: S'han analitzat 3 diferents algoritmes per a la millora de la qual s'ha de fer amb el nostre projecte.</li>
+   <li>sift.py: We implementen SIFT algorithm straight from David G. Lowe paper from 2004 i altres sources a challange and to understand SIFT better.</li>
+</ol>
+## 1. COMPUTER VISION ANALITICS
+
+Per els punts característics o 'keypoints', considereu 3 algoritmes: Harris, ORB i SIFT.Tots ells ja implementats a la biblioteca openCV. Es decideix el triar SIFT perquè és més capaç de detectar punts característiques i és invariant a escala. Aquí tenim els punts característics de cada algorisme amb la mateixa imatge:
+
+- Harris:
+
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/resultHarris.jpg?raw=true">  
+
+- ORB:
+
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/resultORB.jpg?raw=true">  
+
+- SIFT:
+
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/resultSIFT.jpg?raw=true">
 
 ## SIFT (Scale Invariant Feature Transform)
 
@@ -80,23 +150,76 @@ L'implementació consta de 4 passos:
 
   Punts característics del nostre SIFT:
 
-  ![img](/Users/gerard/Desktop/A_LHm_I8-IBZRWyQJHa_mgYzCqK3TlEtlep9kyw3gk7RUtI182HPk4CWiBG9En95kKXhhBPWwUSfg1zLea8nv10DdeleepKGBTS4UOVwOzMFbCy9XxwKgpo7szICQnsgTKcgsPxIqo3lLpTmhnswaa6h4w=nw.png)
+  <img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/manualSIFTResults.png?raw=true"> 
 
-## Procés de reconstrucció - Modelatge 2D a partir de dues imatges utilitzant SIFT.
+<h1 id="castellano"> COMPUTER VISION</h1>
 
-Tal i com s'explica al títol, en aquest apartat explicarem quin procés hem realitzat per tal d'acomplir el repte proposat de generar un mapa de punts 3D donades dues imatges. Agafarem l'imatge utilitzada al video del README.md per l'explicació.
+La Visió per Computador es fa servir en aquest projecte per obtener característiques de les imatges de robot. Aquests punts de caràcter són visualitzats en l'aplicació d'usuari. Aquests se utilizará para un proceso estéreo multivista en futuras versiones.
 
-### Passos per a la reconstrucció:
+En aquest directori de visió per computador trobaras
 
-1. **Dades proporcionades:** Primerament, rebrem dues imatges, en el nostre projecte del robot, les imatges proporcionades seràn les dues que realitza la càmera de la Raspberry Pi.
-    El robot prendra les imatges del següent rostre com es veu en el video:
+<ol>
+<li>computerVisionAnalitics.py: S'han analizó 3 algoritmos diferentes por a la millora de la qual s'ha de fer amb el nostre projecte.</li>
+    <li>sift.py: Implementamos el algoritmo SIFT directamente del artículo de David G. Lowe de 2004 i otras fuentes, un desafío y para comprender mejor SIFT.</li>
+</ol>
+## 1. ANÁLISIS DE VISIÓN POR COMPUTADORA
 
-  
-2. **Calcular SIFT:** A continuació es realitza l'algorisme SIFT, el qual ja sabem com funciona degut a l'explicació anterior. Aplicarem l'algorisme SIFT per a cada imatge per tal d'obtenir els `keypoints` i `descriptors` de cada una.
-3. **Matching:** Una vegada amb els `keypoints` i `descriptors` de cada imatge, realitzarem el matching, on busquem identificar ` keypoints` que apareguin en les dues imatges. Per fer aixó, nosaltres hem utilitzat `knnMatch`from `FlannBasedMatcher` de OpenCV per comparar els `descriptors ` del keypoints d'una imatge amb els de l'altre imatge. Si els `descriptors `de 2 `keypoints` fan match signfica que són el mateix.
-4. **Good Matches:** Del pas anterior, hem trobat molts matches, és a dir, molts punts característics que es trobaven alhora en les dues imatges, però el més segur és que molts d'aquests siguin càlculs erronis degut a la similaritud de diversos sectors de la imatge. És per això per el que realtizarem un filtratge dels matches per tal de quedar-nos amb els "Good Matches" o matches confiables. Per calcular-los, apliquem el test de Lowe's (Lowe's Ratio Test) o "prova de ràtio de pendent". 
-5. **First Reconstruction**: NO ES NECESSARI per la version actual 2D. Aquesta funcio es de cara a l'ampliació on volem veure en 3D el rostre i interactuar amb ell. De cara al futur el que fa una triangulació amb dades de la camara que treu de l'imatge per pasar els punts de 2D a 3D. 
+Para las características de los puntos o 'puntos clave', considere 3 algoritmos: Harris, ORB y SIFT. Tots ells ja implementats a la biblioteca openCV. Es decideix el triar SIFT perquè és més capaç de detectar punts característiques i és invariant a escala. Aquí tenim els punts característics de cada algorisme amb la mateixa imatge:
 
-Es visualitza el resultat:
+- Harris:
 
-<img src="imgReadMe/imgREADME_VC/manualSIFTResults.png?raw=true"> 
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/resultHarris.jpg?raw=true">  
+
+- ORB:
+
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/resultORB.jpg?raw=true">  
+
+- SIFT:
+
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/resultSIFT.jpg?raw=true">
+
+## SIFT (Scale Invariant Feature Transform)
+
+El algoritmo SIFT es especialmente útil para detectar puntos característicos invariantes a cambios de escalera, rotación e iluminación en una imagen. El proceso de detección se realiza mediante distintas etapas. En primer lugar, se aplica una
+pirámide de escalera para identificar puntos potenciales en diferentes niveles de resolución.
+Después, se utiliza un algoritmo de detección de puntos clave para identificar a las regiones con características distintivas,
+tales como esquinas y regiones con cambios bruscos de intensidad.
+Una vez detectados los puntos clave, el algoritmo SIFT calcula un descriptor para cada punto. Estos descriptores son
+vectores numéricos que capturan las características locales de la región en torno a cada punto clave, como la dirección del
+gradiente y la magnitud. Esto permite comparar y emparejar puntos característicos entre diferentes imágenes, ya que los
+descriptores son robustos frente a cambios geométricos y fotométricos.
+
+El algoritmo SIFT ha sido ampliamente utilizado en diversas aplicaciones de visión por ordenador, como la
+correspondencia de imágenes, reconocimiento de objetos y reconstrucción tridimensional. Su robustez y
+invariancia a distintas transformaciones han contribuido a su popularidad y su aplicabilidad en diferentes áreas.
+
+### SIFT Implementación Manual:
+Después de decidir que nos gustaría utilizar el algoritmo SIFT decidimos implementarlo como reto ya que consideramos que de esta forma aprenderíamos y lo comprenderíamos más aunque en el proyecto utilizamos el SIFT de OpenCV para temas de optimización y tiempo.
+
+La implementación consta de 4 pasos:
+
+1. **Obtención de key points:** Para la obtención de key points, o puntos característicos, debe convolucionarse la imagen con
+     una máscara Gaussiana, dando como resultado una imagen suavizada o `escala`. Debemos generar `n` escalas para después conseguir un espacio de diferencias Gaussianas. Cada imagen suavizada nueva se genera con una máscara con la que tiene la `sigma` utilizada en la creación de la imagen suavizada anterior por un hiperparámetro `k^n`. Las imágenes suavizadas están agrupadas en octavas. Las octavas se diferencian en que se reduce la resolución. En cada octava los pixeles tienen una resolución de `2^n de la Octava`. Cuando obtenemos los espacios de Diferencias de Gaussianas, restamos a cada imagen suavizada nueva a la anterior, iteramos por cada píxel de la imagen resultante y si el píxel es un máximo o un mínimo en el espacio `3x3x3` a su alrededor, considera un keypoint.
+
+2. **Refining keypoint location:** En este apartado se refinan brevemente las posiciones de los keypoints, porque se obtiene la
+     posición 'exacta', añadiendo más desimales a las coordenadas de los puntos característicos.
+     Para conseguir esta aproximación, deben implementarse la función de segundo orden de Taylor y la matriz Hessiana. Debido a la poca diferencia de los resultados aplicando este paso o no aplicándolo y al tiempo que implicaría implementar
+     este apartado no se ha implementado.
+
+3. **Orientación de los keypoints:** Una vez tenemos los key points, calculamos qué orientación tienen. Por eso, debemos hacer
+     una ventana alrededor del keypoint de tamaño `3*1.5*escalera donde se encuentra el píxel`. En esta ventana calculamos los gradientes de cada píxel para a continuación conseguir sus magnitudes y orientaciones. En un histograma de 36 bins, 1 por cada 10
+     grados, vamos añadiendo el valor de los pesos de cada píxel. Para asignar los pesos, hemos calculado la media entre `1.5*escala`
+     y la magnitud del píxel. Una vez iterado todos los píxeles de la ventana alrededor del keypoint, se elige el ángulo del
+     `bin` con valor máximo como la orientación del key point. Por cada uno de los `bins` que tenga un valor igual o mayor al
+     `0.8 del bin máximo`, se crean nuevos key points en la misma posición pero con la orientación distinta.
+
+4. **Construcción de los descriptores:** Para la construcción de los descriptores debe observarse un área de `16x16 píxeles` en
+     alrededor del key point. En esta área se crean `descriptores de 4x4`. Dentro de cada descriptor se calcula un histograma
+     de orientaciones de `8 bins`. Para llenar el histograma se hace lo mismo que en el paso anterior, se calcula los gradientes
+     para después calcular las orientaciones y magnitudes de cada píxel. En cada orientación del nuevo histograma de orientaciones se resta la orientación dominante del píxel del paso **3.** para que sean relativas a esa orientación dominante. Una vez calculados todos los
+     histogramas de cada descriptor `4x4` se concatienen los `bins` dando como resultado el descriptor del key point el cual
+     se utiliza cuando se desea hacer match con key points de otra imagen.
+
+   Puntos característicos de nuestro SIFT:
+
+<img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/manualSIFTResults.png?raw=true"> 
