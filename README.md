@@ -33,7 +33,7 @@ En aquest repositori es troba tot el codi, models del robot, explicacions necess
 ### Codi.
 Trobem el codi separat en carpetes:
 - **robot:** En aquesta carpeta es troba tot el codi d'Arduino desenvolupat per el moviment del robot, codi per prendre imatges i cambiar el capçal del robot, python script per comunicar rasberry del robot amb el servidor i els models 3D del robot.
-- **cloudServer:** S'hi pot trobar la cloud function amb el codi de visió per computador, un [readme](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md), la cloud function i el python script que utilitza una maquina virtual per fer de servidor.
+- **cloudServer:** S'hi pot trobar la cloud function amb el codi de visió per computador, un [readme](https://github.com/GerardGV/MultiArm/blob/8963e6b7a2a97b5f60d62367c9a42e4cd74de25f/cloudServer/readmeCloud.md), la cloud function i el python script que utilitza una maquina virtual per fer de servidor.
 - **user:** aquesta carpeta conte l'applicació amb la que interactua l'usuari, el script clientUser.py per les comunicacions, una versió local de la cloud function per fer proves o cambis al algorisme de visió per computador i un [readme](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) per comprendre com funciona l'applicació.
 - **computerVisionPlus:** Conté el codi implementat durant la realització de la pràctica de Visió per Computador, durant la qual vam desenvolupar l'algorisme SIFT i la comparació de diversos algorismes de detecció de punts característics.
 
@@ -89,7 +89,7 @@ Si estàs interessat en conèixer més detalls dels respectius projectes, pots m
     ```terminal
     pip install -r requirements.txt
     ```
-3. In the virtual machine execute server.py. To set up the sever in cloud see [cloudFunctionReadme.md](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md)
+3. In the virtual machine execute server.py. To set up the sever in cloud see [readmeCloud.md](https://github.com/GerardGV/MultiArm/blob/8963e6b7a2a97b5f60d62367c9a42e4cd74de25f/cloudServer/readmeCloud.md)
     ```terminal
     python3 server.py
     ```
@@ -178,7 +178,7 @@ Proyecto conjunto de asignaciones de Robótica (RLP), Visió per Computador (VC)
 ### Código.
 Encontramos el código separado en carpetas:
 - **robot:** En esta carpeta se encuentra todo el código de Arduino desarrollado por el movimiento del robot, código para tomar imágenes y cambiar el cabezal del robot, python script para comunicar rasberry del robot con el servidor y los modelos 3D del robot.
-- **cloudServer:** Se puede encontrar la cloud function con el código de visión por computador, un [readme](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md) , la cloud function y el python script que utiliza una maquina virtual para hacer de servidor.
+- **cloudServer:** Se puede encontrar la cloud function con el código de visión por computador, un [readme](https://github.com/GerardGV/MultiArm/blob/8963e6b7a2a97b5f60d62367c9a42e4cd74de25f/cloudServer/readmeCloud.md) , la cloud function y el python script que utiliza una maquina virtual para hacer de servidor.
 - **user:** esta carpeta contiene la aplicación con la que interactúa el usuario, el script clientUser.py para las comunicaciones, una versión local de la cloud function para realizar pruebas o cambios en el algoritmo de visión por computador y un [readme](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) para comprender cómo funciona la aplicación.
 - **computerVisionPlus:** Contiene el código implementado durante la realización de la práctica de Visión por Computador, durante la cual desarrollamos el algoritmo SIFT y la comparación de varios algoritmos de detección de puntos característicos.
 # Requisitos:
@@ -233,7 +233,7 @@ Si estás interesado en conocer más detalles de los respectivos proyectos, pued
      ```terminal
      pip install -r requirements.txt
      ```
-3. En la maquina virtual ejecute server.py. Para ver como crear la estructura cloud para el servido lea el readme [cloudFunctionReadme.md](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md)
+3. En la maquina virtual ejecute server.py. Para ver como crear la estructura cloud para el servido lea el readme [readmeCloud.md](https://github.com/GerardGV/MultiArm/blob/8963e6b7a2a97b5f60d62367c9a42e4cd74de25f/cloudServer/readmeCloud.md)
      ```terminal
      python3 server.py
      ```
@@ -325,7 +325,7 @@ This repository contains all the necessary code, robot models, and explanations 
 ### Code.
 The code is separated into  folders:
 - **robot:** In this folder you will find all the Arduino code developed for the movement of the robot, code to take pictures and change the head of the robot, python script to communicate the robot's rasberry with the server and the 3D models of the robot.
-- **cloudServer:** The cloud function with computer vision code can be found there, a [readme](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md) , the cloud function and the python script that uses a virtual machine to act as a server.
+- **cloudServer:** The cloud function with computer vision code can be found there, a [readme](https://github.com/GerardGV/MultiArm/blob/8963e6b7a2a97b5f60d62367c9a42e4cd74de25f/cloudServer/readmeCloud.md) , the cloud function and the python script that uses a virtual machine to act as a server.
 - **user:** this folder contains the application with which the user interacts, the clientUser.py script for communications, a local version of the cloud function for testing or changes to the computer vision algorithm and a [readme](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) to understand how the application works.
 - **computerVisionPlus:** Contains the code implemented during the implementation of the Computer Vision practice, during which we developed the SIFT algorithm and the comparison of several characteristic point detection algorithms.
 # Requirements:
