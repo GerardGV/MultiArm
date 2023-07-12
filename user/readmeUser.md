@@ -8,38 +8,6 @@
 * <a href="#castellano">Castellano</a>
 * <a href="#english">English</a>
 ---
-<h1 id="catala"> Sistemes Multimèdia - Projecte al Cloud </h1>
-Per a la realització del nostre projecte de Sistemes Multimèdia, hem volgut realitzar una integració amb els nostres 
-projectes de Robòtica (RLP) i Visió per Computador (VC).
-Per al que correspon a aquesta assignatura, hem fet les connexions necessàries per a controlar remotament el 
-robot, des d'una aplicació, que també hem implementat.
-
-## Arquitectura:
-
-Per a tal de poder controlar remotament el robot, hem desenvolupat una aplicació, la qual permet interactuar amb el 
-robot. En comptes de permetre una connexió remota des d'una xarxa local, hem estructurat l'arquitectura de connexions
-de tal manera que es pugui controlar des de qualsevol part del món amb una connexió a Internet.
-
-A continuació es pot veure l'esquema d'aquesta arquitectura.
-<p align="center">
-<img src="../imgReadMe/imgREADME_SM/sm_connection_architecture.png?raw=true" alt="SM Connection Architecture"/>
-</p>
-Tal com es pot observar, podem trobar un usuari (User -> `clientUser.py`), el robot (`clientRobot.py`) i al centre de 
-tot, el Cloud, en el nostre cas, **Google Cloud**.
-
-### Estructura del Google Cloud:
-
-Primerament, tenim una instància de màquina virtual (VM) mitjançant l'API Compute Engine de 
-Google Cloud (A partir d'ara, GC), en aquesta VM té una IP externa estàtica i es troba dins d'una VPC Network de GC, a
-la qual li hem afegit les regles de Firewall necessàries per a permetre connexions als ports que realitzarem per a les 
-connexions. 
-
-Addicionalment, hi tenim una Cloud Function on tenim tot el codi desenvolupat en el projecte de Visió per Computador 
-(hem posat el codi que es troba en la Cloud Function en el fitxer `tractament_imatges.py` per tal que es pugui 
-visualitzar), per tal que es realitzin tots els càlculs al Cloud.  
-Per a fer els càlculs necessaris, es necessiten dues 
-imatges, fetes pel robot. És per això que mitjançant l'API Cloud Storage de GC hem utilitzat el Bucket per guardar-hi 
-les imatges que després la Cloud Function utilitza per als càlculs.
 
 ### Flux de treball de l'aplicació.
 
@@ -94,40 +62,7 @@ A continuació mostrem el seu funcionament: <br/>
 <li> El segon i el tercer funcionen de la mateixa manera. Són els botons de canvi de capçal. Aquests fan que el robot canviï el seu capçal a un retolador i un bisturí, respectivament.
 L'aplicació envia una instrucció de canvi de capçal al servidor, aquest la rep i l'envia al clientRobot, que finalment l'envia al robot i aquest canvia el capçal.
 </li></ul>
- <h1 id="castellano">Sistemas Multimedia - Proyecto en el Cloud</h1> 
-
-Para la realización de nuestro proyecto de Sistemas Multimedia, hemos querido realizar una integración con los nuestros
-proyectos de Robótica (RLP) y Visión por Computador (VC).
-Para lo que corresponde a esta asignatura, hemos hecho las conexiones necesarias para controlar remotamente el
-robot, desde una aplicación, que también hemos implementado.
-
-## Arquitectura:
-
-Para poder controlar remotamente el robot, hemos desarrollado una aplicación, la cual permite interactuar con el
-robot. En lugar de permitir una conexión remota desde una red local, hemos estructurado la arquitectura de conexiones
-de modo que se pueda controlar desde cualquier parte del mundo con una conexión a Internet.
-
-A continuación se puede ver el esquema de esa arquitectura.
-<p align="center">
-<img src="../imgReadMe/imgREADME_SM/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
-</p>
-Tal como se puede observar, podemos encontrar un usuario (User -> `clientUser.py`), el robot (`clientRobot.py`) y en el centro de
-todo, el Cloud, en nuestro caso, **Google Cloud**.
-
-### Estructura de Google Cloud:
-
-En primer lugar, tenemos una instancia de máquina virtual (VM) mediante la API Compute Engine de
-Google Cloud (A partir de ahora, GC), en esta VM tiene una IP externa estática y se encuentra dentro de una VPC Network de GC, en
-la cual le hemos añadido las reglas de Firewall necesarias para permitir conexiones a los puertos que realizaremos para las
-conexiones.
-
-Adicionalmente, tenemos una Cloud Function donde tenemos todo el código desarrollado en el proyecto de Visión por Computador
-(hemos puesto el código que se encuentra en la Cloud Function en el archivo `tractament_imatges.py` para que se pueda
-visualizar), para que se realicen todos los cálculos en Cloud.
-Para realizar los cálculos necesarios, se necesitan dos
-imágenes, hechas por el robot. Es por eso que mediante la API Cloud Storage de GC hemos utilizado el Bucket para guardarlo
-las imágenes que después la Cloud Function utiliza para los cálculos.
-
+ 
 ### Flujo de trabajo de la aplicación.
 
 A continuación intentaremos realizar un pequeño tutorial o listado de pasos que definan el flujo de trabajo de la aplicación:
@@ -185,40 +120,8 @@ A continuación mostramos su funcionamiento: <br/> <br/>
  <li>El segundo y el tercero funcionan de la misma manera. Son los botones de cambio de cabezal. Éstos hacen que el robot cambie su cabezal a un rotulador y un bisturí, respectivamente.
 La aplicación envía una instrucción de cambio de cabezal al servidor, éste la recibe y la envía al clienteRobot, que finalmente la envía al robot y éste cambia el cabezal.
 </li></ul>
- <h1 id="english">Multimedia Systems - Cloud Project</h1> 
 
-For the realization of our Multimedia Systems project, we wanted to carry out an integration with ours Robotics (RLP) and Computer Vision (VC) projects.
-For what corresponds to this subject, we have made the necessary connections to remotely control the
-robot, from an application, which we have also implemented.
-
-## Architecture:
-
-In order to be able to remotely control the robot, we have developed an application, which allows you to interact with it
-robot Instead of allowing a remote connection from a local network, we structured the connection architecture
-so that it can be controlled from anywhere in the world with an Internet connection.
-
-Below you can see the outline of this architecture.
-<p align="center">
-<img src="../imgReadMe/imgREADME_SM/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
-</p>
-As you can see, we can find a user (User -> `clientUser.py`), the robot (`clientRobot.py`) and in the center of
-everything, the Cloud, in our case, **Google Cloud**.
-
-### Structure of Google Cloud:
-
-First, we instantiate a virtual machine (VM) using the Compute Engine API
-Google Cloud (Henceforth GC), in this VM has a static external IP and is inside a GC VPC Network, in
-to which we have added the necessary Firewall rules to allow connections to the ports we will make for them
-connections
-
-Additionally, we have a Cloud Function where we have all the code developed in the Computer Vision project
-(we have put the code found in the Cloud Function in the `tractament_imatges.py` file so that it can
-visualize), so that all calculations are performed in the Cloud.
-To make the necessary calculations, two are needed
-images, made by the robot. That's why using the GC Cloud Storage API we used the Bucket to save to it
-the images that the Cloud Function then uses for calculations.
-
-### Application workflow.
+<h1 id="english">Application workflow</h1>
 
 Next we will try to make a small tutorial or list of steps that define the workflow of the application:
 

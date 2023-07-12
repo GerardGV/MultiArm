@@ -10,7 +10,7 @@
 
 <img src="imgReadMe/imgREADME_RLP/imgMultiArmHeader.jpeg?raw=true" align="right" width="300" alt="MultiArm Header Image"/>  
 <h1 id="catala"> MultiArm </h1>
-Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (VC) i Sistemes Multimèdia (SM) en el qual hem desenvolupat un braç robotic amb visió per computador per a realitzar operacions quirúrgiques remotament via Internet.
+Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (VC) i Sistemes Multimèdia (SM) en el qual hem desenvolupat un braç robotic amb visió per computador per a realitzar operacions quirúrgiques remotament via Internet amb el suport de Google Cloud Platform.
 
 
 # Taula de continguts:
@@ -28,13 +28,14 @@ Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (
 
 # Què és aquest repositori?
 
-En aquest repositori es troba tot el codi, models del robot explicació necessaris per tal d'entendre què hem fet durant el procés de desenvolupament d'aquest projecte amb l'objectiu de poder replicar-lo i millorar-lo en un futur.
+En aquest repositori es troba tot el codi, models del robot, explicacions necessaries per tal d'entendre què hem fet durant el procés de desenvolupament d'aquest projecte amb l'objectiu de poder replicar-lo i millorar-lo en un futur.
 
 ### Codi.
-Trobem el codi separat en 3 carpetes principals:
-- **robot:** En aquesta carpeta es troba tot el codi d'Arduino desenvolupat i els models 3D del robot.
-- **cloud:** S'hi pot trobar el codi que s'ha d'executar per tal de controlar remotament el robot. Tenim el servidor, el client del robot, el client de l'usuari i l'aplicació.
-- **Computer Vision:** Conté el codi implementat durant la realització de la pràctica de Visió per Computador, durant la qual vam implementar l'algorisme SIFT manual, el procés necessari per realitzar una primera reconstrucció donades dues imatges i la comparació de diversos algorismes similars.
+Trobem el codi separat en carpetes:
+- **robot:** En aquesta carpeta es troba tot el codi d'Arduino desenvolupat per el moviment del robot, codi per prendre imatges i cambiar el capçal del robot, python script per comunicar rasberry del robot amb el servidor i els models 3D del robot.
+- **cloudServer:** S'hi pot trobar la cloud function amb el codi de visió per computador, un [readme](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md), la cloud function i el python script que utilitza una maquina virtual per fer de servidor.
+- **user:** aquesta carpeta conte l'applicació amb la que interactua l'usuari, el script clientUser.py per les comunicacions, una versió local de la cloud function per fer proves o cambis al algorisme de visió per computador i un [readme](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) per comprendre com funciona l'applicació.
+- **computerVisionPlus:** Conté el codi implementat durant la realització de la pràctica de Visió per Computador, durant la qual vam desenvolupar l'algorisme SIFT i la comparació de diversos algorismes de detecció de punts característics.
 
 # Requisits:
 
@@ -76,9 +77,9 @@ l'execució del nostre Software amb les dependències o requeriments que comport
 # Documentació:
 Aquest README conté informació del nostre robot, i un context general de les parts de visió per computador i del Cloud, desenvolupat a Sistemes Multimèdia.
 Si estàs interessat en conèixer més detalls dels respectius projectes, pots mirar:
-* [Visió per Computador: Implementació de l'algorisme SIFT i modelat 3D](https://github.com/GerardGV/MultiArm/tree/main/Computer%20Vision) on aprofundim més sobre l'algorisme implementat per detectar punts característics de dues imatges i després visualitzar-los en l'aplicació.
-* [Sistemes Multimèdia: Projecte al Cloud](https://github.com/GerardGV/MultiArm/tree/main/cloud) on aprofundim més sobre l'arquitectura de comunicacions desenvolupada en el Cloud allotjat a Google Cloud, l'aplicació, el seu funcionament i peticions amb el servidor realitzades.
-
+* [Visió per Computador: Desenvolupament de l'algorisme SIFT i análisi d'altres algorismes](https://github.com/GerardGV/MultiArm/blob/main/computerVisionPlus/readmeComputerVision.md) on aprofundim més sobre l'algorisme implementat per detectar punts característics de dues imatges i després visualitzar-los en l'aplicació.
+* [Sistemes Multimèdia: Projecte al Cloud](https://github.com/GerardGV/MultiArm/tree/main/cloud) on aprofundim més sobre l'arquitectura de comunicacions desenvolupada en el Cloud allotjat a Google Cloud Platform y s'explica el funcionament de la cloud function.
+* [Applicació:](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) explicació de com funcio l'aplicació.
 # Guia d'ús:
 1. Clone this repository.
     ```terminal
@@ -88,9 +89,9 @@ Si estàs interessat en conèixer més detalls dels respectius projectes, pots m
     ```terminal
     pip install -r requirements.txt
     ```
-3. Open the server (execute the cloud/server.py) file
+3. In the virtual machine execute server.py. To set up the sever in cloud see [cloudFunctionReadme.md](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md)
     ```terminal
-    python3 cloud/server.py
+    python3 server.py
     ```
 4. Open the App (execute the cloud/app.py)
     ```terminal
@@ -100,7 +101,7 @@ Si estàs interessat en conèixer més detalls dels respectius projectes, pots m
     ```terminal
     python3 cloud/clientRobot.py
     ```
-6. Enjoy!! 😄 TIP: You can check the Cloud folder README.md to understand the WorkFlow of our app. 
+6. Enjoy!! 😄 TIP: You can check the [readmeUser.md](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) in user folder to understand the WorkFlow of our app. 
 
 # Esquema del Hardware
 <p align="center">
@@ -143,8 +144,7 @@ El nostre esquema de HW esta compost pels 3 motors steppers connectats cadascún
 En aquesta imatge trobem els diversos models 3D que formen el nostre robot. En el nostre cas, els hem imprès mitjançant una impresora 3D amb PLA.
 
 # Millores en un futur:
-* Millorar la visualització de punts per tal que es realitzi una visualització de punts 3D millor. Desenvolupar el software necessari per tal que tota l'aplicació funcioni amb aquesta visualització implementada que permeti rotar la càmera: 
-![]()
+* Millorar la visualització de punts per tal que es realitzi una visualització de punts 3D millor. Desenvolupar el software necessari per tal que tota l'aplicació funcioni amb aquesta visualització implementada que permeti rotar la càmera.
 * Millorar l'algorísmica del robot per controlar millor la profunditat i evitar tallades al pacient, però per millorar això, és necessari que per la part de Visió per Computador s'aconsegueixi fer un meshing i texturització del model per tal de detectar correctament tots els punts amb precisió. D'aquesta manera hi hauria millor interacció Cirurgià - Robot. Aquesta feina és complicada i s'hi ha de dedicar molt de temps, però creiem que és un coll d'ampolla important a superar, doncs el canvi que es pot realitzar en el projecte és gran.
 * Controlar la temperatura dels motors, millorar la refrigeració o canviar el material de construcció del robot, ja que després de bastantes proves o d'execucions llargues, els engranatges més petits que es troben en contacte directe amb els motors es fonen, perdent així moviment del robot.
 
@@ -174,14 +174,13 @@ Proyecto conjunto de las asignaturas de Robótica (RLP), Visión por Computadora
 
 # ¿Qué es este repositorio?
 
-En este repositorio se encuentra todo el código, modelos del robot y explicaciones necesarias para entender lo que hemos hecho durante el proceso de desarrollo de este proyecto, con el objetivo de poder replicarlo y mejorarlo en el futuro.
-
+Proyecto conjunto de asignaciones de Robótica (RLP), Visió per Computador (VC) i Sistemes Multimèdia (SM) en el cual se desenvolupa un braç robotic amb visió per computador per a realitzar operacions quirúrgiques remotement via Internet amb el support de Google Cloud Platform .
 ### Código.
-El código está organizado en 3 carpetas principales:
-- **robot:** En esta carpeta se encuentra todo el código de Arduino desarrollado y los modelos 3D del robot.
-- **cloud:** Aquí se puede encontrar el código que se debe ejecutar para controlar remotamente el robot. Tenemos el servidor, el cliente del robot, el cliente del usuario y la aplicación.
-- **Computer Vision:** Contiene el código implementado durante la realización de la práctica de Visión por Computadora, en la cual implementamos el algoritmo SIFT manual, el proceso necesario para realizar una reconstrucción inicial dadas dos imágenes y la comparación de varios algoritmos similares.
-
+Encontramos el código separado en carpetas:
+- **robot:** En esta carpeta se encuentra todo el código de Arduino desarrollado por el movimiento del robot, código para tomar imágenes y cambiar el cabezal del robot, python script para comunicar rasberry del robot con el servidor y los modelos 3D del robot.
+- **cloudServer:** Se puede encontrar la cloud function con el código de visión por computador, un [readme](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md) , la cloud function y el python script que utiliza una maquina virtual para hacer de servidor.
+- **user:** esta carpeta contiene la aplicación con la que interactúa el usuario, el script clientUser.py para las comunicaciones, una versión local de la cloud function para realizar pruebas o cambios en el algoritmo de visión por computador y un [readme](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) para comprender cómo funciona la aplicación.
+- **computerVisionPlus:** Contiene el código implementado durante la realización de la práctica de Visión por Computador, durante la cual desarrollamos el algoritmo SIFT y la comparación de varios algoritmos de detección de puntos característicos.
 # Requisitos:
 
 Enumeraremos los requisitos necesarios para llevar a cabo nuestro proyecto, tanto el ensamblaje del robot (sin contar cables, tornillos, etc.) como la ejecución de nuestro Software con las dependencias o requerimientos que conlleve.
@@ -220,34 +219,33 @@ Enumeraremos los requisitos necesarios para llevar a cabo nuestro proyecto, tant
 - [Google Cloud Platform (GCP)](https://cloud.google.com/gcp/)
 
 # Documentación:
-Este README contiene información de nuestro robot y un contexto general de las partes de visión por computadora y de Cloud desarrolladas en Sistemas Multimedia.
+Este README contiene información de nuestro robot y un contexto general de las partes de visión por computador y del Cloud, desarrollado en Sistemas Multimedia.
 Si estás interesado en conocer más detalles de los respectivos proyectos, puedes mirar:
-* [Visión por Computadora: Implementación del algoritmo SIFT y modelado 3D](https://github.com/GerardGV/MultiArm/tree/main/Computer%20Vision), donde profundizamos más sobre el algoritmo implementado para detectar puntos característicos en dos imágenes y luego visualizarlos en la aplicación.
-* [Sistemas Multimedia: Proyecto en el Cloud](https://github.com/GerardGV/MultiArm/tree/main/cloud), donde profundizamos más sobre la arquitectura de comunicaciones desarrollada en el Cloud alojado en Google Cloud, la aplicación, su funcionamiento y las solicitudes realizadas al servidor.
-
+* [Visión por Computador: Desarrollo del algoritmo SIFT y análisis de otros algoritmos](https://github.com/GerardGV/MultiArm/blob/main/computerVisionPlus/readmeComputerVision.md) donde profundizamos más sobre el algoritmo implementado para detectar puntos característicos de dos imágenes y después visualizarlos en la aplicación.
+* [Sistemas Multimedia: Proyecto en Cloud](https://github.com/GerardGV/MultiArm/tree/main/cloud) donde profundizamos más sobre la arquitectura de comunicaciones desarrollada en el Cloud alojado en Google Cloud Platform y se explica el funcionamiento de la cloud function.
+* [Applicación:](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) explicación de cómo funciona la aplicación.
 # Guía de uso:
-1. Clona este repositorio.
-    ```terminal
-    git clone https://github.com/GerardGV/MultiArm.git
-    ```
-2. Instala Python y las bibliotecas requeridas. 
-    ```terminal
-    pip install -r requirements.txt
-    ```
-3. Abre el archivo server.py en la carpeta cloud y ejecútalo.
-    ```terminal
-    python3 cloud/server.py
-    ```
-4. Abre la aplicación (ejecuta el archivo app.py en la carpeta cloud).
-    ```terminal
-    python3 cloud/app.py
-    ```
-5. Abre el archivo clientRobot.py y enciende el robot.
-    ```terminal
-    python3 cloud/clientRobot.py
-    ```
-6. ¡Disfruta! 😄 CONSEJO: Puedes consultar el archivo README.md de la carpeta Cloud para comprender el flujo de trabajo de nuestra aplicación.
-
+1. Clone este repositorio.
+     ```terminal
+     git clone https://github.com/GerardGV/MultiArm.git
+     ```
+2. Instale Python y las librerias requeridas.
+     ```terminal
+     pip install -r requirements.txt
+     ```
+3. En la maquina virtual ejecute server.py. Para ver como crear la estructura cloud para el servido lea el readme [cloudFunctionReadme.md](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md)
+     ```terminal
+     python3 server.py
+     ```
+4. Abra la aplicación (ejecute cloud/app.py)
+     ```terminal
+     python3 cloud/app.py
+     ```
+5. Abra clientRobot.py y encienda el Robot
+     ```terminal
+     python3 cloud/clientRobot.py
+     ```
+6. Disfrute!! 😄 TIP: Usted puede revisar el [readmeUser.md](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) in user folder para entender el WorkFlow de nuestra aplicación.
 # Esquema del Hardware
 <p align="center">
   <img src="imgReadMe/imgREADME_RLP/hardware_scheme.jpg" alt="Esquema del Hardware" />
@@ -290,8 +288,7 @@ Nuestro esquema de HW está compuesto por los 3 motores paso a paso conectados c
 En esta imagen encontramos los diversos modelos 3D que forman nuestro robot. En nuestro caso, los hemos impreso mediante una impresora 3D con PLA.
 
 # Mejoras en un futuro:
-* Mejorar la visualización de puntos para que se realice una visualización de puntos 3D mejorada. Desarrollar el software necesario para que toda la aplicación funcione con esta visualización implementada que permita rotar la cámara:
-![]()
+* Mejorar la visualización de puntos para que se realice una visualización de puntos 3D mejorada. Desarrollar el software necesario para que toda la aplicación funcione con esta visualización implementada que permita rotar la cámara.
 * Mejorar la algorítmica del robot para controlar mejor la profundidad y evitar cortes en el paciente. Sin embargo, para mejorar esto, es necesario lograr un meshing y texturización del modelo en la parte de Visión por Computadora para detectar correctamente todos los puntos con precisión. De esta manera, habría una mejor interacción Cirujano-Robot. Este trabajo es complicado y requiere mucho tiempo, pero creemos que es un desafío importante a superar, ya que el cambio que se puede lograr en el proyecto es significativo.
 * Controlar la temperatura de los motores, mejorar la refrigeración o cambiar el material de construcción del robot, ya que después de muchas pruebas o ejecuciones prolongadas, los engranajes más pequeños que están en contacto directo con los motores se funden, perdiendo así el movimiento del robot.
 
@@ -326,14 +323,14 @@ Joint project of the Robotics (RLP), Computer Vision (VC), and Multimedia System
 This repository contains all the necessary code, robot models, and explanations to understand what we have done during the development process of this project, with the aim of being able to replicate and improve it in the future.
 
 ### Code.
-The code is organized into 3 main folders:
-- **robot:** This folder contains all the developed Arduino code and 3D models of the robot.
-- **cloud:** It contains the code that needs to be executed to remotely control the robot. We have the server, the robot client, the user client, and the application.
-- **Computer Vision:** It includes the code implemented during the Computer Vision practice, during which we manually implemented the SIFT algorithm, the necessary process to perform an initial reconstruction given two images, and the comparison of various similar algorithms.
-
+The code is separated into  folders:
+- **robot:** In this folder you will find all the Arduino code developed for the movement of the robot, code to take pictures and change the head of the robot, python script to communicate the robot's rasberry with the server and the 3D models of the robot.
+- **cloudServer:** The cloud function with computer vision code can be found there, a [readme](https://github.com/GerardGV/MultiArm/blob/main/cloudServer/cloudFunctionReadme.md) , the cloud function and the python script that uses a virtual machine to act as a server.
+- **user:** this folder contains the application with which the user interacts, the clientUser.py script for communications, a local version of the cloud function for testing or changes to the computer vision algorithm and a [readme](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) to understand how the application works.
+- **computerVisionPlus:** Contains the code implemented during the implementation of the Computer Vision practice, during which we developed the SIFT algorithm and the comparison of several characteristic point detection algorithms.
 # Requirements:
 
-We will list the necessary requirements to carry out our project, both the assembly of the robot (excluding cables, screws, etc.) and the execution of our software with the dependencies or requirements they entail.
+Joint project of the subjects of Robotics (RLP), Computer Vision (VC) and Multimedia Systems (SM) in which we have developed a robotic arm with computer vision to perform surgical operations remotely via Internet with the support of Google Cloud Platform.
 
 <h2 name="hardware-en"> Hardware: </h2>
 
@@ -371,10 +368,11 @@ We will list the necessary requirements to carry out our project, both the assem
 
 
 # Documentation:
-This README contains information about our robot and provides a general context of the computer vision and Cloud parts developed in Multimedia Systems. If you're interested in learning more details about the respective projects, you can check:
-* [Computer Vision: Implementation of the SIFT algorithm and 3D modeling](https://github.com/GerardGV/MultiArm/tree/main/Computer%20Vision) where we delve deeper into the implemented algorithm for detecting characteristic points in two images and visualizing them in the application.
-* [Multimedia Systems: Cloud Project](https://github.com/GerardGV/MultiArm/tree/main/cloud) where we delve deeper into the communication architecture developed in the Cloud hosted on Google Cloud, the application, its functioning, and the requests made with the server.
-
+This README contains information about our robot and a general context of the computer vision parts and the Cloud, developed in Multimedia Systems.
+If you are interested in knowing more details of the respective projects, you can look at:
+* [Computer Vision: Development of the SIFT algorithm and analysis of other algorithms](https://github.com/GerardGV/MultiArm/blob/main/computerVisionPlus/readmeComputerVision.md) where we deepen more about the algorithm implemented to detect characteristic points of two images and then display them in the application.
+* [Multimedia Systems: Cloud Project](https://github.com/GerardGV/MultiArm/tree/main/cloud) where we delve deeper into the communications architecture developed in the Cloud hosted on Google Cloud Platform and how it works of the cloud function.
+* [Application:](https://github.com/GerardGV/MultiArm/blob/main/user/readmeUser.md) explanation of how the application works.
 # How to use:
 1. Clone this repository.
     ```terminal
@@ -440,8 +438,7 @@ Our hardware scheme is composed of the 3 stepper motors connected to their respe
 In this image, we can see the various 3D models that make up our robot. In our case, we have printed them using a 3D printer with PLA.
 
 # Future Improvements
-* Improve point visualization to achieve better 3D point visualization. Develop the necessary software for the entire application to work with this implemented visualization that allows camera rotation:
-![]()
+* Improve point visualization to achieve better 3D point visualization. Develop the necessary software for the entire application to work with this implemented visualization that allows camera rotation.
 * Improve the robot's algorithm to better control depth and avoid cuts to the patient. However, to improve this, it is necessary to achieve meshing and texturing of the model in the Computer Vision part to accurately detect all points. This would enable better Surgeon-Robot interaction. This task is complex and requires a lot of time, but we believe it is an important bottleneck to overcome as the potential impact on the project is significant.
 * Control the temperature of the motors, improve cooling, or change the construction material of the robot. After several tests or long executions, the smaller gears that are in direct contact with the motors melt, resulting in loss of robot movement.
 
