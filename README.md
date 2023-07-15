@@ -27,6 +27,7 @@ Projecte conjunt de les assignatures de Robòtica (RLP), Visió per Computador (
    * [Autors](#autors)
 
 # Què és aquest repositori?
+Es un projecte on volem simular operacions facials remotament. Amb aquest objectiu, em desenvolupat una aplicacio amb la qual donar ordres a un braç robòtic a través d'internet. Per tal de que l'usari pugui veura el rostre del pacient, el robot prendra dues imatges les quals seran tractades amb un algorimte de visió per computador. Tot aixó amb el suport d'una arquitectura a Google Cloud Platform.
 
 En aquest repositori es troba tot el codi, models del robot, explicacions necessaries per tal d'entendre què hem fet durant el procés de desenvolupament d'aquest projecte amb l'objectiu de poder replicar-lo i millorar-lo en un futur.
 
@@ -173,6 +174,7 @@ Proyecto conjunto de las asignaturas de Robótica (RLP), Visión por Computadora
    * [Autores](#autores)
 
 # ¿Qué es este repositorio?
+Es un proyecto en el que queremos simular operaciones faciales remotamente. Con este objetivo, hemos desarrollado una aplicación con la que dar órdenes a un brazo robótico a través de internet. Para que el usuario pueda ver el rostro del paciente, el robot tomará dos imágenes que serán tratadas con un algoritmo de visión por computador. Todo esto con el apoyo de una arquitectura en Google Cloud Platform.
 
 Proyecto conjunto de asignaciones de Robótica (RLP), Visió per Computador (VC) i Sistemes Multimèdia (SM) en el cual se desenvolupa un braç robotic amb visió per computador per a realitzar operacions quirúrgiques remotement via Internet amb el support de Google Cloud Platform .
 ### Código.
@@ -319,6 +321,7 @@ Joint project of the Robotics (RLP), Computer Vision (VC), and Multimedia System
    * [Authors](#authors)
 
 # What is this?
+It's a project where we want to simulate facial operations remotely. With this aim, We developed an application to give orders to a robotic arm through the internet. In order to see the patient's face on the application, the robot will take two images which will be treated with a computer vision algorithm. All this with the support of an architecture on Google Cloud Platform.
 
 This repository contains all the necessary code, robot models, and explanations to understand what we have done during the development process of this project, with the aim of being able to replicate and improve it in the future.
 
