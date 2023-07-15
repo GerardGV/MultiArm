@@ -4,7 +4,7 @@
 * <a href="#english">English</a>
 
 # [Click to see our YouTube Results Video](https://www.youtube.com/watch?v=n3rDo8sf0jU&ab_channel=JanRubio)
-[![Our Youtube Video](https://github.com/GerardGV/MultiArm/blob/main/imgREADMEs/imgREADME_RLP/youtube_img.png)](https://www.youtube.com/watch?v=n3rDo8sf0jU&ab_channel=JanRubio "MultiArm")
+[![Our Youtube Video](https://github.com/GerardGV/MultiArm/blob/a64478162b4a58e409a5eabdf384f9c1b1279659/imgReadMe/videoCaptura.png)](https://www.youtube.com/watch?v=n3rDo8sf0jU&ab_channel=JanRubio "MultiArm")
 
 ---
 
