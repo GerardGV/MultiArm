@@ -17,10 +17,10 @@ de tal manera que es pugui controlar des de qualsevol part del món amb una conn
 
 A continuació es pot veure l'esquema d'aquesta arquitectura.
 <p align="center">
-<img src="../imgReadMe/imgREADME_SM/sm_connection_architecture.png?raw=true" alt="SM Connection Architecture"/>
+<img src="https://github.com/GerardGV/MultiArm/blob/d32e22e815fb4b48e2b2318964bd2902d5b77652/imgReadMe/imgREADME_SM/sm_connection_architecture.png?raw=true" alt="SM Connection Architecture"/>
 </p>
 Tal com es pot observar, podem trobar un usuari (User -> `clientUser.py`), el robot (`clientRobot.py`) i al centre de 
-tot, el Cloud, en el nostre cas, **Google Cloud**.
+tot, el Cloud, en el nostre cas, Google Cloud.
 
 ### Estructura del Google Cloud:
 
@@ -30,8 +30,9 @@ la qual li hem afegit les regles de Firewall necessàries per a permetre connexi
 connexions. 
 
 Addicionalment, hi tenim una Cloud Function on tenim tot el codi desenvolupat en el projecte de Visió per Computador 
-(hem posat el codi que es troba en la Cloud Function en el fitxer `tractament_imatges.py` per tal que es pugui 
-visualitzar), per tal que es realitzin tots els càlculs al Cloud.  
+(hem posat el codi que es troba en la Cloud Function en el fitxer `cloudFunction.py` per tal que es pugui 
+visualitzar), per tal que es realitzin tots els càlculs al Cloud. IMPORTANT, la cloud function fa una comprobació de que el client, qui li fa la crida, tingui la credencial json necessaria.
+
 Per a fer els càlculs necessaris, es necessiten dues 
 imatges, fetes pel robot. És per això que mitjançant l'API Cloud Storage de GC hem utilitzat el Bucket per guardar-hi 
 les imatges que després la Cloud Function utilitza per als càlculs.
@@ -77,7 +78,7 @@ A continuación se puede ver el esquema de esa arquitectura.
 <img src="../imgReadMe/imgREADME_SM/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
 </p>
 Tal como se puede observar, podemos encontrar un usuario (User -> `clientUser.py`), el robot (`clientRobot.py`) y en el centro de
-todo, el Cloud, en nuestro caso, **Google Cloud**.
+todo, el Cloud, en nuestro caso, Google Cloud.
 
 ### Estructura de Google Cloud:
 
@@ -87,8 +88,9 @@ la cual le hemos añadido las reglas de Firewall necesarias para permitir conexi
 conexiones.
 
 Adicionalmente, tenemos una Cloud Function donde tenemos todo el código desarrollado en el proyecto de Visión por Computador
-(hemos puesto el código que se encuentra en la Cloud Function en el archivo `tractament_imatges.py` para que se pueda
-visualizar), para que se realicen todos los cálculos en Cloud.
+(hemos puesto el código que se encuentra en la Cloud Function en el archivo `cloudFunction.py` para que se pueda
+visualizar), para que se realicen todos los cálculos en Cloud. IMPORTANTE, la cloud function siempre comprueba que el cliente que la llama tengo el archivo json con las credenciales necesarias.
+
 Para realizar los cálculos necesarios, se necesitan dos
 imágenes, hechas por el robot. Es por eso que mediante la API Cloud Storage de GC hemos utilizado el Bucket para guardarlo
 las imágenes que después la Cloud Function utiliza para los cálculos.
@@ -133,7 +135,7 @@ Below you can see the outline of this architecture.
 <img src="../imgReadMe/imgREADME_SM/sm_connection_architecture.png" alt= "SM Connection Architecture"/>
 </p>
 As you can see, we can find a user (User -> `clientUser.py`), the robot (`clientRobot.py`) and in the center of
-everything, the Cloud, in our case, **Google Cloud**.
+everything, the Cloud, in our case, Google Cloud.
 
 ### Structure of Google Cloud:
 
@@ -143,8 +145,9 @@ to which we have added the necessary Firewall rules to allow connections to the 
 connections
 
 Additionally, we have a Cloud Function where we have all the code developed in the Computer Vision project
-(we have put the code found in the Cloud Function in the `tractament_imatges.py` file so that it can
-visualize), so that all calculations are performed in the Cloud.
+(we have put the code found in the Cloud Function in the `cloudFunction.py` file so that it can
+visualize), so that all calculations are performed in the Cloud. IMPORTANT, the cloud function always checks that the client that calling it has the necessary json credentials.
+
 To make the necessary calculations, two are needed
 images, made by the robot. That's why using the GC Cloud Storage API we used the Bucket to save to it
 the images that the Cloud Function then uses for calculations.
