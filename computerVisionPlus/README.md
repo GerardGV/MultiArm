@@ -18,7 +18,7 @@ In this directory you will find the computer vision part of the project:
 	<li>computerVisionAnalitics.py: We analized 3 different algorithms to choose which we were going to use in our project.</li>
   <li>sift.py: We implemented SIFT algorithm straight from David G. Lowe paper from 2004 and other sources as a challange and to understand SIFT better.</li>
 </ol>
-## 1. COMPUTER VISION ANALITICS
+<h2> 1. COMPUTER VISION ANALITICS </h2>
 
 To choose the caracteristic points or `keypoints` we considered 3 algorithms: Harris, ORB and SIFT. All of them are already implemented in the library openCV We decided to choose SIFT because it is more capable of detect caracteristic points and it is scale invariant. Here we have the caracteristic points for each algorithm with the same image:
 
@@ -80,7 +80,7 @@ The implementation consists of 4 steps:
 
 <img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/manualSIFTResults.png?raw=true"> 
 
-<h1 id="catala"> COMPUTER VISION</h1>
+<h1 id="catala"> VISIÓ PER COMPUTADOR </h1>
 
 La Visió per Computador es fa servir en aquest projecte per obtenir característiques de les imatges de robot. Aquests punts de caràcter són visualitzats en l'aplicació d'usuari. Aquests going to be used to a multiview estèreo proces in future versions.
 
@@ -90,7 +90,7 @@ En aquest directori de visió per computador trobaras
 <li>computerVisionAnalitics.py: S'han analitzat 3 diferents algoritmes per a la millora de la qual s'ha de fer amb el nostre projecte.</li>
    <li>sift.py: We implementen SIFT algorithm straight from David G. Lowe paper from 2004 i altres sources a challange and to understand SIFT better.</li>
 </ol>
-## 1. COMPUTER VISION ANALITICS
+<h2> 1. COMPUTER VISION ANALITICS </h2>
 
 Per els punts característics o 'keypoints', considereu 3 algoritmes: Harris, ORB i SIFT.Tots ells ja implementats a la biblioteca openCV. Es decideix el triar SIFT perquè és més capaç de detectar punts característiques i és invariant a escala. Aquí tenim els punts característics de cada algorisme amb la mateixa imatge:
 
@@ -152,7 +152,7 @@ L'implementació consta de 4 passos:
 
   <img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/manualSIFTResults.png?raw=true"> 
 
-<h1 id="castellano"> COMPUTER VISION</h1>
+<h1 id="castellano"> VISIÓN POR COMPUTADOR </h1>
 
 La Visió per Computador es fa servir en aquest projecte per obtener característiques de les imatges de robot. Aquests punts de caràcter són visualitzats en l'aplicació d'usuari. Aquests se utilizará para un proceso estéreo multivista en futuras versiones.
 
@@ -162,7 +162,7 @@ En aquest directori de visió per computador trobaras
 <li>computerVisionAnalitics.py: S'han analizó 3 algoritmos diferentes por a la millora de la qual s'ha de fer amb el nostre projecte.</li>
     <li>sift.py: Implementamos el algoritmo SIFT directamente del artículo de David G. Lowe de 2004 i otras fuentes, un desafío y para comprender mejor SIFT.</li>
 </ol>
-## 1. ANÁLISIS DE VISIÓN POR COMPUTADORA
+<h2> 1. ANÁLISIS DE VISIÓN POR COMPUTADORA </h2>
 
 Para las características de los puntos o 'puntos clave', considere 3 algoritmos: Harris, ORB y SIFT. Tots ells ja implementats a la biblioteca openCV. Es decideix el triar SIFT perquè és més capaç de detectar punts característiques i és invariant a escala. Aquí tenim els punts característics de cada algorisme amb la mateixa imatge:
 
