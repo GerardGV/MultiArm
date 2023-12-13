@@ -55,7 +55,7 @@ After deciding that we would like to use the SIFT algorithm we decided to implem
 The implementation consists of 4 steps:
 
 1. **Obtaining key points:** To obtain key points, or characteristic points, the image must be convoluted with
-     a Gaussian mask, resulting in a smoothed or `scaled' image. We have to generate `n` scales to then obtain a space of Gaussian differences. Each new smoothed image is generated with a mask with the `sigma' used in the creation of the previous smoothed image by a `k^n` hyperparameter. Smoothed images are grouped into `octaves'. The 'octaves' differ in that the resolution is reduced. In each octave the pixels have a resolution of `2^n of the Octave'. When we obtain the Differences of Gaussian spaces, we subtract each new smoothed image from the previous one, iterate through each pixel of the resulting image and if the pixel is a maximum or a minimum in the `3x3x3` space around it, it consider a keypoint.
+     a Gaussian mask, resulting in a smoothed or `scaled` image. We have to generate `n` scales to then obtain a space of Gaussian differences. Each new smoothed image is generated with a mask with the `sigma` used in the creation of the previous smoothed image by a `k^n` hyperparameter. Smoothed images are grouped into `octaves`. The 'octaves' differ in that the resolution is reduced. In each octave the pixels have a resolution of `2^n of the Octave`. When we obtain the Differences of Gaussian spaces, we subtract each new smoothed image from the previous one, iterate through each pixel of the resulting image and if the pixel is a maximum or a minimum in the `3x3x3` space around it, it consider a keypoint.
 
 2. **Refining keypoint location:** In this section the positions of the keypoints are briefly refined, because the
      'exact' position, adding more decimals to the feature point coordinates.
@@ -63,14 +63,14 @@ The implementation consists of 4 steps:
      this section has not been implemented.
 
 3. **Orientation of the keypoints:** Once we have the keypoints, we calculate their orientation. That's why we have to
-     a window around the keypoint of size `3*1.5*scale where the pixel is located'. In this window we calculate the gradients of each pixel to then obtain their magnitudes and orientations. In a histogram of 36 `bins', 1 for every 10
+     a window around the keypoint of size `3*1.5*scale where the pixel is located`. In this window we calculate the gradients of each pixel to then obtain their magnitudes and orientations. In a histogram of 36 `bins`, 1 for every 10
      degrees, we are adding the value of the weights of each pixel. To assign the weights, we calculated the average between `1.5*scale`
      and pixel magnitude. Once all the pixels of the window have been iterated around the keypoint, the angle of the is chosen
-     `bin` with maximum value as the orientation of the key point. For each of the `bins' that has a value equal to or greater than
+     `bin` with maximum value as the orientation of the key point. For each of the `bins` that has a value equal to or greater than
      `0.8 of the maximum bin', new key points are created at the same position but with a different orientation.
 
-4. **Construction of the descriptors:** For the construction of the descriptors, an area of `16x16 pixels' must be observed in the
-     around the key point. In this area `4x4 descriptors' are created. Within each descriptor a histogram is calculated
+4. **Construction of the descriptors:** For the construction of the descriptors, an area of `16x16 pixels` must be observed in the
+     around the key point. In this area `4x4 descriptors` are created. Within each descriptor a histogram is calculated
      of orientations of `8 bins`. In order to fill the histogram, do the same as in the previous step, the gradients are calculated
      to then calculate the orientations and magnitudes of each pixel. From each orientation of the new histogram of orientations the dominant orientation of the pixel in step **3.** is subtracted so that they are relative to this dominant orientation. Once all the
      histograms of each `4x4` descriptor the `bins` are concatenated resulting in the key point descriptor which
@@ -80,19 +80,19 @@ The implementation consists of 4 steps:
 
 <img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/manualSIFTResults.png?raw=true"> 
 
-<h1 id="catala"> VISIÓ PER COMPUTADOR </h1>
+<h1 id="catala"> COMPUTER VISION </h1>
 
-La Visió per Computador es fa servir en aquest projecte per obtenir característiques de les imatges de robot. Aquests punts de caràcter són visualitzats en l'aplicació d'usuari. Aquests going to be used to a multiview estèreo proces in future versions.
+La Visió per Computador es fa servir en aquest projecte per obtenir característiques de les imatges de robot. Aquests punts de caràcter són visualitzats en l'aplicació d'usuari. Aquests s'utilitzaran per a un procés estèreo multivista en futures versions.
 
-En aquest directori de visió per computador trobaras
+En aquest directori de visió per computador trobaràs:
 
 <ol>
-<li>computerVisionAnalitics.py: S'han analitzat 3 diferents algoritmes per a la millora de la qual s'ha de fer amb el nostre projecte.</li>
-   <li>sift.py: We implementen SIFT algorithm straight from David G. Lowe paper from 2004 i altres sources a challange and to understand SIFT better.</li>
+<li>computerVisionAnalitics.py: Hem analitzat 3 algorismes diferents per triar quins utilitzaríem en el nostre projecte.</li>
+<li>sift.py: Vam implementar l'algorisme SIFT directament del document de David G. Lowe de 2004 i altres fonts com a repte i per a entendre millor el SIFT.</li>
 </ol>
-<h2> 1. COMPUTER VISION ANALITICS </h2>
+<h2> 1. ANÀLISI DE VISIÓ PER COMPUTADOR </h2>
 
-Per els punts característics o 'keypoints', considereu 3 algoritmes: Harris, ORB i SIFT.Tots ells ja implementats a la biblioteca openCV. Es decideix el triar SIFT perquè és més capaç de detectar punts característiques i és invariant a escala. Aquí tenim els punts característics de cada algorisme amb la mateixa imatge:
+Per escollir els punts característics o `keypoints` hem considerat 3 algorismes: Harris, ORB i SIFT. Tots ells ja estan implantats a la biblioteca openCV Vam decidir triar SIFT perquè és més capaç de detectar punts característics i és invariant a escala. Aquí tenim els punts característics de cada algorisme amb la mateixa imatge:
 
 - Harris:
 
@@ -122,7 +122,7 @@ correspondència d'imatges, el reconeixement d'objectes i la reconstrucció trid
 invariància a diferents transformacions han contribuït a la seva popularitat i la seva aplicabilitat en diferents àrees.
 
 ### SIFT Implementació Manual:
-Desprès de decidir que ens agradaria utilitzar l'algorisme SIFT vam decidir implementar-lo com a repte ja que considerem que d'aquesta manera aprendriem i el comprendriem més encara que al projecte utilitzem el SIFT de OpenCV per temes d'optimització i temps.
+Després de decidir que ens agradaria utilitzar l'algorisme SIFT vam decidir implementar-lo com a repte ja que considerem que d'aquesta manera aprendriem i el comprendriem més encara que al projecte utilitzem el SIFT de OpenCV per temes d'optimització i temps.
 
 L'implementació consta de 4 passos:
 
@@ -152,19 +152,19 @@ L'implementació consta de 4 passos:
 
   <img src="https://github.com/GerardGV/MultiArm/blob/43c2da3dd5e04115009f267e393c5cc74e6b2c27/imgReadMe/imgREADME_VC/manualSIFTResults.png?raw=true"> 
 
-<h1 id="castellano"> VISIÓN POR COMPUTADOR </h1>
+<h1 id="castellano"> COMPUTER VISION </h1>
 
-La Visió per Computador es fa servir en aquest projecte per obtener característiques de les imatges de robot. Aquests punts de caràcter són visualitzats en l'aplicació d'usuari. Aquests se utilizará para un proceso estéreo multivista en futuras versiones.
+La Visión por Computadora se utiliza en este proyecto para obtener características de las imágenes del robot. Estas características se visualizan en la aplicación de usuario y se utilizarán para un proceso estéreo multivista en futuras versiones.
 
-En aquest directori de visió per computador trobaras
+En este directorio de visión por computadora encontrarás:
 
 <ol>
-<li>computerVisionAnalitics.py: S'han analizó 3 algoritmos diferentes por a la millora de la qual s'ha de fer amb el nostre projecte.</li>
-    <li>sift.py: Implementamos el algoritmo SIFT directamente del artículo de David G. Lowe de 2004 i otras fuentes, un desafío y para comprender mejor SIFT.</li>
+  <li>computerVisionAnalitics.py: Se han analizado 3 algoritmos diferentes para mejorar la calidad en nuestro proyecto.</li>
+  <li>sift.py: Implementamos el algoritmo SIFT directamente del artículo de David G. Lowe de 2004 y otras fuentes, como un desafío y para comprender mejor SIFT.</li>
 </ol>
 <h2> 1. ANÁLISIS DE VISIÓN POR COMPUTADORA </h2>
 
-Para las características de los puntos o 'puntos clave', considere 3 algoritmos: Harris, ORB y SIFT. Tots ells ja implementats a la biblioteca openCV. Es decideix el triar SIFT perquè és més capaç de detectar punts característiques i és invariant a escala. Aquí tenim els punts característics de cada algorisme amb la mateixa imatge:
+Para las características de los puntos o `keypoints`, consideramos 3 algoritmos: Harris, ORB y SIFT. Todos ellos ya están implementados en la biblioteca openCV. Se decide elegir SIFT porque es más capaz de detectar puntos característicos y es invariante a escala. Aquí están los puntos característicos de cada algoritmo con la misma imagen:
 
 - Harris:
 
